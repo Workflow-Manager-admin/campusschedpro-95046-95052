@@ -940,3 +940,16 @@ Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
 Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/react-router-dom/dist/index.mjs'
 
 webpack compiled with 1 error and 1 warning
+Compiling...
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/react-router-dom/dist/index.mjs'
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 36:19:  'setCourses' is assigned a value but never used  no-unused-vars
+
+ERROR in ./node_modules/react-router-dom/dist/index.mjs
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/react-router-dom/dist/index.mjs'
+
+webpack compiled with 1 error and 1 warning
