@@ -121,8 +121,8 @@ const CourseScheduling = () => {
         setSchedule(newSchedule);
       }
     } catch (error) {
-      console.error('Error during drag operation:', error);
-      showNotification('An error occurred while updating the schedule', 'error');
+      // Use a more friendly error handling approach
+      showNotification(`Error during drag operation: ${error.message}`, 'error');
     }
   }, [schedule, availableCourses, showNotification]);
 
