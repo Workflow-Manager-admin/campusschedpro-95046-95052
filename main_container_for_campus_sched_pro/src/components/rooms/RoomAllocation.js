@@ -1,5 +1,31 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Chip } from '@mui/material';
+import { 
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Chip
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+// Styled components for consistent styling
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(2)
+  }
+}));
+
+const StyledChip = styled(Chip)(({ theme }) => ({
+  margin: theme.spacing(0.5),
+  '&.MuiChip-outlined': {
+    borderColor: theme.palette.primary.main
+  }
+}));
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
 
@@ -281,7 +307,7 @@ const RoomAllocation = () => {
       </div>
 
       {/* Room Assignment Dialog */}
-      <Dialog 
+      <StyledDialog 
         open={showAssignDialog} 
         onClose={() => setShowAssignDialog(false)}
         fullWidth
@@ -312,7 +338,7 @@ const RoomAllocation = () => {
               ) : (
                 <div className="room-options">
                   {getSuitableRooms().map(room => (
-                    <Chip
+                    <StyledChip
                       key={room.id}
                       label={`${room.name} (${room.capacity} capacity)`}
                       onClick={() => handleSelectRoom(room)}
@@ -336,7 +362,7 @@ const RoomAllocation = () => {
                 </Alert>
               ) : (
                 unassignedCourses.map(course => (
-                  <Chip
+                  <StyledChip
                     key={course.id}
                     label={`${course.code} - ${course.name}`}
                     onClick={() => handleSelectCourse(course)}
