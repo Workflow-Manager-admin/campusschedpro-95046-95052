@@ -42,7 +42,7 @@ const SAMPLE_COURSES = [
 ];
 
 const CourseScheduling = () => {
-  const [availableCourses, setAvailableCourses] = useState(SAMPLE_COURSES);
+  const [availableCourses] = useState(SAMPLE_COURSES);
   const [schedule, setSchedule] = useState({});
   const [notification, setNotification] = useState({
     open: false,
