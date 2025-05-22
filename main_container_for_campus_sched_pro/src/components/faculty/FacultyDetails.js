@@ -37,29 +37,37 @@ const FacultyDetails = ({ faculty, onSave, onDelete, onClose }) => {
         <div className="faculty-actions">
           {isEditing ? (
             <>
-              <Tooltip title="Save Changes">
-                <IconButton onClick={handleSave} color="primary">
-                  <SaveIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Cancel">
-                <IconButton onClick={() => setIsEditing(false)}>
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
+              <button 
+                className="btn btn-icon" 
+                onClick={handleSave}
+                title="Save Changes"
+              >
+                ✓
+              </button>
+              <button 
+                className="btn btn-icon" 
+                onClick={() => setIsEditing(false)}
+                title="Cancel"
+              >
+                ✕
+              </button>
             </>
           ) : (
             <>
-              <Tooltip title="Edit Faculty">
-                <IconButton onClick={() => setIsEditing(true)} color="primary">
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete Faculty">
-                <IconButton onClick={onDelete} color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              <button 
+                className="btn btn-icon" 
+                onClick={() => setIsEditing(true)}
+                title="Edit Faculty"
+              >
+                ✎
+              </button>
+              <button 
+                className="btn btn-icon btn-danger" 
+                onClick={onDelete}
+                title="Delete Faculty"
+              >
+                🗑
+              </button>
             </>
           )}
         </div>
