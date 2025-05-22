@@ -28,11 +28,17 @@ const StudentScheduleView = () => {
   const [student] = useState(SAMPLE_STUDENT);
   const [selectedCourses, setSelectedCourses] = useState(student.courses);
   const [showPrintView, setShowPrintView] = useState(false);
+  const [yearFilter, setYearFilter] = useState('All Years');
   
   // Get only the courses this student is enrolled in
   const enrolledCourses = courses.filter(course => 
     student.courses.includes(course.id)
   );
+
+  // Apply year filter to enrolled courses if needed
+  const filteredEnrolledCourses = yearFilter === 'All Years'
+    ? enrolledCourses
+    : enrolledCourses.filter(course => course.academicYear === yearFilter);
 
   // Create a filtered schedule based on enrolled courses
   const studentSchedule = getStudentSchedule(schedule, selectedCourses);
