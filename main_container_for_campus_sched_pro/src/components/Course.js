@@ -25,6 +25,11 @@ const Course = memo(({ course, index }) => {
               <span className="course-room">Room: {course.room}</span>
             )}
           </div>
+          {course.academicYear && (
+            <div className="course-year">
+              <span>{course.academicYear} • {course.department}</span>
+            </div>
+          )}
         </Paper>
       )}
     </Draggable>
@@ -43,7 +48,9 @@ Course.propTypes = {
     room: PropTypes.string,
     expectedEnrollment: PropTypes.number,
     requiresLab: PropTypes.bool,
-    requiredEquipment: PropTypes.arrayOf(PropTypes.string)
+    requiredEquipment: PropTypes.arrayOf(PropTypes.string),
+    academicYear: PropTypes.string,
+    department: PropTypes.string
   }).isRequired,
   index: PropTypes.number.isRequired
 };

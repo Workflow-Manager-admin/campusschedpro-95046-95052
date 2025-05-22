@@ -118,6 +118,71 @@ const CourseScheduling = () => {
     // Here we would typically save to backend
     showNotification('Schedule saved successfully!', 'success');
   }, [schedule, showNotification]);
+  
+  // Function to handle opening add course dialog
+  const handleOpenAddDialog = () => {
+    setShowAddDialog(true);
+  };
+  
+  // Function to handle closing add course dialog
+  const handleCloseAddDialog = () => {
+    setShowAddDialog(false);
+    setNewCourse({
+      name: '',
+      code: '',
+      credits: 3,
+      instructor: '',
+      expectedEnrollment: 30,
+      requiresLab: false,
+      requiredEquipment: [],
+      academicYear: 'First Year',
+      department: 'IT',
+    });
+  };
+  
+  // Function to handle input change in the add course form
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCourse(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  // Function to handle checkbox change
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setNewCourse(prev => ({
+      ...prev,
+      [name]: checked
+    }));
+  };
+  
+  // Function to handle adding a new course
+  const handleAddCourse = () => {
+    // Validate form
+    if (!newCourse.name || !newCourse.code || !newCourse.instructor) {
+      showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+    
+    // Create new course with unique ID
+    const newCourseWithId = {
+      ...newCourse,
+      id: `course-${Date.now()}`,
+      requiredEquipment: newCourse.requiresLab ? ['Computers'] : []
+    };
+    
+    // Add to courses array
+    setCourses(prev => [...prev, newCourseWithId]);
+    showNotification(`Course ${newCourseWithId.code} added successfully`, 'success');
+    handleCloseAddDialog();
+  };
+
+  // Filter courses by academic year
+  const filteredCourses = yearFilter === 'All Years' 
+    ? courses 
+    : courses.filter(course => course.academicYear === yearFilter);
 
   return (
     <div className="course-scheduling">
@@ -145,8 +210,25 @@ const CourseScheduling = () => {
           <div className="courses-panel">
             <div className="panel-header">
               <h3>Available Courses</h3>
-              <button className="btn">Add Course</button>
+              <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
             </div>
+            
+            <div className="course-filters">
+              <FormControl variant="outlined" size="small" fullWidth>
+                <InputLabel>Academic Year</InputLabel>
+                <Select
+                  value={yearFilter}
+                  onChange={(e) => setYearFilter(e.target.value)}
+                  label="Academic Year"
+                >
+                  <MenuItem value="All Years">All Years</MenuItem>
+                  {ACADEMIC_YEARS.map(year => (
+                    <MenuItem key={year} value={year}>{year}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            
             <Droppable droppableId="courses-list">
               {(provided) => (
                 <div
@@ -154,7 +236,7 @@ const CourseScheduling = () => {
                   {...provided.droppableProps}
                   className="courses-list"
                 >
-                  {courses.map((course, index) => (
+                  {filteredCourses.map((course, index) => (
                     <Course 
                       key={course.id} 
                       course={course} 
@@ -190,6 +272,118 @@ const CourseScheduling = () => {
           {notification.message}
         </Alert>
       </Snackbar>
+      
+      {/* Add Course Dialog */}
+      <Dialog 
+        open={showAddDialog} 
+        onClose={handleCloseAddDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Add New Course</DialogTitle>
+        <DialogContent>
+          <div className="form-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
+            <TextField
+              label="Course Name"
+              name="name"
+              value={newCourse.name}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
+            <TextField
+              label="Course Code"
+              name="code"
+              value={newCourse.code}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
+            <TextField
+              label="Instructor"
+              name="instructor"
+              value={newCourse.instructor}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <TextField
+                label="Credits"
+                name="credits"
+                value={newCourse.credits}
+                onChange={handleInputChange}
+                type="number"
+                fullWidth
+              />
+              
+              <TextField
+                label="Expected Enrollment"
+                name="expectedEnrollment"
+                value={newCourse.expectedEnrollment}
+                onChange={handleInputChange}
+                type="number"
+                fullWidth
+              />
+            </div>
+            
+            <FormControl fullWidth>
+              <InputLabel>Department</InputLabel>
+              <Select
+                name="department"
+                value={newCourse.department}
+                onChange={handleInputChange}
+                label="Department"
+              >
+                <MenuItem value="IT">IT</MenuItem>
+                <MenuItem value="Computer Science">Computer Science</MenuItem>
+                <MenuItem value="Engineering">Engineering</MenuItem>
+                <MenuItem value="Mathematics">Mathematics</MenuItem>
+              </Select>
+            </FormControl>
+            
+            <FormControl fullWidth>
+              <InputLabel>Academic Year</InputLabel>
+              <Select
+                name="academicYear"
+                value={newCourse.academicYear}
+                onChange={handleInputChange}
+                label="Academic Year"
+              >
+                {ACADEMIC_YEARS.map(year => (
+                  <MenuItem key={year} value={year}>{year}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            <FormGroup>
+              <FormControlLabel 
+                control={
+                  <Checkbox 
+                    checked={newCourse.requiresLab}
+                    onChange={handleCheckboxChange}
+                    name="requiresLab"
+                  />
+                } 
+                label="Requires Lab"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddDialog}>Cancel</Button>
+          <Button 
+            onClick={handleAddCourse}
+            variant="contained"
+            color="primary"
+          >
+            Add Course
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
