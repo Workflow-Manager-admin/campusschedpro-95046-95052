@@ -143,19 +143,7 @@ const CourseScheduling = () => {
     showNotification('Schedule saved successfully!', 'success');
   }, [schedule, showNotification]);
 
-  // Handle room assignment updates
-  const handleRoomUpdate = useCallback((updatedSchedule) => {
-    setSchedule(prevSchedule => {
-      const newSchedule = { ...prevSchedule };
-      Object.keys(newSchedule).forEach(slotId => {
-        newSchedule[slotId] = newSchedule[slotId].map(course => {
-          const updatedCourse = updatedSchedule.find(c => c.id === course.id);
-          return updatedCourse || course;
-        });
-      });
-      return newSchedule;
-    });
-  }, []);
+  // Room assignment updates can be handled here if needed
 
   return (
     <div className="course-scheduling">
