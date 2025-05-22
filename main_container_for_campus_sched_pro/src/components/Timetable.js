@@ -52,7 +52,7 @@ Timetable.propTypes = {
     })
   ).isRequired,
   schedule: PropTypes.object.isRequired,
-  onCourseMove: PropTypes.func.isRequired
+  _onCourseMove: PropTypes.func.isRequired
 };
 
 export default Timetable;
