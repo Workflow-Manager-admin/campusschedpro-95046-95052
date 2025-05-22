@@ -5,3 +5,5 @@ export { default as CourseScheduling } from './CourseScheduling';
 export { default as FacultyManagement } from './faculty/FacultyManagement';
 export { default as FacultyCard } from './faculty/FacultyCard';
 export { default as FacultyDetails } from './faculty/FacultyDetails';
+export { default as RoomManagement } from './rooms/RoomManagement';
+export { default as RoomAllocation } from './rooms/RoomAllocation';

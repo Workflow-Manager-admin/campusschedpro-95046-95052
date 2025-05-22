@@ -5,16 +5,8 @@ import { FacultyManagement } from './components/faculty';
 import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
-
-const RoomAllocation = () => (
-  <div className="dashboard-card">
-    <div className="card-header">
-      <h2 className="card-title">Room Allocation</h2>
-      <button className="btn">Assign Room</button>
-    </div>
-    <p>Room allocation interface will be implemented here</p>
-  </div>
-);
+import './styles/RoomStyles.css';
+import RoomAllocation from './components/rooms/RoomAllocation';
 
 const ConflictResolution = () => (
   <div className="dashboard-card">
