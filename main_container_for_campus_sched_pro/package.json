@@ -12,8 +12,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.30.1",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^6.30.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -37,6 +36,8 @@
     ]
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "cross-env": "^7.0.3",
+    "react-scripts": "^5.0.1"
   }
 }
