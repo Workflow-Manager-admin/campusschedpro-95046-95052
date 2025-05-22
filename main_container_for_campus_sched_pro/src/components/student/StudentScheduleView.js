@@ -125,7 +125,9 @@ const StudentScheduleView = () => {
       {Object.keys(studentSchedule).length === 0 ? (
         <div className="no-schedule">
           <Alert severity="info">
-            No courses have been scheduled yet. Please check back later or select different courses.
+            {filteredEnrolledCourses.length === 0 
+              ? "No courses match the selected year filter" 
+              : "No courses have been scheduled yet. Please check back later or select different courses."}
           </Alert>
         </div>
       ) : (
