@@ -9,7 +9,6 @@ import {
 import { useSchedule } from '../../context/ScheduleContext';
 import Timetable from '../Timetable';
 import { getStudentSchedule, formatPrintableSchedule } from '../../utils/scheduleUtils';
-=======
 
 // Sample student data - in a real app this would come from authentication/user state
 const SAMPLE_STUDENT = {
