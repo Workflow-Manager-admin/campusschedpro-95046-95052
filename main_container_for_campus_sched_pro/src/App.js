@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import PeopleIcon from '@mui/icons-material/People';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import WarningIcon from '@mui/icons-material/Warning';
-import SchoolIcon from '@mui/icons-material/School';
+import { 
+  CalendarMonth as CalendarMonthIcon,
+  People as PeopleIcon,
+  MeetingRoom as MeetingRoomIcon,
+  Warning as WarningIcon,
+  School as SchoolIcon 
+} from '@mui/icons-material';
 import CourseScheduling from './components/CourseScheduling';
 import FacultyManagement from './components/faculty/FacultyManagement';
 import './App.css';
