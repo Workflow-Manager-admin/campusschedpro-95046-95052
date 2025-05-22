@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Droppable } from '@hello-pangea/dnd';
-import { Tooltip } from '@mui/material';
+import { Tooltip, Paper } from '@mui/material';
 
 const TimeSlot = ({ day, time, courses }) => {
   const slotId = `${day}-${time}`;
@@ -26,8 +26,12 @@ const TimeSlot = ({ day, time, courses }) => {
               key={course.id}
               title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
               placement="top"
+              arrow
             >
-              <div className="course-item">
+              <Paper 
+                className="course-item"
+                elevation={1}
+              >
                 <div className="course-item-header">
                   <span className="course-code">{course.code}</span>
                   <span className="course-credits">{course.credits} cr</span>
@@ -37,7 +41,7 @@ const TimeSlot = ({ day, time, courses }) => {
                   <span>{course.instructor}</span>
                   <span>{course.room || 'TBA'}</span>
                 </div>
-              </div>
+              </Paper>
             </Tooltip>
           ))}
           {provided.placeholder}
