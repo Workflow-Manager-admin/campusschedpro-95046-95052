@@ -29,4 +29,17 @@ const TimeSlot = ({ day, time, courses }) => {
   );
 };
 
+TimeSlot.propTypes = {
+  day: PropTypes.string.isRequired,
+  time: PropTypes.string.isRequired,
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      instructor: PropTypes.string.isRequired,
+      room: PropTypes.string
+    })
+  ).isRequired
+};
+
 export default TimeSlot;
