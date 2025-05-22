@@ -6,7 +6,7 @@ import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
-import RoomAllocation from './components/rooms/RoomAllocation';
+import { RoomAllocation, RoomManagement } from './components';
 
 const ConflictResolution = () => (
   <div className="dashboard-card">
@@ -60,6 +60,14 @@ function App() {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
             <span className="nav-icon">🏢</span>
+            <span className="nav-text">Room Management</span>
+          </NavLink>
+          
+          <NavLink 
+            to="/room-allocation" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <span className="nav-icon">📍</span>
             <span className="nav-text">Room Allocation</span>
           </NavLink>
           
@@ -84,7 +92,8 @@ function App() {
           <Routes>
             <Route path="/" element={<CourseScheduling />} />
             <Route path="/faculty" element={<FacultyManagement />} />
-            <Route path="/rooms" element={<RoomAllocation />} />
+            <Route path="/rooms" element={<RoomManagement />} />
+            <Route path="/room-allocation" element={<RoomAllocation />} />
             <Route path="/conflicts" element={<ConflictResolution />} />
             <Route path="/student-view" element={<StudentView />} />
           </Routes>
