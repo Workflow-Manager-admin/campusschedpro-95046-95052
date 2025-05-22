@@ -32,7 +32,7 @@ const INITIAL_ROOMS = [
 ];
 
 const RoomManagement = () => {
-  const [rooms, setRooms] = useState(INITIAL_ROOMS);
+  const [rooms] = useState(INITIAL_ROOMS);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');

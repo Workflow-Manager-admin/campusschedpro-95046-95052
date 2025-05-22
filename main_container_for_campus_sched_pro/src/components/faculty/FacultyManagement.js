@@ -1,9 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import { 
-  calculateTeachingLoad, 
-  getFacultyStatus, 
-  validateCourseAssignment 
+  getFacultyStatus 
 } from '../../utils/facultyUtils';
 import FacultyCard from './FacultyCard';
 import FacultyDetails from './FacultyDetails';
