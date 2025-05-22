@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Dialog, TextField, IconButton } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
+
 import { 
   calculateTeachingLoad, 
   getFacultyStatus, 
@@ -111,13 +109,12 @@ const FacultyManagement = () => {
       <div className="faculty-container">
         <div className="faculty-list">
           <div className="search-bar">
-            <SearchIcon className="search-icon" />
-            <TextField
-              fullWidth
+            <input
+              type="text"
               placeholder="Search faculty..."
               value={searchTerm}
               onChange={handleSearch}
-              variant="outlined"
+              className="search-input"
             />
           </div>
 
