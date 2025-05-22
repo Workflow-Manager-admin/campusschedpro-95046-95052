@@ -232,3 +232,556 @@ src/components/CourseScheduling.js
   Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
 
 webpack compiled with 1 warning
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/MeetingRoom.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/MeetingRoom.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/CalendarMonth.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/MeetingRoom.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 13 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/MeetingRoom.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 13 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/MeetingRoom.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 10 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/People.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 10 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/School.js'
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 10 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm/Warning.js'
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+LOG from webpack.FileSystemInfo
+<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
++ 10 hidden lines
+
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+webpack compiled with 5 errors and 1 warning
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 2:10:   'DragDropContext' is defined but never used      no-unused-vars
+  Line 31:19:  'setCourses' is assigned a value but never used  no-unused-vars
+  Line 32:10:  'schedule' is assigned a value but never used    no-unused-vars
+
+ERROR in ./node_modules/@mui/icons-material/esm/CalendarMonth.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/MeetingRoom.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/People.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/School.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+ERROR in ./node_modules/@mui/icons-material/esm/Warning.js 3:0-50
+Module not found: Error: Can't resolve './utils/createSvgIcon' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/icons-material/esm'
+Did you mean 'createSvgIcon.js'?
+BREAKING CHANGE: The request './utils/createSvgIcon' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+
+webpack compiled with 5 errors and 1 warning
