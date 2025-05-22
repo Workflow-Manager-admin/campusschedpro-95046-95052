@@ -8,7 +8,7 @@ import {
   School as SchoolIcon 
 } from '@mui/icons-material';
 import CourseScheduling from './components/CourseScheduling';
-import FacultyManagement from './components/faculty/FacultyManagement';
+import { FacultyManagement } from './components/faculty';
 import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
