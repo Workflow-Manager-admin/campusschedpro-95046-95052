@@ -6,7 +6,7 @@ import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
-import { RoomAllocation, RoomManagement } from './components/rooms';
+import { RoomAllocation, RoomManagement } from './components/rooms-simplified';
 
 const ConflictResolution = () => (
   <div className="dashboard-card">
