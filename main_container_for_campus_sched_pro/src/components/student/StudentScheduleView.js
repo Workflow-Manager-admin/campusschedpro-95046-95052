@@ -38,10 +38,13 @@ const StudentScheduleView = () => {
   // Apply year filter to enrolled courses if needed
   const filteredEnrolledCourses = yearFilter === 'All Years'
     ? enrolledCourses
-    : enrolledCourses.filter(course => course.academicYear === yearFilter);
+    : enrolledCourses.filter(course => course.academicYear && course.academicYear === yearFilter);
 
   // Create a filtered schedule based on enrolled courses
-  const studentSchedule = getStudentSchedule(schedule, selectedCourses);
+  const studentSchedule = getStudentSchedule(
+    schedule, 
+    filteredEnrolledCourses.map(course => course.id)
+  );
   
   // Handle course selection changes
   const handleCourseToggle = useCallback((courseId) => {
