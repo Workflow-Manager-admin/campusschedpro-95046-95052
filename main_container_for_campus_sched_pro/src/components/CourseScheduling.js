@@ -299,14 +299,14 @@ const CourseScheduling = () => {
       >
         <DialogTitle>Add New Course</DialogTitle>
         <DialogContent>
-          <div className="form-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
             <TextField
               label="Course Name"
               name="name"
               value={newCourse.name}
               onChange={handleInputChange}
               fullWidth
-              required
+              margin="dense"
             />
             
             <TextField
@@ -315,7 +315,7 @@ const CourseScheduling = () => {
               value={newCourse.code}
               onChange={handleInputChange}
               fullWidth
-              required
+              margin="dense"
             />
             
             <TextField
@@ -324,7 +324,7 @@ const CourseScheduling = () => {
               value={newCourse.instructor}
               onChange={handleInputChange}
               fullWidth
-              required
+              margin="dense"
             />
             
             <div style={{ display: 'flex', gap: '16px' }}>
@@ -335,6 +335,7 @@ const CourseScheduling = () => {
                 onChange={handleInputChange}
                 type="number"
                 fullWidth
+                margin="dense"
               />
               
               <TextField
@@ -344,12 +345,14 @@ const CourseScheduling = () => {
                 onChange={handleInputChange}
                 type="number"
                 fullWidth
+                margin="dense"
               />
             </div>
             
-            <FormControl fullWidth>
-              <InputLabel>Department</InputLabel>
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="department-label">Department</InputLabel>
               <Select
+                labelId="department-label"
                 name="department"
                 value={newCourse.department}
                 onChange={handleInputChange}
@@ -362,9 +365,10 @@ const CourseScheduling = () => {
               </Select>
             </FormControl>
             
-            <FormControl fullWidth>
-              <InputLabel>Academic Year</InputLabel>
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="academic-year-label">Academic Year</InputLabel>
               <Select
+                labelId="academic-year-label"
                 name="academicYear"
                 value={newCourse.academicYear}
                 onChange={handleInputChange}
@@ -396,6 +400,7 @@ const CourseScheduling = () => {
             onClick={handleAddCourse}
             variant="contained"
             color="primary"
+            disabled={!newCourse.name || !newCourse.code || !newCourse.instructor}
           >
             Add Course
           </Button>
