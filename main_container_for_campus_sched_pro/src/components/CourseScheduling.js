@@ -133,9 +133,29 @@ const CourseScheduling = () => {
       return;
     }
     
+    // Check for courses without room assignments
+    const unassignedCourses = Object.values(schedule).flat().filter(course => !course.room);
+    if (unassignedCourses.length > 0) {
+      showNotification(`Warning: ${unassignedCourses.length} courses don't have room assignments`, 'warning');
+    }
+    
     // Here we would typically save to backend
     showNotification('Schedule saved successfully!', 'success');
   }, [schedule, showNotification]);
+
+  // Handle room assignment updates
+  const handleRoomUpdate = useCallback((updatedSchedule) => {
+    setSchedule(prevSchedule => {
+      const newSchedule = { ...prevSchedule };
+      Object.keys(newSchedule).forEach(slotId => {
+        newSchedule[slotId] = newSchedule[slotId].map(course => {
+          const updatedCourse = updatedSchedule.find(c => c.id === course.id);
+          return updatedCourse || course;
+        });
+      });
+      return newSchedule;
+    });
+  }, []);
 
   return (
     <div className="course-scheduling">
