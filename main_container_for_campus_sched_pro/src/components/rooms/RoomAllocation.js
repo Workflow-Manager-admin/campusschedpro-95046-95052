@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Chip } from '@mui/material';
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
