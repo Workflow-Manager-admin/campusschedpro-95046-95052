@@ -9,51 +9,44 @@ import CourseScheduling from './components/CourseScheduling';
 import './App.css';
 import './styles/CourseScheduling.css';
 
+// Placeholder components
 const FacultyManagement = () => (
-  <div className="dashboard-grid">
-    <div className="dashboard-card">
-      <div className="card-header">
-        <h2 className="card-title">Faculty Directory</h2>
-        <button className="btn">Add Faculty</button>
-      </div>
-      <p>Faculty management interface will be implemented here</p>
+  <div className="dashboard-card">
+    <div className="card-header">
+      <h2 className="card-title">Faculty Directory</h2>
+      <button className="btn">Add Faculty</button>
     </div>
+    <p>Faculty management interface will be implemented here</p>
   </div>
 );
 
 const RoomAllocation = () => (
-  <div className="dashboard-grid">
-    <div className="dashboard-card">
-      <div className="card-header">
-        <h2 className="card-title">Room Allocation</h2>
-        <button className="btn">Assign Room</button>
-      </div>
-      <p>Room allocation interface will be implemented here</p>
+  <div className="dashboard-card">
+    <div className="card-header">
+      <h2 className="card-title">Room Allocation</h2>
+      <button className="btn">Assign Room</button>
     </div>
+    <p>Room allocation interface will be implemented here</p>
   </div>
 );
 
 const ConflictResolution = () => (
-  <div className="dashboard-grid">
-    <div className="dashboard-card">
-      <div className="card-header">
-        <h2 className="card-title">Schedule Conflicts</h2>
-        <button className="btn btn-accent">Resolve All</button>
-      </div>
-      <p>Conflict resolution interface will be implemented here</p>
+  <div className="dashboard-card">
+    <div className="card-header">
+      <h2 className="card-title">Schedule Conflicts</h2>
+      <button className="btn btn-accent">Resolve All</button>
     </div>
+    <p>Conflict resolution interface will be implemented here</p>
   </div>
 );
 
 const StudentView = () => (
-  <div className="dashboard-grid">
-    <div className="dashboard-card">
-      <div className="card-header">
-        <h2 className="card-title">Student Schedule View</h2>
-        <button className="btn">Print Schedule</button>
-      </div>
-      <p>Student view interface will be implemented here</p>
+  <div className="dashboard-card">
+    <div className="card-header">
+      <h2 className="card-title">Student Schedule View</h2>
+      <button className="btn">Print Schedule</button>
     </div>
+    <p>Student view interface will be implemented here</p>
   </div>
 );
 
