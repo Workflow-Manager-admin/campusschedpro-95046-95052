@@ -2,44 +2,16 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import CourseScheduling from './components/CourseScheduling';
 import { FacultyManagement } from './components/faculty';
+import { RoomManagement, RoomAllocation } from './components/rooms';
+import { ConflictResolution } from './components/conflicts';
+import { StudentScheduleView } from './components/student';
+import { ScheduleProvider } from './context/ScheduleContext';
 import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
-// Using simple placeholder components until Room components are fully implemented
-const RoomManagement = () => (
-  <div className="dashboard-card">
-    <h2>Room Management</h2>
-    <p>Room Management interface will be implemented here</p>
-  </div>
-);
-
-const RoomAllocation = () => (
-  <div className="dashboard-card">
-    <h2>Room Allocation</h2>
-    <p>Room Allocation interface will be implemented here</p>
-  </div>
-);
-
-const ConflictResolution = () => (
-  <div className="dashboard-card">
-    <div className="card-header">
-      <h2 className="card-title">Schedule Conflicts</h2>
-      <button className="btn btn-accent">Resolve All</button>
-    </div>
-    <p>Conflict resolution interface will be implemented here</p>
-  </div>
-);
-
-const StudentView = () => (
-  <div className="dashboard-card">
-    <div className="card-header">
-      <h2 className="card-title">Student Schedule View</h2>
-      <button className="btn">Print Schedule</button>
-    </div>
-    <p>Student view interface will be implemented here</p>
-  </div>
-);
+import './styles/ConflictResolution.css';
+import './styles/StudentView.css';
 
 function App() {
   return (
