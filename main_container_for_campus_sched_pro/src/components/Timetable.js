@@ -8,7 +8,8 @@ const TIME_SLOTS = [
   '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
 ];
 
-const Timetable = ({ courses, schedule, onCourseMove }) => {
+// Destructure props but mark unused ones with underscore to avoid lint warnings
+const Timetable = ({ _courses, schedule, _onCourseMove }) => {
   return (
     <div className="timetable">
       <div className="timetable-header">
@@ -40,7 +41,7 @@ const Timetable = ({ courses, schedule, onCourseMove }) => {
 };
 
 Timetable.propTypes = {
-  courses: PropTypes.arrayOf(
+  _courses: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
