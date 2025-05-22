@@ -16,7 +16,7 @@ import {
   FormControlLabel, 
   Checkbox, 
   FormGroup, 
-  Typography 
+  Typography
 } from '@mui/material';
 import Timetable from './Timetable';
 import Course from './Course';
