@@ -32,7 +32,6 @@ class RoomAllocationErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-    <RoomAllocationErrorBoundary>
         <div className="error-container">
           <h2>Something went wrong.</h2>
           <button 
