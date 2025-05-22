@@ -210,27 +210,31 @@ export const ScheduleProvider = ({ children }) => {
     });
     setSchedule(updatedSchedule);
 
-    // Update allocations immediately
-    const updatedAllocations = [...allocations];
-    
-    // Remove course from any existing room allocation
-    updatedAllocations.forEach(allocation => {
-      allocation.courses = allocation.courses.filter(c => c.id !== courseId);
-    });
+    // Update allocations immutably
+    const updatedAllocations = allocations.map(allocation => ({
+      ...allocation,
+      courses: allocation.courses.filter(c => c.id !== courseId)
+    }));
 
     // Add course to new room allocation if room is assigned
     if (room) {
-      const roomAllocation = updatedAllocations.find(a => a.roomId === roomId);
-      if (roomAllocation) {
+      const roomIndex = updatedAllocations.findIndex(a => a.roomId === roomId);
+      if (roomIndex !== -1) {
         const courseSchedule = Object.entries(updatedSchedule)
           .filter(([_, courses]) => courses.some(c => c.id === courseId))
           .map(([slotId]) => slotId);
 
-        roomAllocation.courses.push({
-          ...course,
-          room: room.name,
-          schedule: courseSchedule
-        });
+        updatedAllocations[roomIndex] = {
+          ...updatedAllocations[roomIndex],
+          courses: [
+            ...updatedAllocations[roomIndex].courses,
+            {
+              ...course,
+              room: room.name,
+              schedule: courseSchedule
+            }
+          ]
+        };
       }
     }
 
