@@ -11,23 +11,23 @@ export default [
         ecmaFeatures: { jsx: true }
       },
       globals: {
-        document: true,
-        window: true,
-        test: true,
-        expect: true
+        document: "readonly",
+        window: "readonly",
+        localStorage: "readonly",
+        console: "readonly",
+        test: "readonly",
+        expect: "readonly"
       }
     },
     rules: {
-
-     'no-unused-vars': ['warn', { 
-       varsIgnorePattern: 'React|App',
-       args: 'none',
-       ignoreRestSiblings: true,
-       argsIgnorePattern: '^_'
-     }],
-     'react/jsx-uses-vars': 'error',
-     'react/jsx-uses-react': 'off'
-
+      'no-unused-vars': ['warn', { 
+        varsIgnorePattern: 'React|App',
+        args: 'none',
+        ignoreRestSiblings: true,
+        argsIgnorePattern: '^_'
+      }],
+      'react/jsx-uses-vars': 'error',
+      'react/jsx-uses-react': 'off'
     }
   },
   pluginJs.configs.recommended,
@@ -39,4 +39,4 @@ export default [
       "react/jsx-uses-vars": "error"
     }
   }
-]
+];
