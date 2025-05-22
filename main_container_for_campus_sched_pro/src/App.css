@@ -49,6 +49,15 @@ body {
   color: var(--text-light);
 }
 
+.nav-icon {
+  font-size: 1.2rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -58,7 +67,7 @@ body {
   text-decoration: none;
   border-radius: 8px;
   margin-bottom: 8px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .nav-item:hover {
