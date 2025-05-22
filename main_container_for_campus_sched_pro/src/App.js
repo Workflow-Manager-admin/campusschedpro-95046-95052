@@ -67,27 +67,43 @@ function App() {
             <span className="logo logo-text">CampusSchedPro</span>
           </div>
           
-          <NavLink to="/" className="nav-item" end>
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            end
+          >
             <CalendarMonthIcon />
             <span className="nav-text">Course Scheduling</span>
           </NavLink>
           
-          <NavLink to="/faculty" className="nav-item">
+          <NavLink 
+            to="/faculty" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <PeopleIcon />
             <span className="nav-text">Faculty Management</span>
           </NavLink>
           
-          <NavLink to="/rooms" className="nav-item">
+          <NavLink 
+            to="/rooms" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <MeetingRoomIcon />
             <span className="nav-text">Room Allocation</span>
           </NavLink>
           
-          <NavLink to="/conflicts" className="nav-item">
+          <NavLink 
+            to="/conflicts" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <WarningIcon />
             <span className="nav-text">Conflict Resolution</span>
           </NavLink>
           
-          <NavLink to="/student-view" className="nav-item">
+          <NavLink 
+            to="/student-view" 
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <SchoolIcon />
             <span className="nav-text">Student View</span>
           </NavLink>
