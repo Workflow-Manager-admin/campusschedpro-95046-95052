@@ -12,7 +12,10 @@ const SAMPLE_COURSES = [
     code: 'CS101',
     credits: 3,
     instructor: 'Dr. Smith',
-    room: 'Room 101'
+    room: null,
+    expectedEnrollment: 35,
+    requiresLab: false,
+    requiredEquipment: ['Projector', 'Whiteboard']
   },
   {
     id: 'course-2',
@@ -20,7 +23,10 @@ const SAMPLE_COURSES = [
     code: 'CS201',
     credits: 4,
     instructor: 'Dr. Johnson',
-    room: 'Room 102'
+    room: null,
+    expectedEnrollment: 25,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Projector', 'Whiteboard']
   },
   {
     id: 'course-3',
@@ -28,7 +34,10 @@ const SAMPLE_COURSES = [
     code: 'CS301',
     credits: 3,
     instructor: 'Dr. Davis',
-    room: 'Room 103'
+    room: null,
+    expectedEnrollment: 80,
+    requiresLab: false,
+    requiredEquipment: ['Projector', 'Smart Board']
   }
 ];
 
