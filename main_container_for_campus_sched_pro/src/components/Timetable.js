@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { DragDropContext } from '@hello-pangea/dnd';
 import TimeSlot from './TimeSlot';
 

@@ -26,4 +26,15 @@ const Course = ({ course, index }) => {
   );
 };
 
+Course.propTypes = {
+  course: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    code: PropTypes.string.isRequired,
+    credits: PropTypes.number.isRequired,
+    instructor: PropTypes.string.isRequired
+  }).isRequired,
+  index: PropTypes.number.isRequired
+};
+
 export default Course;
