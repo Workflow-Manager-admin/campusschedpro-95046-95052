@@ -1,5 +1,5 @@
 /**
- * Utility functions for course scheduling validation and conflict detection
+ * Utility functions for course scheduling validation, conflict detection and resolution
  */
 
 /**
