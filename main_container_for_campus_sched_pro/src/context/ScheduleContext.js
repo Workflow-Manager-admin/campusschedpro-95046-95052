@@ -3,80 +3,277 @@ import PropTypes from 'prop-types';
 import { findScheduleConflicts } from '../utils/scheduleUtils';
 
 // Initial sample data remains the same...
-// (All the initial data constants remain unchanged)
+// (All the initial data constants remain unchanged, INITIAL_COURSES, INITIAL_ROOMS, INITIAL_ALLOCATIONS)
 
-// Local Storage Keys
-const STORAGE_KEYS = {
-  COURSES: 'campusSchedPro_courses',
-  SCHEDULE: 'campusSchedPro_schedule',
-  ROOMS: 'campusSchedPro_rooms',
-  ALLOCATIONS: 'campusSchedPro_allocations'
+// Storage configuration
+const STORAGE_CONFIG = {
+  keys: {
+    COURSES: 'campusSchedPro_courses',
+    SCHEDULE: 'campusSchedPro_schedule',
+    ROOMS: 'campusSchedPro_rooms',
+    ALLOCATIONS: 'campusSchedPro_allocations'
+  },
+  
+  load(key, fallback) {
+    if (typeof window === 'undefined') return fallback;
+    try {
+      const stored = window.localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  
+  save(key, data) {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(key, JSON.stringify(data));
+    } catch {
+      // Fail silently in production
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to save to localStorage');
+      }
+    }
+  },
+  
+  clear() {
+    if (typeof window === 'undefined') return;
+    try {
+      Object.values(this.keys).forEach(key => 
+        window.localStorage.removeItem(key)
+      );
+    } catch {
+      // Fail silently
+    }
+  }
+};
+
+// Create the context
+const ScheduleContext = createContext(undefined);
+
+/**
+ * Custom hook to access the schedule context
+ * @returns {Object} Schedule context value
+ * @throws {Error} If used outside of ScheduleProvider
+ */
+export const useSchedule = () => {
+  const context = useContext(ScheduleContext);
+  if (context === undefined) {
+    throw new Error('useSchedule must be used within a ScheduleProvider');
+  }
+  return context;
 };
 
 /**
- * Check if localStorage is available
- * @returns {boolean} Whether localStorage is available
+ * Provider component that wraps the application and makes schedule state available to any
+ * child component that calls useSchedule().
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
  */
-const isStorageAvailable = () => {
-  try {
-    const test = '__storage_test__';
-    window.localStorage.setItem(test, test);
-    window.localStorage.removeItem(test);
+export const ScheduleProvider = ({ children }) => {
+  // Initialize state from storage with fallback to initial data
+  const [courses, setCourses] = useState(() => 
+    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.COURSES, INITIAL_COURSES)
+  );
+  
+  const [schedule, setSchedule] = useState(() => 
+    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.SCHEDULE, {})
+  );
+  
+  const [rooms, setRooms] = useState(() => 
+    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.ROOMS, INITIAL_ROOMS)
+  );
+  
+  const [allocations, setAllocations] = useState(() => 
+    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.ALLOCATIONS, INITIAL_ALLOCATIONS)
+  );
+
+  const [conflicts, setConflicts] = useState([]);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
+
+  // Persist state changes to storage
+  useEffect(() => {
+    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.COURSES, courses);
+  }, [courses]);
+
+  useEffect(() => {
+    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.SCHEDULE, schedule);
+  }, [schedule]);
+
+  useEffect(() => {
+    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.ROOMS, rooms);
+  }, [rooms]);
+
+  useEffect(() => {
+    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.ALLOCATIONS, allocations);
+  }, [allocations]);
+
+  // Update conflicts whenever schedule changes
+  useEffect(() => {
+    const newConflicts = findScheduleConflicts(schedule);
+    setConflicts(newConflicts);
+  }, [schedule]);
+
+  // Function to show notifications across components
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
+
+  const handleCloseNotification = useCallback(() => {
+    setNotification(prev => ({ ...prev, open: false }));
+  }, []);
+
+  // Function to assign a room to a course
+  const assignRoom = useCallback((courseId, roomId) => {
+    const course = courses.find(c => c.id === courseId);
+    const room = rooms.find(r => r.id === roomId);
+    
+    if (!course || !room) return false;
+
+    // Update course with room assignment
+    const updatedCourses = courses.map(c => 
+      c.id === courseId ? { ...c, room: room.name } : c
+    );
+    setCourses(updatedCourses);
+
+    // Update schedule to reflect room assignment
+    const updatedSchedule = { ...schedule };
+    Object.keys(updatedSchedule).forEach(slotId => {
+      updatedSchedule[slotId] = updatedSchedule[slotId].map(c => 
+        c.id === courseId ? { ...c, room: room.name } : c
+      );
+    });
+    setSchedule(updatedSchedule);
+
+    // Check for conflicts after assignment
+    const newConflicts = findScheduleConflicts(updatedSchedule);
+    if (newConflicts.length > 0) {
+      showNotification(`Warning: Found ${newConflicts.length} scheduling conflicts after room assignment`, 'warning');
+    } else {
+      showNotification(`Successfully assigned ${course.code} to ${room.name}`, 'success');
+    }
+
     return true;
-  } catch (e) {
-    return false;
-  }
+  }, [courses, rooms, schedule, showNotification]);
+
+  // Function to resolve a conflict by moving a course to a different slot
+  const resolveConflict = useCallback((conflictId, courseIdToMove, newSlotId) => {
+    const conflict = conflicts.find(c => c.id === conflictId);
+    if (!conflict) return false;
+
+    const courseToMove = courses.find(c => c.id === courseIdToMove);
+    if (!courseToMove) return false;
+
+    // Remove course from its current slot
+    const currentSlot = conflict.slotId;
+    const updatedSchedule = { ...schedule };
+    updatedSchedule[currentSlot] = updatedSchedule[currentSlot].filter(
+      c => c.id !== courseIdToMove
+    );
+
+    // Add course to new slot
+    if (!updatedSchedule[newSlotId]) {
+      updatedSchedule[newSlotId] = [];
+    }
+    updatedSchedule[newSlotId].push(courseToMove);
+
+    setSchedule(updatedSchedule);
+    showNotification(`Moved ${courseToMove.code} to resolve conflict`, 'success');
+
+    return true;
+  }, [conflicts, courses, schedule, showNotification]);
+
+  // Function to update room allocations when schedule changes
+  const updateAllocations = useCallback(() => {
+    const newAllocations = [...allocations];
+
+    // Clear existing course assignments
+    newAllocations.forEach(allocation => {
+      allocation.courses = [];
+    });
+
+    // Rebuild allocations based on scheduled courses
+    Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+      coursesInSlot.forEach(course => {
+        if (course.room) {
+          const roomAllocation = newAllocations.find(
+            a => a.roomName === course.room
+          );
+          
+          if (roomAllocation) {
+            const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
+            
+            if (existingCourse) {
+              // Add this slot to existing course schedule
+              if (!existingCourse.schedule.includes(slotId)) {
+                existingCourse.schedule.push(slotId);
+              }
+            } else {
+              // Add new course to room allocation
+              roomAllocation.courses.push({
+                ...course,
+                schedule: [slotId]
+              });
+            }
+          }
+        }
+      });
+    });
+
+    setAllocations(newAllocations);
+  }, [schedule, allocations]);
+
+  // Call updateAllocations whenever schedule or courses change
+  useEffect(() => {
+    updateAllocations();
+  }, [schedule, courses, updateAllocations]);
+
+  // Function to clear all stored data
+  const clearStoredData = useCallback(() => {
+    STORAGE_CONFIG.clear();
+    setCourses(INITIAL_COURSES);
+    setSchedule({});
+    setRooms(INITIAL_ROOMS);
+    setAllocations(INITIAL_ALLOCATIONS);
+    showNotification('All stored data has been cleared', 'info');
+  }, [showNotification]);
+
+  // Context value to be provided
+  const contextValue = {
+    courses,
+    setCourses,
+    schedule,
+    setSchedule,
+    conflicts,
+    rooms,
+    setRooms,
+    allocations,
+    setAllocations,
+    notification,
+    showNotification,
+    handleCloseNotification,
+    assignRoom,
+    resolveConflict,
+    updateAllocations,
+    clearStoredData
+  };
+
+  return (
+    <ScheduleContext.Provider value={contextValue}>
+      {children}
+    </ScheduleContext.Provider>
+  );
 };
 
-/**
- * Load data from localStorage with fallback value
- * @param {string} key - Storage key
- * @param {*} fallback - Default value if storage is empty
- * @returns {*} Parsed data or fallback value
- */
-const loadFromStorage = (key, fallback) => {
-  if (!isStorageAvailable()) return fallback;
-  
-  try {
-    const stored = window.localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn(`Error loading data from localStorage (${key}):`, error);
-    return fallback;
-  }
+ScheduleProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };
-
-/**
- * Save data to localStorage
- * @param {string} key - Storage key
- * @param {*} data - Data to store
- */
-const saveToStorage = (key, data) => {
-  if (!isStorageAvailable()) return;
-  
-  try {
-    window.localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn(`Error saving data to localStorage (${key}):`, error);
-  }
-};
-
-// Rest of the context implementation remains the same...
-// (All the context code remains unchanged)
-
-// Function to clear all stored data in clearStoredData
-const clearStoredData = useCallback(() => {
-  if (isStorageAvailable()) {
-    Object.values(STORAGE_KEYS).forEach(key => window.localStorage.removeItem(key));
-  }
-  setCourses(INITIAL_COURSES);
-  setSchedule({});
-  setRooms(INITIAL_ROOMS);
-  setAllocations(INITIAL_ALLOCATIONS);
-  showNotification('All stored data has been cleared', 'info');
-}, [showNotification]);
-
-// Rest of the component implementation remains the same...
-// (All other code remains unchanged)
