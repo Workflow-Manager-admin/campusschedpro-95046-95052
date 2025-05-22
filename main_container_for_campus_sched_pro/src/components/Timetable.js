@@ -74,4 +74,17 @@ const Timetable = ({ courses, onCourseMove }) => {
   );
 };
 
+Timetable.propTypes = {
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      code: PropTypes.string.isRequired,
+      credits: PropTypes.number.isRequired,
+      instructor: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  onCourseMove: PropTypes.func
+};
+
 export default Timetable;
