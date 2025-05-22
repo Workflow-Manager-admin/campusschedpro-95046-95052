@@ -17,6 +17,8 @@ const FacultyDetails = ({ faculty, onSave, onDelete, onClose }) => {
   const handleSave = () => {
     onSave(editedFaculty);
     setIsEditing(false);
+    // Notify parent component that editing is complete
+    onClose();
   };
 
   const getScheduleDisplay = () => {
