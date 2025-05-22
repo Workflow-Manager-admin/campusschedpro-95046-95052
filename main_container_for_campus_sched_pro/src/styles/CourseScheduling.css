@@ -107,6 +107,21 @@
   margin-top: 6px;
   border-top: 1px solid var(--border-color);
   padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.year-badge {
+  background-color: var(--primary-green);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.department-text {
+  font-style: italic;
 }
 
 .timetable-panel {
