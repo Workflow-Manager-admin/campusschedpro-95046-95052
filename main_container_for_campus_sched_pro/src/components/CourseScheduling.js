@@ -229,9 +229,11 @@ const CourseScheduling = () => {
             </div>
             
             <div className="course-filters">
-              <FormControl variant="outlined" size="small" fullWidth>
-                <InputLabel>Academic Year</InputLabel>
+              <FormControl variant="outlined" size="small" fullWidth sx={{ minWidth: 150 }}>
+                <InputLabel id="year-filter-label">Academic Year</InputLabel>
                 <Select
+                  labelId="year-filter-label"
+                  id="year-filter"
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value)}
                   label="Academic Year"
