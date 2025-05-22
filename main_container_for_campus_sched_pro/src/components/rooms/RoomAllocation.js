@@ -18,31 +18,39 @@ const RoomAllocation = () => {
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Get unique buildings from rooms data
-  const buildings = ['all', ...new Set(rooms.map(r => r.building))];
+  // Get unique buildings from rooms data - memoized
+  const buildings = useMemo(() => {
+    return ['all', ...new Set(rooms.map(r => r.building))];
+  }, [rooms]);
   
-  // Filter allocations by building
-  const filteredAllocations = allocations.filter(allocation => 
-    buildingFilter === 'all' || allocation.building === buildingFilter
-  );
+  // Filter allocations by building - memoized
+  const filteredAllocations = useMemo(() => {
+    return allocations.filter(allocation => 
+      buildingFilter === 'all' || allocation.building === buildingFilter
+    );
+  }, [allocations, buildingFilter]);
 
-  // All courses that don't have room assignments
-  const unassignedCourses = courses.filter(course => !course.room);
+  // All courses that don't have room assignments - memoized
+  const unassignedCourses = useMemo(() => {
+    return courses.filter(course => !course.room);
+  }, [courses]);
   
-  // Filter unassigned courses by search query
-  const filteredCourses = unassignedCourses.filter(course => 
-    course.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    course.code.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter unassigned courses by search query - memoized
+  const filteredCourses = useMemo(() => {
+    return unassignedCourses.filter(course => 
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      course.code.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [unassignedCourses, searchQuery]);
 
   // Handle course selection for room assignment
-  const handleSelectCourse = (course) => {
+  const handleSelectCourse = useCallback((course) => {
     setSelectedCourse(course);
     setSelectedRoom(null);
-  };
+  }, []);
 
   // Handle room selection
-  const handleSelectRoom = (room) => {
+  const handleSelectRoom = useCallback((room) => {
     setSelectedRoom(room);
     
     if (selectedCourse) {
@@ -52,10 +60,10 @@ const RoomAllocation = () => {
         showNotification(suitabilityCheck.message, 'warning');
       }
     }
-  };
+  }, [selectedCourse, showNotification]);
 
   // Handle room assignment
-  const handleAssignRoom = () => {
+  const handleAssignRoom = useCallback(() => {
     if (!selectedCourse || !selectedRoom) {
       showNotification('Please select both a course and a room', 'error');
       return;
@@ -75,10 +83,10 @@ const RoomAllocation = () => {
     setSelectedCourse(null);
     setSelectedRoom(null);
     setShowAssignDialog(false);
-  };
+  }, [selectedCourse, selectedRoom, showNotification, assignRoom]);
 
   // Handle auto assign all unassigned courses
-  const handleAutoAssign = () => {
+  const handleAutoAssign = useCallback(() => {
     let assignedCount = 0;
     let failedCount = 0;
 
@@ -107,17 +115,17 @@ const RoomAllocation = () => {
     if (failedCount > 0) {
       showNotification(`Could not find suitable rooms for ${failedCount} courses`, 'warning');
     }
-  };
+  }, [unassignedCourses, rooms, assignRoom, showNotification]);
 
   // Get suitable rooms for selected course
-  const getSuitableRooms = () => {
+  const getSuitableRooms = useCallback(() => {
     if (!selectedCourse) return [];
     
     return rooms.filter(room => {
       const result = isRoomSuitableForCourse(room, selectedCourse);
       return result.suitable;
     });
-  };
+  }, [selectedCourse, rooms]);
 
   return (
     <div className="room-allocation">
@@ -163,7 +171,7 @@ const RoomAllocation = () => {
                   key={course.id} 
                   className="unassigned-course-item"
                   onClick={() => {
-                    setSelectedCourse(course);
+                    handleSelectCourse(course);
                     setShowAssignDialog(true);
                   }}
                 >
