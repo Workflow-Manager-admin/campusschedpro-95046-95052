@@ -1,186 +1,64 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Alert, Snackbar } from '@mui/material';
-import { findScheduleConflicts, formatSlotId } from '../../utils/scheduleUtils';
-
-// Sample schedule data - would normally be passed as props or from context
-const SAMPLE_SCHEDULE = {
-  'Monday-9:00 AM': [
-    {
-      id: 'course-1',
-      name: 'Introduction to Computer Science',
-      code: 'CS101',
-      credits: 3,
-      instructor: 'Dr. Smith',
-      room: 'Lecture Hall A'
-    },
-    {
-      id: 'course-4',
-      name: 'Software Engineering',
-      code: 'CS401',
-      credits: 3,
-      instructor: 'Dr. Wilson',
-      room: 'Lecture Hall A' // Same room as CS101
-    }
-  ],
-  'Monday-1:00 PM': [
-    {
-      id: 'course-2',
-      name: 'Data Structures',
-      code: 'CS201',
-      credits: 4,
-      instructor: 'Dr. Johnson',
-      room: 'Lab 101'
-    }
-  ],
-  'Tuesday-1:00 PM': [
-    {
-      id: 'course-3',
-      name: 'Database Systems',
-      code: 'CS301',
-      credits: 3,
-      instructor: 'Dr. Davis',
-      room: 'Lecture Hall A'
-    },
-    {
-      id: 'course-5',
-      name: 'Computer Networks',
-      code: 'CS402',
-      credits: 3,
-      instructor: 'Dr. Davis', // Same instructor as CS301
-      room: 'Seminar Room 201'
-    }
-  ]
-};
-
-// Sample available rooms for resolving conflicts
-const AVAILABLE_ROOMS = [
-  { id: 'room-1', name: 'Lecture Hall A', capacity: 120 },
-  { id: 'room-2', name: 'Lab 101', capacity: 30 },
-  { id: 'room-3', name: 'Seminar Room 201', capacity: 40 },
-  { id: 'room-4', name: 'Classroom 102', capacity: 60 },
-  { id: 'room-5', name: 'Lecture Hall B', capacity: 100 }
-];
-
-// Sample available time slots for resolving conflicts
-const AVAILABLE_TIME_SLOTS = [
-  'Monday-9:00 AM',
-  'Monday-10:00 AM',
-  'Monday-11:00 AM',
-  'Monday-1:00 PM',
-  'Monday-2:00 PM',
-  'Tuesday-9:00 AM',
-  'Tuesday-10:00 AM',
-  'Tuesday-11:00 AM',
-  'Tuesday-1:00 PM',
-  'Tuesday-2:00 PM',
-  'Wednesday-9:00 AM',
-  'Wednesday-10:00 AM',
-  'Wednesday-11:00 AM',
-  'Wednesday-1:00 PM',
-  'Wednesday-2:00 PM'
-];
+import React, { useState } from 'react';
+import { Alert, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Chip } from '@mui/material';
+import { useSchedule } from '../../context/ScheduleContext';
+import { suggestAlternativeTimeSlots, formatSlotId } from '../../utils/scheduleUtils';
 
 const ConflictResolution = () => {
-  const [schedule, setSchedule] = useState(SAMPLE_SCHEDULE);
-  const [conflicts, setConflicts] = useState([]);
-  const [showResolutionModal, setShowResolutionModal] = useState(false);
-  const [currentConflict, setCurrentConflict] = useState(null);
-  const [resolutionMethod, setResolutionMethod] = useState('changeRoom');
-  const [selectedNewRoom, setSelectedNewRoom] = useState('');
-  const [selectedNewTimeSlot, setSelectedNewTimeSlot] = useState('');
-  const [selectedCourseToMove, setSelectedCourseToMove] = useState('');
-  const [notification, setNotification] = useState({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
+  const { 
+    conflicts, 
+    schedule, 
+    setSchedule, 
+    notification, 
+    showNotification, 
+    handleCloseNotification
+  } = useSchedule();
 
-  // Find conflicts when the schedule changes
-  useEffect(() => {
-    const foundConflicts = findScheduleConflicts(schedule);
-    setConflicts(foundConflicts);
-  }, [schedule]);
+  const [selectedConflict, setSelectedConflict] = useState(null);
+  const [courseToMove, setCourseToMove] = useState(null);
+  const [showResolutionDialog, setShowResolutionDialog] = useState(false);
+  const [suggestedSlots, setSuggestedSlots] = useState([]);
 
-  const handleCloseNotification = useCallback(() => {
-    setNotification(prev => ({ ...prev, open: false }));
-  }, []);
+  // Group conflicts by type for better organization
+  const instructorConflicts = conflicts.filter(c => c.type === 'instructor');
+  const roomConflicts = conflicts.filter(c => c.type === 'room');
 
-  const showNotification = useCallback((message, severity = 'info') => {
-    setNotification({
-      open: true,
-      message,
-      severity
-    });
-  }, []);
-
-  const handleResolveConflict = (conflict) => {
-    setCurrentConflict(conflict);
-    setShowResolutionModal(true);
-    setResolutionMethod('changeRoom');
-    setSelectedNewRoom('');
-    setSelectedNewTimeSlot('');
-    setSelectedCourseToMove(conflict.courses[0].id);
+  const handleResolveClick = (conflict) => {
+    setSelectedConflict(conflict);
+    setSuggestedSlots([]);
+    setShowResolutionDialog(true);
   };
 
-  const handleApplyResolution = () => {
-    if (!currentConflict) return;
+  const handleSelectCourseToMove = (course) => {
+    setCourseToMove(course);
+    
+    // Generate suggested alternative slots
+    const alternatives = suggestAlternativeTimeSlots(schedule, course, selectedConflict.slotId);
+    setSuggestedSlots(alternatives);
+  };
 
-    const courseToMove = currentConflict.courses.find(c => c.id === selectedCourseToMove);
-    if (!courseToMove) {
-      showNotification('Please select a course to move', 'error');
-      return;
+  const handleMoveToSlot = (newSlotId) => {
+    const updatedSchedule = { ...schedule };
+    
+    // Remove course from conflict slot
+    updatedSchedule[selectedConflict.slotId] = updatedSchedule[selectedConflict.slotId]
+      .filter(c => c.id !== courseToMove.id);
+    
+    // Add to new slot
+    if (!updatedSchedule[newSlotId]) {
+      updatedSchedule[newSlotId] = [];
     }
-
-    const newSchedule = { ...schedule };
-    const { slotId } = currentConflict;
-
-    if (resolutionMethod === 'changeRoom') {
-      if (!selectedNewRoom) {
-        showNotification('Please select a new room', 'error');
-        return;
-      }
-
-      // Update the room for the selected course
-      newSchedule[slotId] = newSchedule[slotId].map(course => {
-        if (course.id === selectedCourseToMove) {
-          return { ...course, room: selectedNewRoom };
-        }
-        return course;
-      });
-      
-      showNotification(`Changed room for ${courseToMove.code} to ${selectedNewRoom}`, 'success');
-    } 
-    else if (resolutionMethod === 'changeTime') {
-      if (!selectedNewTimeSlot) {
-        showNotification('Please select a new time slot', 'error');
-        return;
-      }
-
-      // Check if the new time slot already exists in the schedule
-      if (!newSchedule[selectedNewTimeSlot]) {
-        newSchedule[selectedNewTimeSlot] = [];
-      }
-
-      // Check for conflicts in the new slot
-      const conflictInNewSlot = newSchedule[selectedNewTimeSlot].some(c => 
-        c.instructor === courseToMove.instructor || c.room === courseToMove.room
-      );
-
-      if (conflictInNewSlot) {
-        showNotification('This would create a new conflict. Please choose a different time slot.', 'error');
-        return;
-      }
-
-      // Move the course to the new time slot
-      newSchedule[selectedNewTimeSlot].push(courseToMove);
-      // Remove from original slot
-      newSchedule[slotId] = newSchedule[slotId].filter(course => course.id !== selectedCourseToMove);
-      
-      showNotification(`Moved ${courseToMove.code} to ${selectedNewTimeSlot}`, 'success');
-    }
-
-    setSchedule(newSchedule);
-    setShowResolutionModal(false);
+    updatedSchedule[newSlotId].push(courseToMove);
+    
+    // Update schedule
+    setSchedule(updatedSchedule);
+    
+    // Close dialog
+    setShowResolutionDialog(false);
+    setSelectedConflict(null);
+    setCourseToMove(null);
+    
+    // Show success notification
+    showNotification(`Successfully moved ${courseToMove.code} to ${newSlotId}`, 'success');
   };
 
   const handleResolveAll = () => {
@@ -188,74 +66,42 @@ const ConflictResolution = () => {
       showNotification('No conflicts to resolve', 'info');
       return;
     }
-
-    let newSchedule = { ...schedule };
-    let resolvedCount = 0;
-    let failedCount = 0;
-
+    
+    let conflictsResolved = 0;
+    const updatedSchedule = { ...schedule };
+    
     // Try to resolve each conflict
-    conflicts.forEach(conflict => {
-      // For this demo, we'll use a simple strategy: try to move the second course to a different time
-      const courseToMove = conflict.courses[1];
-      const { slotId } = conflict;
+    for (const conflict of conflicts) {
+      const course = conflict.courses[1]; // Choose second course to move
+      const alternatives = suggestAlternativeTimeSlots(updatedSchedule, course, conflict.slotId);
       
-      // Find an available time slot that doesn't create new conflicts
-      const availableSlot = AVAILABLE_TIME_SLOTS.find(newSlot => {
-        // Skip if it's the current slot
-        if (newSlot === slotId) return false;
+      if (alternatives.length > 0) {
+        // Remove course from conflict slot
+        updatedSchedule[conflict.slotId] = updatedSchedule[conflict.slotId]
+          .filter(c => c.id !== course.id);
         
-        // Skip if slot doesn't exist in schedule yet
-        if (!newSchedule[newSlot]) return true;
-        
-        // Check for conflicts in the new slot
-        return !newSchedule[newSlot].some(c => 
-          c.instructor === courseToMove.instructor || c.room === courseToMove.room
-        );
-      });
-
-      if (availableSlot) {
-        // Ensure the slot exists in the schedule
-        if (!newSchedule[availableSlot]) {
-          newSchedule[availableSlot] = [];
+        // Add to first alternative slot
+        const newSlotId = alternatives[0];
+        if (!updatedSchedule[newSlotId]) {
+          updatedSchedule[newSlotId] = [];
         }
-        
-        // Move the course to the new time slot
-        newSchedule[availableSlot].push(courseToMove);
-        // Remove from original slot
-        newSchedule[slotId] = newSchedule[slotId].filter(course => course.id !== courseToMove.id);
-        
-        resolvedCount++;
-      } else {
-        failedCount++;
+        updatedSchedule[newSlotId].push(course);
+        conflictsResolved++;
       }
-    });
-
-    setSchedule(newSchedule);
-    
-    if (resolvedCount > 0) {
-      showNotification(`Successfully resolved ${resolvedCount} conflicts`, 'success');
     }
     
-    if (failedCount > 0) {
-      showNotification(`Could not automatically resolve ${failedCount} conflicts`, 'warning');
-    }
-  };
-
-  const getConflictType = (conflict) => {
-    switch(conflict.type) {
-      case 'instructor':
-        return 'Instructor Double-Booked';
-      case 'room':
-        return 'Room Double-Booked';
-      default:
-        return 'Scheduling Conflict';
+    if (conflictsResolved > 0) {
+      setSchedule(updatedSchedule);
+      showNotification(`Successfully resolved ${conflictsResolved} conflicts`, 'success');
+    } else {
+      showNotification('Could not automatically resolve conflicts. Please resolve manually.', 'warning');
     }
   };
 
   return (
     <div className="conflict-resolution">
-      <div className="card-header">
-        <h2 className="card-title">Schedule Conflicts</h2>
+      <div className="conflict-header">
+        <h2>Schedule Conflicts</h2>
         <button 
           className="btn btn-accent"
           onClick={handleResolveAll}
@@ -263,185 +109,173 @@ const ConflictResolution = () => {
           Resolve All
         </button>
       </div>
-      
-      <div className="conflicts-container">
+
+      <div className="conflict-container">
         {conflicts.length === 0 ? (
           <div className="no-conflicts">
-            <p>No scheduling conflicts detected.</p>
+            <div className="success-icon">✓</div>
+            <h3>No Conflicts Detected</h3>
+            <p>Your schedule is conflict-free!</p>
           </div>
         ) : (
           <>
             <div className="conflict-summary">
-              <p>Found {conflicts.length} conflicts in the current schedule.</p>
+              <Alert severity="warning">
+                Found {conflicts.length} scheduling conflicts that need resolution
+              </Alert>
             </div>
-            
-            <div className="conflicts-list">
-              {conflicts.map((conflict, index) => {
-                const { day, time } = formatSlotId(conflict.slotId);
-                return (
-                  <div key={index} className="conflict-card">
-                    <div className="conflict-header">
-                      <div className="conflict-type">
-                        {getConflictType(conflict)}
-                      </div>
-                      <div className="conflict-time">
-                        {day} at {time}
-                      </div>
-                    </div>
-                    
-                    <div className="conflict-details">
-                      <div className="conflict-courses">
-                        {conflict.courses.map(course => (
-                          <div key={course.id} className="conflict-course-item">
-                            <div className="course-code">{course.code}</div>
-                            <div className="course-name">{course.name}</div>
-                            <div className="course-details">
-                              <span>Instructor: {course.instructor}</span>
-                              <span>Room: {course.room || 'Not assigned'}</span>
-                            </div>
+
+            <div className="conflict-section">
+              <h3>Instructor Conflicts</h3>
+              {instructorConflicts.length === 0 ? (
+                <p>No instructor conflicts detected</p>
+              ) : (
+                <div className="conflict-list">
+                  {instructorConflicts.map((conflict) => (
+                    <div key={conflict.id} className="conflict-card">
+                      <div className="conflict-info">
+                        <div className="conflict-type instructor">
+                          <span>Instructor</span>
+                        </div>
+                        <div className="conflict-details">
+                          <h4>Instructor Double-Booked</h4>
+                          <p>{conflict.message}</p>
+                          <div className="conflicting-courses">
+                            {conflict.courses.map(course => (
+                              <div key={course.id} className="conflict-course">
+                                <strong>{course.code}</strong> - {course.name}
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                      
-                      <div className="conflict-actions">
-                        <button 
-                          className="btn"
-                          onClick={() => handleResolveConflict(conflict)}
-                        >
-                          Resolve
-                        </button>
-                      </div>
+                      <button 
+                        className="btn" 
+                        onClick={() => handleResolveClick(conflict)}
+                      >
+                        Resolve
+                      </button>
                     </div>
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="conflict-section">
+              <h3>Room Conflicts</h3>
+              {roomConflicts.length === 0 ? (
+                <p>No room conflicts detected</p>
+              ) : (
+                <div className="conflict-list">
+                  {roomConflicts.map((conflict) => (
+                    <div key={conflict.id} className="conflict-card">
+                      <div className="conflict-info">
+                        <div className="conflict-type room">
+                          <span>Room</span>
+                        </div>
+                        <div className="conflict-details">
+                          <h4>Room Double-Booked</h4>
+                          <p>{conflict.message}</p>
+                          <div className="conflicting-courses">
+                            {conflict.courses.map(course => (
+                              <div key={course.id} className="conflict-course">
+                                <strong>{course.code}</strong> - {course.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <button 
+                        className="btn" 
+                        onClick={() => handleResolveClick(conflict)}
+                      >
+                        Resolve
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}
       </div>
-      
-      {/* Resolution modal */}
-      {showResolutionModal && currentConflict && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>Resolve Conflict</h3>
-              <button 
-                className="btn-close"
-                onClick={() => setShowResolutionModal(false)}
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="conflict-summary">
-                <p>
-                  <strong>Conflict Type:</strong> {getConflictType(currentConflict)}
-                </p>
-                <p>
-                  <strong>Time Slot:</strong> {formatSlotId(currentConflict.slotId).day} at {formatSlotId(currentConflict.slotId).time}
-                </p>
-              </div>
+
+      {/* Conflict Resolution Dialog */}
+      <Dialog 
+        open={showResolutionDialog} 
+        onClose={() => setShowResolutionDialog(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          Resolve Schedule Conflict
+        </DialogTitle>
+        <DialogContent>
+          {selectedConflict && (
+            <>
+              <Alert severity="warning" style={{ marginBottom: '20px' }}>
+                {selectedConflict.message}
+              </Alert>
               
-              <div className="form-group">
-                <label>Select Course to Move:</label>
-                <select
-                  value={selectedCourseToMove}
-                  onChange={(e) => setSelectedCourseToMove(e.target.value)}
-                >
-                  {currentConflict.courses.map(course => (
-                    <option key={course.id} value={course.id}>
-                      {course.code} - {course.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Typography variant="h6" gutterBottom>
+                Select which course to move:
+              </Typography>
               
-              <div className="form-group">
-                <label>Resolution Method:</label>
-                <div className="resolution-options">
-                  <div className="resolution-option">
-                    <input
-                      type="radio"
-                      id="changeRoom"
-                      name="resolutionMethod"
-                      value="changeRoom"
-                      checked={resolutionMethod === 'changeRoom'}
-                      onChange={() => setResolutionMethod('changeRoom')}
-                    />
-                    <label htmlFor="changeRoom">Change Room</label>
+              <div className="course-selection">
+                {selectedConflict.courses.map(course => (
+                  <div 
+                    key={course.id}
+                    className={`course-option ${courseToMove?.id === course.id ? 'selected' : ''}`}
+                    onClick={() => handleSelectCourseToMove(course)}
+                  >
+                    <h4>{course.code} - {course.name}</h4>
+                    <p>Instructor: {course.instructor}</p>
+                    <p>Room: {course.room || 'Not assigned'}</p>
                   </div>
+                ))}
+              </div>
+              
+              {courseToMove && (
+                <>
+                  <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+                    Select a new time slot:
+                  </Typography>
                   
-                  <div className="resolution-option">
-                    <input
-                      type="radio"
-                      id="changeTime"
-                      name="resolutionMethod"
-                      value="changeTime"
-                      checked={resolutionMethod === 'changeTime'}
-                      onChange={() => setResolutionMethod('changeTime')}
-                    />
-                    <label htmlFor="changeTime">Change Time Slot</label>
-                  </div>
-                </div>
-              </div>
-              
-              {resolutionMethod === 'changeRoom' ? (
-                <div className="form-group">
-                  <label>Select New Room:</label>
-                  <select
-                    value={selectedNewRoom}
-                    onChange={(e) => setSelectedNewRoom(e.target.value)}
-                  >
-                    <option value="">-- Select Room --</option>
-                    {AVAILABLE_ROOMS.map(room => (
-                      <option key={room.id} value={room.name}>
-                        {room.name} (Capacity: {room.capacity})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className="form-group">
-                  <label>Select New Time Slot:</label>
-                  <select
-                    value={selectedNewTimeSlot}
-                    onChange={(e) => setSelectedNewTimeSlot(e.target.value)}
-                  >
-                    <option value="">-- Select Time Slot --</option>
-                    {AVAILABLE_TIME_SLOTS.map((slot, index) => {
-                      const { day, time } = formatSlotId(slot);
-                      return (
-                        <option key={index} value={slot}>
-                          {day} at {time}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
+                  {suggestedSlots.length === 0 ? (
+                    <Alert severity="error">
+                      No available time slots found. Try selecting a different course to move.
+                    </Alert>
+                  ) : (
+                    <div className="slot-suggestions">
+                      {suggestedSlots.map(slotId => {
+                        const { day, time } = formatSlotId(slotId);
+                        return (
+                          <Chip
+                            key={slotId}
+                            label={`${day} at ${time}`}
+                            onClick={() => handleMoveToSlot(slotId)}
+                            clickable
+                            color="primary"
+                            variant="outlined"
+                            style={{ margin: '5px' }}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
               )}
-            </div>
-            
-            <div className="modal-footer">
-              <button 
-                className="btn"
-                onClick={() => setShowResolutionModal(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn btn-accent"
-                onClick={handleApplyResolution}
-              >
-                Apply Resolution
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowResolutionDialog(false)} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Notification Snackbar */}
       <Snackbar
         open={notification.open}
         autoHideDuration={6000}
