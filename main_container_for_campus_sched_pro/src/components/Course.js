@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
 
 const Course = ({ course, index }) => {

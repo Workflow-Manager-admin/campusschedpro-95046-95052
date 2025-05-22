@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Droppable } from '@hello-pangea/dnd';
 
 const TimeSlot = ({ day, time, courses }) => {
