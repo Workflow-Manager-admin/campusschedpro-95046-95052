@@ -247,6 +247,70 @@
   border-color: var(--primary-green);
 }
 
+.dialog-content {
+  padding: 24px;
+  width: 500px;
+  max-width: 90vw;
+}
+
+.dialog-content h2 {
+  margin: 0 0 20px 0;
+  color: var(--primary-green);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group input {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-green);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+.faculty-info-section {
+  margin-bottom: 20px;
+}
+
+.faculty-info-section p {
+  margin: 8px 0;
+  color: var(--text-primary);
+}
+
+.faculty-info-section strong {
+  color: var(--primary-green);
+  margin-right: 8px;
+}
+
 @media (max-width: 1024px) {
   .faculty-container {
     grid-template-columns: 1fr;
@@ -262,5 +326,11 @@
     max-height: 80vh;
     overflow-y: auto;
     z-index: 1000;
+  }
+
+  .dialog-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
   }
 }
