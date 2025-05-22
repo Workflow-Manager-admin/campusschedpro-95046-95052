@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Paper } from '@mui/material';
-
 const FacultyCard = ({ faculty, selected, onClick }) => {
   const getStatusClass = (status) => {
     switch (status) {
@@ -17,10 +15,13 @@ const FacultyCard = ({ faculty, selected, onClick }) => {
   };
 
   return (
-    <Paper
+    <div
       className={`faculty-card ${selected ? 'selected' : ''}`}
       onClick={onClick}
-      elevation={selected ? 2 : 1}
+      style={{ 
+        boxShadow: selected ? '0 2px 8px rgba(0, 0, 0, 0.15)' : '0 1px 4px rgba(0, 0, 0, 0.1)',
+        background: '#ffffff'
+      }}
     >
       <div className="faculty-card-header">
         <div className="faculty-info">

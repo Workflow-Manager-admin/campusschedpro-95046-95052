@@ -155,8 +155,13 @@ const FacultyManagement = () => {
         )}
       </div>
 
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)}>
-        <div className="dialog-content">
+      <Dialog 
+        open={showAddDialog} 
+        onClose={() => setShowAddDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <div className="dialog-content" style={{ padding: '24px' }}>
           <h2>Add New Faculty</h2>
           <TextField
             fullWidth
