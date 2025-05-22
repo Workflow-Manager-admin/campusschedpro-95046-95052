@@ -1,0 +1,108 @@
+.student-schedule {
+  padding: 20px;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.student-info {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.course-filter-panel {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-filter-panel h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--primary-green);
+}
+
+.timetable-view {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  flex: 1;
+}
+
+.no-schedule {
+  padding: 40px;
+  background: var(--background-light);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+
+  .print-view {
+    padding: 0;
+    height: auto;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+.print-schedule {
+  padding: 20px;
+}
+
+.print-schedule h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--primary-green);
+}
+
+.print-day {
+  margin-bottom: 30px;
+}
+
+.print-day h2 {
+  color: var(--primary-green);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.print-table th, 
+.print-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.print-table th {
+  background-color: var(--background-grey);
+  color: var(--primary-green);
+  font-weight: 500;
+}
