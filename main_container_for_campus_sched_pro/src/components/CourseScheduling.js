@@ -22,7 +22,7 @@ const CourseScheduling = () => {
     // Drop outside valid area
     if (!destination) return;
 
-    const course = availableCourses.find(c => c.id === draggableId);
+    const course = courses.find(c => c.id === draggableId);
     if (!course) return;
 
     try {
@@ -78,7 +78,7 @@ const CourseScheduling = () => {
       // Use a more friendly error handling approach
       showNotification(`Error during drag operation: ${error.message}`, 'error');
     }
-  }, [schedule, availableCourses, showNotification]);
+  }, [schedule, courses, setSchedule, showNotification]);
 
   const handleSaveSchedule = useCallback(() => {
     const conflicts = findScheduleConflicts(schedule);
