@@ -7,25 +7,9 @@ import {
   DialogActions,
   Button,
   Typography,
-  Chip
+  Chip,
+  Box
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
-
-// Styled components for consistent styling
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(2)
-  }
-}));
-
-const StyledChip = styled(Chip)(({ theme }) => ({
-  margin: theme.spacing(0.5),
-  '&.MuiChip-outlined': {
-    borderColor: theme.palette.primary.main
-  }
-}));
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
 
@@ -348,11 +332,17 @@ const RoomAllocation = () => {
       </div>
 
       {/* Room Assignment Dialog */}
-      <StyledDialog 
+      <Dialog 
         open={showAssignDialog} 
         onClose={() => setShowAssignDialog(false)}
         fullWidth
         maxWidth="sm"
+        PaperProps={{
+          sx: {
+            p: 2,
+            borderRadius: 1
+          }
+        }}
       >
         <DialogTitle>
           Assign Room to Course
