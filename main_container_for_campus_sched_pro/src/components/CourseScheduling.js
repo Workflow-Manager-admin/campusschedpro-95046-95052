@@ -97,18 +97,25 @@ const CourseScheduling = () => {
     showNotification('Schedule saved successfully!', 'success');
   }, [schedule, showNotification]);
 
-  // Room assignment updates can be handled here if needed
-
   return (
     <div className="course-scheduling">
       <div className="scheduling-header">
         <h2>Course Scheduling</h2>
-        <button 
-          className="btn btn-accent"
-          onClick={handleSaveSchedule}
-        >
-          Save Schedule
-        </button>
+        <div className="header-actions">
+          <button 
+            className="btn"
+            onClick={() => window.location.href = '/conflicts'}
+          >
+            View Conflicts
+          </button>
+          <button 
+            className="btn btn-accent"
+            onClick={handleSaveSchedule}
+            style={{ marginLeft: '10px' }}
+          >
+            Save Schedule
+          </button>
+        </div>
       </div>
       
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -125,7 +132,7 @@ const CourseScheduling = () => {
                   {...provided.droppableProps}
                   className="courses-list"
                 >
-                  {availableCourses.map((course, index) => (
+                  {courses.map((course, index) => (
                     <Course 
                       key={course.id} 
                       course={course} 
@@ -140,7 +147,6 @@ const CourseScheduling = () => {
           
           <div className="timetable-panel">
             <Timetable
-              courses={availableCourses}
               schedule={schedule}
               onCourseMove={setSchedule}
             />
