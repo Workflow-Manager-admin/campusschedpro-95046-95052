@@ -286,7 +286,7 @@ export const ScheduleProvider = ({ children }) => {
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
     updateAllocations();
-  }, [schedule, courses]);
+  }, [schedule, courses, updateAllocations]);
 
   // Context value to be provided
   const contextValue = {
