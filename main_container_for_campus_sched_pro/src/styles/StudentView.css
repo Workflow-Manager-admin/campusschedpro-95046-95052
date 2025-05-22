@@ -39,6 +39,20 @@
   margin-bottom: 16px;
 }
 
+.year-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.year-filter-select {
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 0.9rem;
+}
+
 .timetable-view {
   background: var(--background-light);
   border-radius: 12px;
