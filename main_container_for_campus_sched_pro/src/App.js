@@ -6,7 +6,20 @@ import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
-import { RoomAllocation, RoomManagement } from './components/rooms-simplified';
+// Using simple placeholder components until Room components are fully implemented
+const RoomManagement = () => (
+  <div className="dashboard-card">
+    <h2>Room Management</h2>
+    <p>Room Management interface will be implemented here</p>
+  </div>
+);
+
+const RoomAllocation = () => (
+  <div className="dashboard-card">
+    <h2>Room Allocation</h2>
+    <p>Room Allocation interface will be implemented here</p>
+  </div>
+);
 
 const ConflictResolution = () => (
   <div className="dashboard-card">
