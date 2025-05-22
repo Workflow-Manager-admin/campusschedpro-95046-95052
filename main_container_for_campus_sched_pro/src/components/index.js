@@ -5,5 +5,18 @@ export { default as CourseScheduling } from './CourseScheduling';
 export { default as FacultyManagement } from './faculty/FacultyManagement';
 export { default as FacultyCard } from './faculty/FacultyCard';
 export { default as FacultyDetails } from './faculty/FacultyDetails';
-export { default as RoomManagement } from './rooms/RoomManagement';
-export { default as RoomAllocation } from './rooms/RoomAllocation';
+// Room components
+import RoomManagement from './rooms/RoomManagement';
+import RoomAllocation from './rooms/RoomAllocation';
+
+export {
+  Course,
+  TimeSlot,
+  Timetable,
+  CourseScheduling,
+  FacultyManagement,
+  FacultyCard,
+  FacultyDetails,
+  RoomManagement,
+  RoomAllocation
+};
