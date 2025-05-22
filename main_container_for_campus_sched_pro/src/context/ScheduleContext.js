@@ -2,8 +2,63 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import PropTypes from 'prop-types';
 import { findScheduleConflicts } from '../utils/scheduleUtils';
 
-// Initial sample data remains the same...
-// (All the initial data constants remain unchanged, INITIAL_COURSES, INITIAL_ROOMS, INITIAL_ALLOCATIONS)
+// Initial sample data
+const INITIAL_COURSES = [
+  {
+    id: 'course-1',
+    name: 'Introduction to Computer Science',
+    code: 'CS101',
+    credits: 3,
+    instructor: 'Dr. Sarah Johnson',
+    expectedEnrollment: 100,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Projector']
+  },
+  {
+    id: 'course-2',
+    name: 'Database Systems',
+    code: 'CS301',
+    credits: 4,
+    instructor: 'Prof. Michael Chen',
+    expectedEnrollment: 60,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Database Server']
+  }
+];
+
+const INITIAL_ROOMS = [
+  {
+    id: 'room-1',
+    name: 'Lecture Hall A',
+    type: 'Lecture Hall',
+    capacity: 120,
+    building: 'Science Building',
+    equipment: ['Projector', 'Smart Board', 'Audio System']
+  },
+  {
+    id: 'room-2',
+    name: 'Computer Lab 101',
+    type: 'Computer Lab',
+    capacity: 60,
+    building: 'Engineering Building',
+    equipment: ['Computers', 'Projector', 'Database Server']
+  }
+];
+
+const INITIAL_ALLOCATIONS = [
+  {
+    roomId: 'room-1',
+    roomName: 'Lecture Hall A',
+    building: 'Science Building',
+    courses: []
+  },
+  {
+    roomId: 'room-2',
+    roomName: 'Computer Lab 101',
+    building: 'Engineering Building',
+    courses: []
+  }
+];
 
 // Storage configuration
 const STORAGE_CONFIG = {
