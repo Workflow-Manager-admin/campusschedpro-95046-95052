@@ -136,6 +136,33 @@ const INITIAL_ALLOCATIONS = [
   }
 ];
 
+// Local Storage Keys
+const STORAGE_KEYS = {
+  COURSES: 'campusSchedPro_courses',
+  SCHEDULE: 'campusSchedPro_schedule',
+  ROOMS: 'campusSchedPro_rooms',
+  ALLOCATIONS: 'campusSchedPro_allocations'
+};
+
+// Utility functions for localStorage operations
+const loadFromStorage = (key, fallback) => {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch (error) {
+    console.warn(`Error loading data from localStorage (${key}):`, error);
+    return fallback;
+  }
+};
+
+const saveToStorage = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.warn(`Error saving data to localStorage (${key}):`, error);
+  }
+};
+
 // Create the context
 const ScheduleContext = createContext();
 
@@ -153,16 +180,46 @@ export const useSchedule = () => {
  * child component that calls useSchedule().
  */
 export const ScheduleProvider = ({ children }) => {
-  const [courses, setCourses] = useState(INITIAL_COURSES);
-  const [schedule, setSchedule] = useState({});
+  // Initialize state from localStorage with fallback to initial data
+  const [courses, setCourses] = useState(() => 
+    loadFromStorage(STORAGE_KEYS.COURSES, INITIAL_COURSES)
+  );
+  
+  const [schedule, setSchedule] = useState(() => 
+    loadFromStorage(STORAGE_KEYS.SCHEDULE, {})
+  );
+  
+  const [rooms, setRooms] = useState(() => 
+    loadFromStorage(STORAGE_KEYS.ROOMS, INITIAL_ROOMS)
+  );
+  
+  const [allocations, setAllocations] = useState(() => 
+    loadFromStorage(STORAGE_KEYS.ALLOCATIONS, INITIAL_ALLOCATIONS)
+  );
+
   const [conflicts, setConflicts] = useState([]);
-  const [rooms, setRooms] = useState(INITIAL_ROOMS);
-  const [allocations, setAllocations] = useState(INITIAL_ALLOCATIONS);
   const [notification, setNotification] = useState({
     open: false,
     message: '',
     severity: 'info'
   });
+
+  // Persist state changes to localStorage
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.COURSES, courses);
+  }, [courses]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.SCHEDULE, schedule);
+  }, [schedule]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.ROOMS, rooms);
+  }, [rooms]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.ALLOCATIONS, allocations);
+  }, [allocations]);
 
   // Update conflicts whenever schedule changes
   useEffect(() => {
@@ -288,6 +345,16 @@ export const ScheduleProvider = ({ children }) => {
     updateAllocations();
   }, [schedule, courses, updateAllocations]);
 
+  // Function to clear all stored data
+  const clearStoredData = useCallback(() => {
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    setCourses(INITIAL_COURSES);
+    setSchedule({});
+    setRooms(INITIAL_ROOMS);
+    setAllocations(INITIAL_ALLOCATIONS);
+    showNotification('All stored data has been cleared', 'info');
+  }, []);
+
   // Context value to be provided
   const contextValue = {
     courses,
@@ -304,7 +371,8 @@ export const ScheduleProvider = ({ children }) => {
     handleCloseNotification,
     assignRoom,
     resolveConflict,
-    updateAllocations
+    updateAllocations,
+    clearStoredData
   };
 
   return (
