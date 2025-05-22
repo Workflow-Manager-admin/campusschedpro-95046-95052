@@ -7,18 +7,9 @@ import WarningIcon from '@mui/icons-material/Warning';
 import SchoolIcon from '@mui/icons-material/School';
 import './App.css';
 
-// Placeholder components for each section
-const CourseScheduling = () => (
-  <div className="dashboard-grid">
-    <div className="dashboard-card">
-      <div className="card-header">
-        <h2 className="card-title">Course Schedule</h2>
-        <button className="btn">Add Course</button>
-      </div>
-      <p>Drag and drop interface for course scheduling will be implemented here</p>
-    </div>
-  </div>
-);
+import CourseScheduling from './components/CourseScheduling';
+import './styles/CourseScheduling.css';
+=======
 
 const FacultyManagement = () => (
   <div className="dashboard-grid">
