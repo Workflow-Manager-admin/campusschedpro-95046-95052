@@ -1,43 +1,14 @@
 import React, { useState } from 'react';
 import { Alert, Snackbar } from '@mui/material';
-
-// Sample room data
-const INITIAL_ROOMS = [
-  {
-    id: 'room-1',
-    name: 'Lecture Hall A',
-    type: 'Lecture Hall',
-    capacity: 120,
-    equipment: ['Projector', 'Smart Board', 'Audio System'],
-    building: 'Science Building',
-    floor: '1st Floor'
-  },
-  {
-    id: 'room-2',
-    name: 'Lab 101',
-    type: 'Computer Lab',
-    capacity: 30,
-    equipment: ['Computers', 'Projector', 'Whiteboard'],
-    building: 'Engineering Building',
-    floor: '2nd Floor'
-  },
-  {
-    id: 'room-3',
-    name: 'Seminar Room 201',
-    type: 'Seminar Room',
-    capacity: 40,
-    equipment: ['Projector', 'Whiteboard'],
-    building: 'Humanities Building',
-    floor: '3rd Floor'
-  }
-];
+import { useSchedule } from '../../context/ScheduleContext';
 
 const ROOM_TYPES = ['Lecture Hall', 'Computer Lab', 'Seminar Room', 'Classroom', 'Conference Room'];
 const EQUIPMENT_OPTIONS = ['Projector', 'Whiteboard', 'Smart Board', 'Computers', 'Audio System', 'Video Conference', 'Document Camera'];
 const BUILDINGS = ['Science Building', 'Engineering Building', 'Humanities Building', 'Business Building', 'Library'];
 
 const RoomManagement = () => {
-  const [rooms, setRooms] = useState(INITIAL_ROOMS);
+  // Use room data from context instead of local state
+  const { rooms, setRooms, showNotification: contextShowNotification } = useSchedule();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -45,6 +16,7 @@ const RoomManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editedRoom, setEditedRoom] = useState(null);
+  // Local component state for UI management only
   const [notification, setNotification] = useState({
     open: false,
     message: '',
@@ -123,11 +95,7 @@ const RoomManagement = () => {
   const handleSaveEdit = () => {
     // Validate edited room
     if (!editedRoom.name || !editedRoom.type || !editedRoom.building) {
-      setNotification({
-        open: true,
-        message: 'Please fill in all required fields',
-        severity: 'error'
-      });
+      contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
@@ -140,11 +108,7 @@ const RoomManagement = () => {
     setSelectedRoom(editedRoom);
     setIsEditing(false);
     
-    setNotification({
-      open: true,
-      message: 'Room updated successfully',
-      severity: 'success'
-    });
+    contextShowNotification('Room updated successfully', 'success');
   };
 
   const handleDeleteRoom = () => {
@@ -156,21 +120,13 @@ const RoomManagement = () => {
     setRooms(updatedRooms);
     setSelectedRoom(null);
     
-    setNotification({
-      open: true,
-      message: 'Room deleted successfully',
-      severity: 'success'
-    });
+    contextShowNotification('Room deleted successfully', 'success');
   };
 
   const handleAddRoom = () => {
     // Validate new room
     if (!newRoom.name || !newRoom.type || !newRoom.building) {
-      setNotification({
-        open: true,
-        message: 'Please fill in all required fields',
-        severity: 'error'
-      });
+      contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
@@ -194,11 +150,7 @@ const RoomManagement = () => {
       floor: '1st Floor'
     });
     
-    setNotification({
-      open: true,
-      message: 'Room added successfully',
-      severity: 'success'
-    });
+    contextShowNotification('Room added successfully', 'success');
   };
 
   const handleCloseNotification = () => {
@@ -529,20 +481,7 @@ const RoomManagement = () => {
         </div>
       )}
 
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert
-          onClose={handleCloseNotification}
-          severity={notification.severity}
-          variant="filled"
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
+      {/* Snackbar notifications are handled by the context */}
     </div>
   );
 };
