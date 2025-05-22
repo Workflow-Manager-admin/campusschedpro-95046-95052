@@ -1,15 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TimeSlot from './TimeSlot';
+import { useSchedule } from '../context/ScheduleContext';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const TIME_SLOTS = [
+export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+export const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
   '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
 ];
 
-// Only destructure the props we actually use
-const Timetable = ({ schedule }) => {
+// Use the schedule from props but fall back to context if not provided
+const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
+  const { schedule: contextSchedule } = useSchedule();
+  
+  // Use provided schedule or fall back to context
+  const schedule = propSchedule || contextSchedule;
+
   return (
     <div className="timetable">
       <div className="timetable-header">
@@ -41,7 +47,8 @@ const Timetable = ({ schedule }) => {
 };
 
 Timetable.propTypes = {
-  schedule: PropTypes.object.isRequired
+  schedule: PropTypes.object,
+  onCourseMove: PropTypes.func
 };
 
 export default Timetable;
