@@ -244,7 +244,7 @@ export const ScheduleProvider = ({ children }) => {
   };
 
   // Function to update room allocations when schedule changes
-  const updateAllocations = () => {
+  const updateAllocations = useCallback(() => {
     const newAllocations = [...allocations];
 
     // Clear existing course assignments
@@ -281,7 +281,7 @@ export const ScheduleProvider = ({ children }) => {
     });
 
     setAllocations(newAllocations);
-  };
+  }, [schedule, allocations, setAllocations]);
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
