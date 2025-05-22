@@ -15,76 +15,78 @@ import './styles/StudentView.css';
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <nav className="sidebar">
-          <div className="logo-container">
-            <span className="nav-icon">🎓</span>
-            <span className="logo logo-text">CampusSchedPro</span>
-          </div>
-          
-          <NavLink 
-            to="/" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-            end
-          >
-            <span className="nav-icon">📅</span>
-            <span className="nav-text">Course Scheduling</span>
-          </NavLink>
-          
-          <NavLink 
-            to="/faculty" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <span className="nav-icon">👥</span>
-            <span className="nav-text">Faculty Management</span>
-          </NavLink>
-          
-          <NavLink 
-            to="/rooms" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <span className="nav-icon">🏢</span>
-            <span className="nav-text">Room Management</span>
-          </NavLink>
-          
-          <NavLink 
-            to="/room-allocation" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <span className="nav-icon">📍</span>
-            <span className="nav-text">Room Allocation</span>
-          </NavLink>
-          
-          <NavLink 
-            to="/conflicts" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <span className="nav-icon">⚠️</span>
-            <span className="nav-text">Conflict Resolution</span>
-          </NavLink>
-          
-          <NavLink 
-            to="/student-view" 
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <span className="nav-icon">👨‍🎓</span>
-            <span className="nav-text">Student View</span>
-          </NavLink>
-        </nav>
+    <ScheduleProvider>
+      <Router>
+        <div className="app">
+          <nav className="sidebar">
+            <div className="logo-container">
+              <span className="nav-icon">🎓</span>
+              <span className="logo logo-text">CampusSchedPro</span>
+            </div>
+            
+            <NavLink 
+              to="/" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+              end
+            >
+              <span className="nav-icon">📅</span>
+              <span className="nav-text">Course Scheduling</span>
+            </NavLink>
+            
+            <NavLink 
+              to="/faculty" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            >
+              <span className="nav-icon">👥</span>
+              <span className="nav-text">Faculty Management</span>
+            </NavLink>
+            
+            <NavLink 
+              to="/rooms" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            >
+              <span className="nav-icon">🏢</span>
+              <span className="nav-text">Room Management</span>
+            </NavLink>
+            
+            <NavLink 
+              to="/room-allocation" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            >
+              <span className="nav-icon">📍</span>
+              <span className="nav-text">Room Allocation</span>
+            </NavLink>
+            
+            <NavLink 
+              to="/conflicts" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            >
+              <span className="nav-icon">⚠️</span>
+              <span className="nav-text">Conflict Resolution</span>
+            </NavLink>
+            
+            <NavLink 
+              to="/student-view" 
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            >
+              <span className="nav-icon">👨‍🎓</span>
+              <span className="nav-text">Student View</span>
+            </NavLink>
+          </nav>
 
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<CourseScheduling />} />
-            <Route path="/faculty" element={<FacultyManagement />} />
-            <Route path="/rooms" element={<RoomManagement />} />
-            <Route path="/room-allocation" element={<RoomAllocation />} />
-            <Route path="/conflicts" element={<ConflictResolution />} />
-            <Route path="/student-view" element={<StudentView />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<CourseScheduling />} />
+              <Route path="/faculty" element={<FacultyManagement />} />
+              <Route path="/rooms" element={<RoomManagement />} />
+              <Route path="/room-allocation" element={<RoomAllocation />} />
+              <Route path="/conflicts" element={<ConflictResolution />} />
+              <Route path="/student-view" element={<StudentScheduleView />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </ScheduleProvider>
   );
 }
 
