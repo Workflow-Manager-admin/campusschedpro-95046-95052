@@ -47,13 +47,14 @@ const StudentScheduleView = () => {
   );
   
   // Handle course selection changes
+  // Update filtered courses when course selection changes
   const handleCourseToggle = useCallback((courseId) => {
     setSelectedCourses(prev => {
-      if (prev.includes(courseId)) {
-        return prev.filter(id => id !== courseId);
-      } else {
-        return [...prev, courseId];
-      }
+      const newSelection = prev.includes(courseId)
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId];
+      
+      return newSelection;
     });
   }, []);
 
