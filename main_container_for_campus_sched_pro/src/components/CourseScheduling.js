@@ -1,8 +1,23 @@
 import React, { useCallback, useState } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
-import { Alert, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions, 
-  TextField, Button, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, 
-  FormGroup, Typography } from '@mui/material';
+import { 
+  Alert, 
+  Snackbar, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  TextField, 
+  Button, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem, 
+  FormControlLabel, 
+  Checkbox, 
+  FormGroup, 
+  Typography 
+} from '@mui/material';
 import Timetable from './Timetable';
 import Course from './Course';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';

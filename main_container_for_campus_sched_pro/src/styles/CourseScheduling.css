@@ -46,7 +46,9 @@
 
 .course-filters {
   margin-bottom: 16px;
-  padding: 0 8px;
+  padding: 8px;
+  background-color: var(--background-grey);
+  border-radius: 8px;
 }
 
 .courses-list {
