@@ -12,7 +12,9 @@ const INITIAL_COURSES = [
     instructor: 'Dr. Sarah Johnson',
     expectedEnrollment: 100,
     requiresLab: true,
-    requiredEquipment: ['Computers', 'Projector']
+    requiredEquipment: ['Computers', 'Projector'],
+    department: 'Computer Science',
+    academicYear: 'First Year'
   },
   {
     id: 'course-2',
@@ -22,7 +24,109 @@ const INITIAL_COURSES = [
     instructor: 'Prof. Michael Chen',
     expectedEnrollment: 60,
     requiresLab: true,
-    requiredEquipment: ['Computers', 'Database Server']
+    requiredEquipment: ['Computers', 'Database Server'],
+    department: 'Computer Science',
+    academicYear: 'Third Year'
+  },
+  // IT courses for first year
+  {
+    id: 'course-3',
+    name: 'IT Fundamentals',
+    code: 'IT101',
+    credits: 3,
+    instructor: 'Prof. Emily Wilson',
+    expectedEnrollment: 80,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Projector'],
+    department: 'IT',
+    academicYear: 'First Year'
+  },
+  {
+    id: 'course-4',
+    name: 'Introduction to Programming',
+    code: 'IT102',
+    credits: 4,
+    instructor: 'Dr. David Miller',
+    expectedEnrollment: 75,
+    requiresLab: true,
+    requiredEquipment: ['Computers'],
+    department: 'IT',
+    academicYear: 'First Year'
+  },
+  // IT courses for second year
+  {
+    id: 'course-5',
+    name: 'Data Structures',
+    code: 'IT201',
+    credits: 4,
+    instructor: 'Dr. Jennifer Lee',
+    expectedEnrollment: 65,
+    requiresLab: true,
+    requiredEquipment: ['Computers'],
+    department: 'IT',
+    academicYear: 'Second Year'
+  },
+  {
+    id: 'course-6',
+    name: 'Computer Networks',
+    code: 'IT202',
+    credits: 3,
+    instructor: 'Prof. Robert Chen',
+    expectedEnrollment: 60,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Network Equipment'],
+    department: 'IT',
+    academicYear: 'Second Year'
+  },
+  // IT courses for third year
+  {
+    id: 'course-7',
+    name: 'Web Development',
+    code: 'IT301',
+    credits: 3,
+    instructor: 'Prof. Amanda Davis',
+    expectedEnrollment: 55,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Web Servers'],
+    department: 'IT',
+    academicYear: 'Third Year'
+  },
+  {
+    id: 'course-8',
+    name: 'Database Management',
+    code: 'IT302',
+    credits: 4,
+    instructor: 'Dr. Michael Robinson',
+    expectedEnrollment: 50,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Database Server'],
+    department: 'IT',
+    academicYear: 'Third Year'
+  },
+  // IT courses for fourth year
+  {
+    id: 'course-9',
+    name: 'Software Engineering',
+    code: 'IT401',
+    credits: 4,
+    instructor: 'Dr. Laura Morgan',
+    expectedEnrollment: 45,
+    requiresLab: true,
+    requiredEquipment: ['Computers', 'Software Tools'],
+    department: 'IT',
+    academicYear: 'Fourth Year'
+  },
+  {
+    id: 'course-10',
+    name: 'IT Project Management',
+    code: 'IT402',
+    credits: 3,
+    instructor: 'Prof. James Wilson',
+    expectedEnrollment: 40,
+    requiresLab: false,
+    requiredEquipment: ['Projector'],
+    department: 'IT',
+    academicYear: 'Fourth Year'
   }
 ];
 
