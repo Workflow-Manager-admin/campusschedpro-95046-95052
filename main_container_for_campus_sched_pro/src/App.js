@@ -5,11 +5,9 @@ import PeopleIcon from '@mui/icons-material/People';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import WarningIcon from '@mui/icons-material/Warning';
 import SchoolIcon from '@mui/icons-material/School';
-import './App.css';
-
 import CourseScheduling from './components/CourseScheduling';
+import './App.css';
 import './styles/CourseScheduling.css';
-=======
 
 const FacultyManagement = () => (
   <div className="dashboard-grid">
