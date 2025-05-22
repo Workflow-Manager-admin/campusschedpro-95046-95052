@@ -16,7 +16,11 @@ class RoomAllocationErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('RoomAllocation Error:', error, errorInfo);
+    // Log error to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('RoomAllocation Error:', error);
+      console.error('Error Info:', errorInfo);
+    }
   }
 
   render() {

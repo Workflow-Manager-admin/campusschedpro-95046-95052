@@ -394,8 +394,15 @@ const RoomAllocation = () => {
  * Room allocation component for managing course room assignments
  * PUBLIC_INTERFACE
  */
+/**
+ * Room allocation component for managing course room assignments
+ * PUBLIC_INTERFACE
+ */
 RoomAllocation.propTypes = {
-  // Component does not accept any props
+  // This component is self-contained and uses context,
+  // so it does not accept any props
 };
+
+RoomAllocation.defaultProps = {};
 
 export default RoomAllocation;
