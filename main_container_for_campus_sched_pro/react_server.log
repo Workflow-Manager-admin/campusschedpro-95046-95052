@@ -1705,3 +1705,79 @@ export 'createFilterOptions' (reexported as 'createFilterOptions') was not found
 
 webpack compiled with 18 errors and 1 warning
 Compiling...
+Failed to compile.
+
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/ClassNameGenerator/index.js'
+WARNING in [eslint] 
+src/components/CourseScheduling.js
+  Line 36:28:  'setAvailableCourses' is assigned a value but never used  no-unused-vars
+
+ERROR in ./node_modules/@mui/base/ClassNameGenerator/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/ClassNameGenerator/index.js'
+
+ERROR in ./node_modules/@mui/base/ClickAwayListener/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/ClickAwayListener/index.js'
+
+ERROR in ./node_modules/@mui/base/FocusTrap/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/FocusTrap/index.js'
+
+ERROR in ./node_modules/@mui/base/NoSsr/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/NoSsr/index.js'
+
+ERROR in ./node_modules/@mui/base/Popper/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/Popper/index.js'
+
+ERROR in ./node_modules/@mui/base/Portal/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/Portal/index.js'
+
+ERROR in ./node_modules/@mui/base/TextareaAutosize/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/TextareaAutosize/index.js'
+
+ERROR in ./node_modules/@mui/base/composeClasses/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/composeClasses/index.js'
+
+ERROR in ./node_modules/@mui/base/unstable_useModal/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/unstable_useModal/index.js'
+
+ERROR in ./node_modules/@mui/base/useAutocomplete/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/useAutocomplete/index.js'
+
+ERROR in ./node_modules/@mui/base/useBadge/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/useBadge/index.js'
+
+ERROR in ./node_modules/@mui/base/useSlider/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/useSlider/index.js'
+
+ERROR in ./node_modules/@mui/base/useSnackbar/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/useSnackbar/index.js'
+
+ERROR in ./node_modules/@mui/base/utils/index.js
+Module build failed (from ./node_modules/source-map-loader/dist/cjs.js):
+Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/base/utils/index.js'
+
+ERROR in ./node_modules/@mui/material/Alert/Alert.js 38:9-23
+export 'unstable_composeClasses' (imported as 'composeClasses') was not found in '@mui/base' (possible exports: Badge, Button, ClickAwayListener, CssAnimation, CssTransition, Dropdown, DropdownActionTypes, DropdownContext, FocusTrap, FormControl, FormControlContext, Input, Menu, MenuButton, MenuItem, MenuProvider, Modal, NoSsr, Option, OptionGroup, Popper, PopupContext, Portal, Select, SelectActionTypes, SelectProvider, Slider, Snackbar, Switch, Tab, TabPanel, TablePagination, TablePaginationActions, Tabs, TabsContext, TabsList, TabsListActionTypes, TabsListProvider, TabsProvider, TextareaAutosize, Unstable_NumberInput, Unstable_Popup, badgeClasses, buttonClasses, formControlClasses, getBadgeUtilityClass, getButtonUtilityClass, getFormControlUtilityClass, getInputUtilityClass, getMenuButtonUtilityClass, getMenuItemUtilityClass, getMenuUtilityClass, getModalUtilityClass, getNumberInputUtilityClass, getOptionGroupUtilityClass, getOptionUtilityClass, getPopupUtilityClass, getSelectUtilityClass, getSliderUtilityClass, getSnackbarUtilityClass, getSwitchUtilityClass, getTabPanelUtilityClass, getTabUtilityClass, getTablePaginationUtilityClass, getTabsListUtilityClass, getTabsUtilityClass, inputClasses, menuButtonClasses, menuClasses, menuItemClasses, modalClasses, numberInputClasses, optionClasses, optionGroupClasses, popupClasses, selectClasses, sliderClasses, snackbarClasses, switchClasses, tabClasses, tabPanelClasses, tablePaginationClasses, tabsClasses, tabsListClasses, unstable_generateUtilityClass, unstable_isGlobalState, unstable_useNumberInput, useButton, useDropdown, useFormControlContext, useInput, useMenu, useMenuButton, useMenuItem, useMenuItemContextStabilizer, useOption, useOptionContextStabilizer, useSelect, useSwitch, useTab, useTabPanel, useTabs, useTabsContext, useTabsList)
+
+ERROR in ./node_modules/@mui/material/Autocomplete/Autocomplete.js 372:0-31
+export 'createFilterOptions' (reexported as 'createFilterOptions') was not found in '@mui/base' (possible exports: Badge, Button, ClickAwayListener, CssAnimation, CssTransition, Dropdown, DropdownActionTypes, DropdownContext, FocusTrap, FormControl, FormControlContext, Input, Menu, MenuButton, MenuItem, MenuProvider, Modal, NoSsr, Option, OptionGroup, Popper, PopupContext, Portal, Select, SelectActionTypes, SelectProvider, Slider, Snackbar, Switch, Tab, TabPanel, TablePagination, TablePaginationActions, Tabs, TabsContext, TabsList, TabsListActionTypes, TabsListProvider, TabsProvider, TextareaAutosize, Unstable_NumberInput, Unstable_Popup, badgeClasses, buttonClasses, formControlClasses, getBadgeUtilityClass, getButtonUtilityClass, getFormControlUtilityClass, getInputUtilityClass, getMenuButtonUtilityClass, getMenuItemUtilityClass, getMenuUtilityClass, getModalUtilityClass, getNumberInputUtilityClass, getOptionGroupUtilityClass, getOptionUtilityClass, getPopupUtilityClass, getSelectUtilityClass, getSliderUtilityClass, getSnackbarUtilityClass, getSwitchUtilityClass, getTabPanelUtilityClass, getTabUtilityClass, getTablePaginationUtilityClass, getTabsListUtilityClass, getTabsUtilityClass, inputClasses, menuButtonClasses, menuClasses, menuItemClasses, modalClasses, numberInputClasses, optionClasses, optionGroupClasses, popupClasses, selectClasses, sliderClasses, snackbarClasses, switchClasses, tabClasses, tabPanelClasses, tablePaginationClasses, tabsClasses, tabsListClasses, unstable_generateUtilityClass, unstable_isGlobalState, unstable_useNumberInput, useButton, useDropdown, useFormControlContext, useInput, useMenu, useMenuButton, useMenuItem, useMenuItemContextStabilizer, useOption, useOptionContextStabilizer, useSelect, useSwitch, useTab, useTabPanel, useTabs, useTabsContext, useTabsList)
+
+ERROR in ./node_modules/@mui/material/Autocomplete/Autocomplete.js 456:6-21
+export 'useAutocomplete' (imported as 'useAutocomplete') was not found in '@mui/base' (possible exports: Badge, Button, ClickAwayListener, CssAnimation, CssTransition, Dropdown, DropdownActionTypes, DropdownContext, FocusTrap, FormControl, FormControlContext, Input, Menu, MenuButton, MenuItem, MenuProvider, Modal, NoSsr, Option, OptionGroup, Popper, PopupContext, Portal, Select, SelectActionTypes, SelectProvider, Slider, Snackbar, Switch, Tab, TabPanel, TablePagination, TablePaginationActions, Tabs, TabsContext, TabsList, TabsListActionTypes, TabsListProvider, TabsProvider, TextareaAutosize, Unstable_NumberInput, Unstable_Popup, badgeClasses, buttonClasses, formControlClasses, getBadgeUtilityClass, getButtonUtilityClass, getFormControlUtilityClass, getInputUtilityClass, getMenuButtonUtilityClass, getMenuItemUtilityClass, getMenuUtilityClass, getModalUtilityClass, getNumberInputUtilityClass, getOptionGroupUtilityClass, getOptionUtilityClass, getPopupUtilityClass, getSelectUtilityClass, getSliderUtilityClass, getSnackbarUtilityClass, getSwitchUtilityClass, getTabPanelUtilityClass, getTabUtilityClass, getTablePaginationUtilityClass, getTabsListUtilityClass, getTabsUtilityClass, inputClasses, menuButtonClasses, menuClasses, menuItemClasses, modalClasses, numberInputClasses, optionClasses, optionGroupClasses, popupClasses, selectClasses, sliderClasses, snackbarClasses, switchClasses, tabClasses, tabPanelClasses, tablePaginationClasses, tabsClasses, tabsListClasses, unstable_generateUtilityClass, unstable_isGlobalState, unstable_useNumberInput, useButton, useDropdown, useFormControlContext, useInput, useMenu, useMenuButton, useMenuItem, useMenuItemContextStabilizer, useOption, useOptionContextStabilizer, useSelect, useSwitch, useTab, useTabPanel, useTabs, useTabsContext, useTabsList)
+
+ERROR in ./node_modules/@mui/material/useAutocomplete/index.js 3:0-65
+export 'createFilterOptions' (reexported as 'createFilterOptions') was not found in './useAutocomplete' (possible exports: default)
+
+webpack compiled with 18 errors and 1 warning
