@@ -48,7 +48,7 @@ const FacultyCard = ({ faculty, selected, onClick }) => {
           <div className="stat-label">Hours/Week</div>
         </div>
       </div>
-    </Paper>
+    </div>
   );
 };
 
