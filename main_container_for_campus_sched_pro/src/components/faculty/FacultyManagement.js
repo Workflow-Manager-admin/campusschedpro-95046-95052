@@ -1,6 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { Dialog, TextField } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
 
 import { 
   calculateTeachingLoad, 
@@ -50,7 +48,7 @@ const FacultyManagement = () => {
     name: '',
     department: '',
     email: '',
-    expertise: []
+    expertise: ''
   });
 
   const handleSearch = (event) => {
@@ -84,7 +82,7 @@ const FacultyManagement = () => {
     const updatedFaculty = getFacultyStatus(newFacultyMember, []);
     setFaculty(prev => [...prev, updatedFaculty]);
     setShowAddDialog(false);
-    setNewFaculty({ name: '', department: '', email: '', expertise: [] });
+    setNewFaculty({ name: '', department: '', email: '', expertise: '' });
   };
 
   const handleUpdateFaculty = (updatedFaculty) => {
