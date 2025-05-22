@@ -41,18 +41,7 @@ const Timetable = ({ schedule }) => {
 };
 
 Timetable.propTypes = {
-  _courses: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      code: PropTypes.string.isRequired,
-      credits: PropTypes.number.isRequired,
-      instructor: PropTypes.string.isRequired,
-      room: PropTypes.string
-    })
-  ).isRequired,
-  schedule: PropTypes.object.isRequired,
-  _onCourseMove: PropTypes.func.isRequired
+  schedule: PropTypes.object.isRequired
 };
 
 export default Timetable;
