@@ -27,7 +27,8 @@ const Course = memo(({ course, index }) => {
           </div>
           {course.academicYear && course.department && (
             <div className="course-year">
-              <span>{course.academicYear} • {course.department}</span>
+              <span className="year-badge">{course.academicYear}</span>
+              <span className="department-text">{course.department}</span>
             </div>
           )}
         </Paper>
