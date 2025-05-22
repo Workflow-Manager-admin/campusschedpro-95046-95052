@@ -29,6 +29,45 @@ const StyledChip = styled(Chip)(({ theme }) => ({
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
 
+import PropTypes from 'prop-types';
+
+class RoomAllocationErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('RoomAllocation Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h2>Something went wrong.</h2>
+          <button 
+            className="btn" 
+            onClick={() => window.location.reload()}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+RoomAllocationErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
 const RoomAllocation = () => {
   const { 
     courses, 
