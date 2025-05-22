@@ -1,66 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Alert, Snackbar } from '@mui/material';
 import Timetable from './Timetable';
 import Course from './Course';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
-
-const SAMPLE_COURSES = [
-  {
-    id: 'course-1',
-    name: 'Introduction to Computer Science',
-    code: 'CS101',
-    credits: 3,
-    instructor: 'Dr. Smith',
-    room: null,
-    expectedEnrollment: 35,
-    requiresLab: false,
-    requiredEquipment: ['Projector', 'Whiteboard']
-  },
-  {
-    id: 'course-2',
-    name: 'Data Structures',
-    code: 'CS201',
-    credits: 4,
-    instructor: 'Dr. Johnson',
-    room: null,
-    expectedEnrollment: 25,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Projector', 'Whiteboard']
-  },
-  {
-    id: 'course-3',
-    name: 'Database Systems',
-    code: 'CS301',
-    credits: 3,
-    instructor: 'Dr. Davis',
-    room: null,
-    expectedEnrollment: 80,
-    requiresLab: false,
-    requiredEquipment: ['Projector', 'Smart Board']
-  }
-];
+import { useSchedule } from '../context/ScheduleContext';
 
 const CourseScheduling = () => {
-  const [availableCourses] = useState(SAMPLE_COURSES);
-  const [schedule, setSchedule] = useState({});
-  const [notification, setNotification] = useState({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
-
-  const handleCloseNotification = useCallback(() => {
-    setNotification(prev => ({ ...prev, open: false }));
-  }, []);
-
-  const showNotification = useCallback((message, severity = 'info') => {
-    setNotification({
-      open: true,
-      message,
-      severity
-    });
-  }, []);
+  const { 
+    courses,
+    schedule, 
+    setSchedule,
+    notification,
+    showNotification,
+    handleCloseNotification
+  } = useSchedule();
 
   const handleDragEnd = useCallback((result) => {
     const { source, destination, draggableId } = result;
