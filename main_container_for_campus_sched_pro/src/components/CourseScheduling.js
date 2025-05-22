@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Alert, Snackbar } from '@mui/material';
 import Timetable from './Timetable';
@@ -33,73 +33,111 @@ const SAMPLE_COURSES = [
 ];
 
 const CourseScheduling = () => {
-  const [courses, setCourses] = useState(SAMPLE_COURSES);
+  const [availableCourses, setAvailableCourses] = useState(SAMPLE_COURSES);
   const [schedule, setSchedule] = useState({});
-  const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
 
-  const handleScheduleChange = (newSchedule) => {
-    const conflicts = findScheduleConflicts(newSchedule);
-    if (conflicts.length > 0) {
-      setNotification({
-        open: true,
-        message: `Warning: Found ${conflicts.length} scheduling conflicts`,
-        severity: 'warning'
-      });
-    }
-    setSchedule(newSchedule);
-  };
+  const handleCloseNotification = useCallback(() => {
+    setNotification(prev => ({ ...prev, open: false }));
+  }, []);
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
 
+  const handleDragEnd = useCallback((result) => {
     const { source, destination, draggableId } = result;
-    const course = courses.find(c => c.id === draggableId);
 
-    // Validate the move
-    const validation = validateCourseMove(schedule, destination.droppableId, course);
-    if (!validation.valid) {
-      setNotification({
-        open: true,
-        message: validation.message,
-        severity: 'error'
-      });
+    // Drop outside valid area
+    if (!destination) return;
+
+    const course = availableCourses.find(c => c.id === draggableId);
+    if (!course) return;
+
+    try {
+      // Moving from course list to timetable
+      if (source.droppableId === 'courses-list') {
+        const validation = validateCourseMove(schedule, destination.droppableId, course);
+        if (!validation.valid) {
+          showNotification(validation.message, 'error');
+          return;
+        }
+
+        const newSchedule = { ...schedule };
+        if (!newSchedule[destination.droppableId]) {
+          newSchedule[destination.droppableId] = [];
+        }
+        newSchedule[destination.droppableId].push(course);
+
+        const conflicts = findScheduleConflicts(newSchedule);
+        if (conflicts.length > 0) {
+          showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
+        }
+
+        setSchedule(newSchedule);
+      }
+      // Moving between timetable slots
+      else {
+        const validation = validateCourseMove(schedule, destination.droppableId, course);
+        if (!validation.valid) {
+          showNotification(validation.message, 'error');
+          return;
+        }
+
+        const newSchedule = { ...schedule };
+        
+        // Remove from source
+        newSchedule[source.droppableId] = newSchedule[source.droppableId]
+          .filter(c => c.id !== draggableId);
+        
+        // Add to destination
+        if (!newSchedule[destination.droppableId]) {
+          newSchedule[destination.droppableId] = [];
+        }
+        newSchedule[destination.droppableId].push(course);
+
+        const conflicts = findScheduleConflicts(newSchedule);
+        if (conflicts.length > 0) {
+          showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
+        }
+
+        setSchedule(newSchedule);
+      }
+    } catch (error) {
+      console.error('Error during drag operation:', error);
+      showNotification('An error occurred while updating the schedule', 'error');
+    }
+  }, [schedule, availableCourses, showNotification]);
+
+  const handleSaveSchedule = useCallback(() => {
+    const conflicts = findScheduleConflicts(schedule);
+    if (conflicts.length > 0) {
+      showNotification('Cannot save schedule with conflicts. Please resolve them first.', 'error');
       return;
     }
-
-    // Handle move from course list to timetable
-    if (source.droppableId === 'courses-list') {
-      const newSchedule = { ...schedule };
-      if (!newSchedule[destination.droppableId]) {
-        newSchedule[destination.droppableId] = [];
-      }
-      newSchedule[destination.droppableId].push(course);
-      handleScheduleChange(newSchedule);
-    }
-    // Handle move between timetable slots
-    else {
-      const newSchedule = { ...schedule };
-      // Remove from source
-      newSchedule[source.droppableId] = newSchedule[source.droppableId].filter(
-        c => c.id !== draggableId
-      );
-      // Add to destination
-      if (!newSchedule[destination.droppableId]) {
-        newSchedule[destination.droppableId] = [];
-      }
-      newSchedule[destination.droppableId].push(course);
-      handleScheduleChange(newSchedule);
-    }
-  };
-
-  const handleCloseNotification = () => {
-    setNotification({ ...notification, open: false });
-  };
+    
+    // Here we would typically save to backend
+    showNotification('Schedule saved successfully!', 'success');
+  }, [schedule, showNotification]);
 
   return (
     <div className="course-scheduling">
       <div className="scheduling-header">
         <h2>Course Scheduling</h2>
-        <button className="btn btn-accent">Save Schedule</button>
+        <button 
+          className="btn btn-accent"
+          onClick={handleSaveSchedule}
+        >
+          Save Schedule
+        </button>
       </div>
       
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -116,8 +154,12 @@ const CourseScheduling = () => {
                   {...provided.droppableProps}
                   className="courses-list"
                 >
-                  {courses.map((course, index) => (
-                    <Course key={course.id} course={course} index={index} />
+                  {availableCourses.map((course, index) => (
+                    <Course 
+                      key={course.id} 
+                      course={course} 
+                      index={index}
+                    />
                   ))}
                   {provided.placeholder}
                 </div>
@@ -127,9 +169,9 @@ const CourseScheduling = () => {
           
           <div className="timetable-panel">
             <Timetable
-              courses={courses}
+              courses={availableCourses}
               schedule={schedule}
-              onCourseMove={handleScheduleChange}
+              onCourseMove={setSchedule}
             />
           </div>
         </div>
