@@ -1,0 +1,232 @@
+.room-management {
+  padding: 20px;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.room-container {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  height: calc(100% - 60px);
+  min-height: 600px;
+}
+
+.room-list {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.room-card {
+  background: var(--background-light);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.room-card.selected {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px var(--primary-green);
+}
+
+.room-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.room-info h3 {
+  margin: 0;
+  color: var(--primary-green);
+}
+
+.room-type {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.room-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.status-available {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.status-booked {
+  background-color: #EF5350;
+  color: white;
+}
+
+.room-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.2em;
+  font-weight: 500;
+  color: var(--primary-green);
+}
+
+.stat-label {
+  font-size: 0.8em;
+  color: var(--text-secondary);
+}
+
+.room-details {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.room-allocation {
+  padding: 20px;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.allocation-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.allocation-card {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.allocation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.allocation-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--primary-green);
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.schedule-table th {
+  background: var(--background-grey);
+  font-weight: 500;
+  color: var(--primary-green);
+}
+
+.schedule-table tr:last-child td {
+  border-bottom: none;
+}
+
+.equipment-tag {
+  display: inline-block;
+  background: var(--background-grey);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9em;
+  background-color: var(--background-light);
+}
+
+@media (max-width: 1024px) {
+  .room-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .room-details {
+    margin-top: 20px;
+  }
+}
