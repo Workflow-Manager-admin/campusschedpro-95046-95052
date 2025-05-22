@@ -367,18 +367,17 @@ const RoomAllocation = () => {
                   No suitable rooms available for this course's requirements
                 </Alert>
               ) : (
-                <div className="room-options">
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
                   {getSuitableRooms().map(room => (
-                    <StyledChip
+                    <Chip
                       key={room.id}
                       label={`${room.name} (${room.capacity} capacity)`}
                       onClick={() => handleSelectRoom(room)}
                       color="primary"
                       variant={selectedRoom?.id === room.id ? "filled" : "outlined"}
-                      style={{ margin: '5px' }}
                     />
                   ))}
-                </div>
+                </Box>
               )}
             </>
           ) : (
@@ -392,16 +391,17 @@ const RoomAllocation = () => {
                   All courses have been assigned rooms
                 </Alert>
               ) : (
-                unassignedCourses.map(course => (
-                  <StyledChip
-                    key={course.id}
-                    label={`${course.code} - ${course.name}`}
-                    onClick={() => handleSelectCourse(course)}
-                    color="primary"
-                    variant={selectedCourse?.id === course.id ? "filled" : "outlined"}
-                    style={{ margin: '5px' }}
-                  />
-                ))
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                  {unassignedCourses.map(course => (
+                    <Chip
+                      key={course.id}
+                      label={`${course.code} - ${course.name}`}
+                      onClick={() => handleSelectCourse(course)}
+                      color="primary"
+                      variant={selectedCourse?.id === course.id ? "filled" : "outlined"}
+                    />
+                  ))}
+                </Box>
               )}
             </>
           )}
