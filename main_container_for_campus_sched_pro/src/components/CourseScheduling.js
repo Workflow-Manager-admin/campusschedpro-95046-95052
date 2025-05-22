@@ -229,6 +229,11 @@ const CourseScheduling = () => {
             </div>
             
             <div className="course-filters">
+              <div className="filter-header">
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  Filter courses by academic year:
+                </Typography>
+              </div>
               <FormControl variant="outlined" size="small" fullWidth sx={{ minWidth: 150 }}>
                 <InputLabel id="year-filter-label">Academic Year</InputLabel>
                 <Select
@@ -244,6 +249,12 @@ const CourseScheduling = () => {
                   ))}
                 </Select>
               </FormControl>
+              {yearFilter !== 'All Years' && (
+                <Typography variant="body2" sx={{ mt: 1, fontSize: '0.8rem', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--primary-green)', marginRight: '4px' }}>✓</span> 
+                  Showing {filteredCourses.length} courses for {yearFilter}
+                </Typography>
+              )}
             </div>
             
             <Droppable droppableId="courses-list">
