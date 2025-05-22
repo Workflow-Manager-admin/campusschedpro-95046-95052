@@ -42,7 +42,7 @@ function App() {
       <div className="app">
         <nav className="sidebar">
           <div className="logo-container">
-            <SchoolIcon />
+            <span className="nav-icon">🎓</span>
             <span className="logo logo-text">CampusSchedPro</span>
           </div>
           
@@ -51,7 +51,7 @@ function App() {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             end
           >
-            <CalendarMonthIcon />
+            <span className="nav-icon">📅</span>
             <span className="nav-text">Course Scheduling</span>
           </NavLink>
           
@@ -59,7 +59,7 @@ function App() {
             to="/faculty" 
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            <PeopleIcon />
+            <span className="nav-icon">👥</span>
             <span className="nav-text">Faculty Management</span>
           </NavLink>
           
@@ -67,7 +67,7 @@ function App() {
             to="/rooms" 
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            <MeetingRoomIcon />
+            <span className="nav-icon">🏢</span>
             <span className="nav-text">Room Allocation</span>
           </NavLink>
           
@@ -75,7 +75,7 @@ function App() {
             to="/conflicts" 
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            <WarningIcon />
+            <span className="nav-icon">⚠️</span>
             <span className="nav-text">Conflict Resolution</span>
           </NavLink>
           
@@ -83,7 +83,7 @@ function App() {
             to="/student-view" 
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            <SchoolIcon />
+            <span className="nav-icon">👨‍🎓</span>
             <span className="nav-text">Student View</span>
           </NavLink>
         </nav>
