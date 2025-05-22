@@ -2,9 +2,9 @@
 > react-kavia@0.1.0 start
 > react-scripts start
 
-(node:545) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:1310) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:545) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:1310) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Compiled successfully!
@@ -17,114 +17,6 @@ You can now view react-kavia in the browser.
 Note that the development build is not optimized.
 To create a production build, use npm run build.
 
-webpack compiled successfully
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/GlobalStyles'
-ERROR in ./node_modules/@mui/styled-engine/esm/GlobalStyles/GlobalStyles.js 5:0-40
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/GlobalStyles'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js 5:0-47
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/StyledEngineProvider'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/index.js 11:0-39
-Module not found: Error: Can't resolve '@emotion/styled' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/index.js 45:0-62
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm'
-
-ERROR in ./node_modules/@mui/system/esm/ThemeProvider/ThemeProvider.js 64:32-65
-export 'ThemeContext' (imported as 'StyledEngineThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'css' (reexported as 'css') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'keyframes' (reexported as 'keyframes') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/useThemeWithoutDefault/useThemeWithoutDefault.js 9:40-52
-export 'ThemeContext' (imported as 'ThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-webpack compiled with 8 errors
-Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/GlobalStyles'
-LOG from webpack.FileSystemInfo
-<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/styled isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
-<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/react isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
-+ 14 hidden lines
-
-ERROR in ./node_modules/@mui/styled-engine/esm/GlobalStyles/GlobalStyles.js 5:0-40
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/GlobalStyles'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js 5:0-47
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/StyledEngineProvider'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/index.js 11:0-39
-Module not found: Error: Can't resolve '@emotion/styled' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/index.js 45:0-62
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm'
-
-ERROR in ./node_modules/@mui/system/esm/ThemeProvider/ThemeProvider.js 64:32-65
-export 'ThemeContext' (imported as 'StyledEngineThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'css' (reexported as 'css') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'keyframes' (reexported as 'keyframes') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/useThemeWithoutDefault/useThemeWithoutDefault.js 9:40-52
-export 'ThemeContext' (imported as 'ThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-webpack compiled with 8 errors
-Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/styled/base/dist'
-LOG from webpack.FileSystemInfo
-<w> Managed item /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/react isn't a directory or doesn't contain a package.json (see snapshot.managedPaths option)
-+ 13 hidden lines
-
-ERROR in ./node_modules/@emotion/styled/base/dist/emotion-styled-base.browser.development.esm.js 2:0-64
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/styled/base/dist'
-
-ERROR in ./node_modules/@emotion/styled/dist/emotion-styled.browser.development.esm.js 3:0-24
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@emotion/styled/dist'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/GlobalStyles/GlobalStyles.js 5:0-40
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/GlobalStyles'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js 5:0-47
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm/StyledEngineProvider'
-
-ERROR in ./node_modules/@mui/styled-engine/esm/index.js 45:0-62
-Module not found: Error: Can't resolve '@emotion/react' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@mui/styled-engine/esm'
-
-ERROR in ./node_modules/@mui/system/esm/ThemeProvider/ThemeProvider.js 64:32-65
-export 'ThemeContext' (imported as 'StyledEngineThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'css' (reexported as 'css') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/index.js 9:0-74
-export 'keyframes' (reexported as 'keyframes') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-ERROR in ./node_modules/@mui/system/esm/useThemeWithoutDefault/useThemeWithoutDefault.js 9:40-52
-export 'ThemeContext' (imported as 'ThemeContext') was not found in '@mui/styled-engine' (possible exports: GlobalStyles, StyledEngineProvider, default, internal_mutateStyles, internal_serializeStyles)
-
-webpack compiled with 9 errors
-Compiling...
-Compiled successfully!
 webpack compiled successfully
 Compiling...
 Compiled successfully!
