@@ -48,6 +48,7 @@ class RoomAllocationErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
+    <RoomAllocationErrorBoundary>
         <div className="error-container">
           <h2>Something went wrong.</h2>
           <button 
@@ -199,6 +200,7 @@ const RoomAllocation = () => {
   }, [selectedCourse, rooms]);
 
   return (
+    <RoomAllocationErrorBoundary>
     <div className="room-allocation">
       <div className="room-header">
         <h2>Room Allocation</h2>
@@ -429,7 +431,10 @@ const RoomAllocation = () => {
         </DialogActions>
       </Dialog>
     </div>
+    </RoomAllocationErrorBoundary>
   );
 };
+
+RoomAllocation.propTypes = {};
 
 export default RoomAllocation;
