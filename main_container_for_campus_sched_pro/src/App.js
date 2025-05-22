@@ -6,19 +6,10 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import WarningIcon from '@mui/icons-material/Warning';
 import SchoolIcon from '@mui/icons-material/School';
 import CourseScheduling from './components/CourseScheduling';
+import FacultyManagement from './components/faculty/FacultyManagement';
 import './App.css';
 import './styles/CourseScheduling.css';
-
-// Placeholder components
-const FacultyManagement = () => (
-  <div className="dashboard-card">
-    <div className="card-header">
-      <h2 className="card-title">Faculty Directory</h2>
-      <button className="btn">Add Faculty</button>
-    </div>
-    <p>Faculty management interface will be implemented here</p>
-  </div>
-);
+import './styles/FacultyManagement.css';
 
 const RoomAllocation = () => (
   <div className="dashboard-card">

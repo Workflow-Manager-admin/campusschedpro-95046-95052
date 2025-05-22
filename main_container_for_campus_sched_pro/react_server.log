@@ -21,3 +21,4 @@ src/components/CourseScheduling.js
   Line 36:28:  'setAvailableCourses' is assigned a value but never used  no-unused-vars
 
 webpack compiled with 1 warning
+Compiling...
