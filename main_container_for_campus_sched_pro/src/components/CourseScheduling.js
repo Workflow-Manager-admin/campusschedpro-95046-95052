@@ -194,10 +194,10 @@ const CourseScheduling = () => {
     handleCloseAddDialog();
   };
 
-  // Filter courses by academic year
+  // Filter courses by academic year - safely handle courses that might not have academicYear
   const filteredCourses = yearFilter === 'All Years' 
     ? courses 
-    : courses.filter(course => course.academicYear === yearFilter);
+    : courses.filter(course => course.academicYear && course.academicYear === yearFilter);
 
   return (
     <div className="course-scheduling">
