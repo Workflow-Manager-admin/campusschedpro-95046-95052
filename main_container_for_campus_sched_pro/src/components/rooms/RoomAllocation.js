@@ -133,7 +133,10 @@ const RoomAllocation = () => {
     if (failedCount > 0) {
       showNotification(`Could not find suitable rooms for ${failedCount} courses`, 'warning');
     }
-  }, [unassignedCourses, rooms, assignRoom, showNotification]);
+    
+    // Refresh allocations after assignments
+    updateAllocations();
+  }, [unassignedCourses, rooms, assignRoom, showNotification, updateAllocations]);
 
   // Get suitable rooms for selected course
   const getSuitableRooms = useCallback(() => {
