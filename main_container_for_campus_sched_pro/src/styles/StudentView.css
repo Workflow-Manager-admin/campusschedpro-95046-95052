@@ -32,6 +32,13 @@
   color: var(--primary-green);
 }
 
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .timetable-view {
   background: var(--background-light);
   border-radius: 12px;
