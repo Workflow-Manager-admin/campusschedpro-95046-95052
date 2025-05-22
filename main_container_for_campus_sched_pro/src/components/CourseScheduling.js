@@ -8,15 +8,35 @@ import Course from './Course';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
 import { useSchedule } from '../context/ScheduleContext';
 
+const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
+
 const CourseScheduling = () => {
   const { 
     courses,
+    setCourses,
     schedule, 
     setSchedule,
     notification,
     showNotification,
     handleCloseNotification
   } = useSchedule();
+  
+  // State for add course dialog
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newCourse, setNewCourse] = useState({
+    name: '',
+    code: '',
+    credits: 3,
+    instructor: '',
+    expectedEnrollment: 30,
+    requiresLab: false,
+    requiredEquipment: [],
+    academicYear: 'First Year',
+    department: 'IT',
+  });
+  
+  // State for year filter
+  const [yearFilter, setYearFilter] = useState('All Years');
 
   const handleDragEnd = useCallback((result) => {
     const { source, destination, draggableId } = result;
