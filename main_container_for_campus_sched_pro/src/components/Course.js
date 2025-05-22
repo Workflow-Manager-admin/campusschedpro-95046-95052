@@ -40,7 +40,10 @@ Course.propTypes = {
     code: PropTypes.string.isRequired,
     credits: PropTypes.number.isRequired,
     instructor: PropTypes.string.isRequired,
-    room: PropTypes.string
+    room: PropTypes.string,
+    expectedEnrollment: PropTypes.number,
+    requiresLab: PropTypes.bool,
+    requiredEquipment: PropTypes.arrayOf(PropTypes.string)
   }).isRequired,
   index: PropTypes.number.isRequired
 };
