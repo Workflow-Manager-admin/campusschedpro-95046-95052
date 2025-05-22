@@ -9,9 +9,7 @@ const RoomAllocation = () => {
     rooms, 
     allocations, 
     assignRoom,
-    notification,
-    showNotification,
-    handleCloseNotification
+    showNotification
   } = useSchedule();
 
   const [buildingFilter, setBuildingFilter] = useState('all');
