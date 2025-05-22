@@ -90,21 +90,21 @@ const StudentScheduleView = () => {
       <div className="course-filter-panel no-print">
         <div className="filter-header">
           <h3>My Courses</h3>
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 150, mb: 2 }}>
-            <InputLabel id="year-filter-label">Filter by Year</InputLabel>
-            <Select
-              labelId="year-filter-label"
-              id="year-filter"
+          <div className="year-filter-container">
+            <label htmlFor="year-filter-select">Filter by Year:</label>
+            <select
+              id="year-filter-select"
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              label="Filter by Year"
+              className="year-filter-select"
             >
-              <MenuItem value="All Years">All Years</MenuItem>
-              {ACADEMIC_YEARS.map(year => (
-                <MenuItem key={year} value={year}>{year}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <option value="All Years">All Years</option>
+              <option value="First Year">First Year</option>
+              <option value="Second Year">Second Year</option>
+              <option value="Third Year">Third Year</option>
+              <option value="Fourth Year">Fourth Year</option>
+            </select>
+          </div>
         </div>
         <FormGroup>
           {filteredEnrolledCourses.map(course => (
