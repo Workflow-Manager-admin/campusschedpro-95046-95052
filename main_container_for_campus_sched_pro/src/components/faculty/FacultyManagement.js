@@ -104,7 +104,7 @@ const FacultyManagement = () => {
       <div className="faculty-header">
         <h2>Faculty Management</h2>
         <button className="btn" onClick={() => setShowAddDialog(true)}>
-          <AddIcon /> Add Faculty
+          + Add Faculty
         </button>
       </div>
 
@@ -154,55 +154,62 @@ const FacultyManagement = () => {
         )}
       </div>
 
-      <Dialog 
-        open={showAddDialog} 
-        onClose={() => setShowAddDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <div className="dialog-content" style={{ padding: '24px' }}>
-          <h2>Add New Faculty</h2>
-          <TextField
-            fullWidth
-            label="Name"
-            value={newFaculty.name}
-            onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Department"
-            value={newFaculty.department}
-            onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={newFaculty.email}
-            onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Expertise (comma-separated)"
-            value={newFaculty.expertise}
-            onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
-            margin="normal"
-          />
-          <div className="dialog-actions">
-            <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
-            <button 
-              className="btn btn-accent" 
-              onClick={handleAddFaculty}
-              disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
-            >
-              Add Faculty
-            </button>
+      {showAddDialog && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="dialog-content" style={{ padding: '24px' }}>
+              <h2>Add New Faculty</h2>
+              
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  value={newFaculty.name}
+                  onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Department</label>
+                <input
+                  type="text"
+                  value={newFaculty.department}
+                  onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={newFaculty.email}
+                  onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Expertise (comma-separated)</label>
+                <input
+                  type="text"
+                  value={newFaculty.expertise}
+                  onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
+                />
+              </div>
+              
+              <div className="dialog-actions">
+                <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
+                <button 
+                  className="btn btn-accent" 
+                  onClick={handleAddFaculty}
+                  disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
+                >
+                  Add Faculty
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </Dialog>
+      )}
     </div>
   );
 };
