@@ -387,6 +387,12 @@ const RoomAllocation = () => {
   );
 };
 
-RoomAllocation.propTypes = {};
+/**
+ * Room allocation component for managing course room assignments
+ * PUBLIC_INTERFACE
+ */
+RoomAllocation.propTypes = {
+  // Component does not accept any props
+};
 
 export default RoomAllocation;
