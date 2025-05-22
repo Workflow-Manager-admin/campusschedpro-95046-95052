@@ -239,7 +239,10 @@ const RoomAllocation = () => {
                           <button 
                             className="btn-icon"
                             title="Unassign Room"
-                            onClick={() => assignRoom(course.id, null)}
+                            onClick={() => {
+                              assignRoom(course.id, null);
+                              showNotification(`Unassigned ${course.code} from room`, 'info');
+                            }}
                           >
                             ✕
                           </button>

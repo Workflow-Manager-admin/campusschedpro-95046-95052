@@ -135,13 +135,14 @@ export const ScheduleProvider = ({ children }) => {
   // Function to assign a room to a course
   const assignRoom = useCallback((courseId, roomId) => {
     const course = courses.find(c => c.id === courseId);
-    const room = rooms.find(r => r.id === roomId);
+    const room = roomId ? rooms.find(r => r.id === roomId) : null;
     
-    if (!course || !room) return false;
+    if (!course) return false;
+    if (roomId && !room) return false;
 
-    // Update course with room assignment
+    // Update course with room assignment (or remove assignment if roomId is null)
     const updatedCourses = courses.map(c => 
-      c.id === courseId ? { ...c, room: room.name } : c
+      c.id === courseId ? { ...c, room: room?.name || null } : c
     );
     setCourses(updatedCourses);
 
@@ -149,17 +150,46 @@ export const ScheduleProvider = ({ children }) => {
     const updatedSchedule = { ...schedule };
     Object.keys(updatedSchedule).forEach(slotId => {
       updatedSchedule[slotId] = updatedSchedule[slotId].map(c => 
-        c.id === courseId ? { ...c, room: room.name } : c
+        c.id === courseId ? { ...c, room: room?.name || null } : c
       );
     });
     setSchedule(updatedSchedule);
+
+    // Update allocations immediately
+    const updatedAllocations = [...allocations];
+    
+    // Remove course from any existing room allocation
+    updatedAllocations.forEach(allocation => {
+      allocation.courses = allocation.courses.filter(c => c.id !== courseId);
+    });
+
+    // Add course to new room allocation if room is assigned
+    if (room) {
+      const roomAllocation = updatedAllocations.find(a => a.roomId === roomId);
+      if (roomAllocation) {
+        const courseSchedule = Object.entries(updatedSchedule)
+          .filter(([_, courses]) => courses.some(c => c.id === courseId))
+          .map(([slotId]) => slotId);
+
+        roomAllocation.courses.push({
+          ...course,
+          room: room.name,
+          schedule: courseSchedule
+        });
+      }
+    }
+
+    setAllocations(updatedAllocations);
 
     // Check for conflicts after assignment
     const newConflicts = findScheduleConflicts(updatedSchedule);
     if (newConflicts.length > 0) {
       showNotification(`Warning: Found ${newConflicts.length} scheduling conflicts after room assignment`, 'warning');
     } else {
-      showNotification(`Successfully assigned ${course.code} to ${room.name}`, 'success');
+      const message = room 
+        ? `Successfully assigned ${course.code} to ${room.name}`
+        : `Successfully removed room assignment from ${course.code}`;
+      showNotification(message, 'success');
     }
 
     return true;
