@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { findScheduleConflicts } from '../utils/scheduleUtils';
@@ -144,7 +145,12 @@ const STORAGE_KEYS = {
   ALLOCATIONS: 'campusSchedPro_allocations'
 };
 
-// Utility functions for localStorage operations
+/**
+ * Load data from localStorage with fallback value
+ * @param {string} key - Storage key
+ * @param {*} fallback - Default value if storage is empty
+ * @returns {*} Parsed data or fallback value
+ */
 const loadFromStorage = (key, fallback) => {
   try {
     const stored = localStorage.getItem(key);
@@ -155,6 +161,11 @@ const loadFromStorage = (key, fallback) => {
   }
 };
 
+/**
+ * Save data to localStorage
+ * @param {string} key - Storage key
+ * @param {*} data - Data to store
+ */
 const saveToStorage = (key, data) => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
@@ -228,20 +239,20 @@ export const ScheduleProvider = ({ children }) => {
   }, [schedule]);
 
   // Function to show notifications across components
-  const showNotification = (message, severity = 'info') => {
+  const showNotification = useCallback((message, severity = 'info') => {
     setNotification({
       open: true,
       message,
       severity
     });
-  };
+  }, []);
 
-  const handleCloseNotification = () => {
+  const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, open: false }));
-  };
+  }, []);
 
   // Function to assign a room to a course
-  const assignRoom = (courseId, roomId) => {
+  const assignRoom = useCallback((courseId, roomId) => {
     const course = courses.find(c => c.id === courseId);
     const room = rooms.find(r => r.id === roomId);
     
@@ -271,10 +282,10 @@ export const ScheduleProvider = ({ children }) => {
     }
 
     return true;
-  };
+  }, [courses, rooms, schedule, showNotification]);
 
   // Function to resolve a conflict by moving a course to a different slot
-  const resolveConflict = (conflictId, courseIdToMove, newSlotId) => {
+  const resolveConflict = useCallback((conflictId, courseIdToMove, newSlotId) => {
     const conflict = conflicts.find(c => c.id === conflictId);
     if (!conflict) return false;
 
@@ -298,7 +309,7 @@ export const ScheduleProvider = ({ children }) => {
     showNotification(`Moved ${courseToMove.code} to resolve conflict`, 'success');
 
     return true;
-  };
+  }, [conflicts, courses, schedule, showNotification]);
 
   // Function to update room allocations when schedule changes
   const updateAllocations = useCallback(() => {
@@ -338,7 +349,7 @@ export const ScheduleProvider = ({ children }) => {
     });
 
     setAllocations(newAllocations);
-  }, [schedule, allocations, setAllocations]);
+  }, [schedule, allocations]);
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
@@ -353,7 +364,7 @@ export const ScheduleProvider = ({ children }) => {
     setRooms(INITIAL_ROOMS);
     setAllocations(INITIAL_ALLOCATIONS);
     showNotification('All stored data has been cleared', 'info');
-  }, []);
+  }, [showNotification]);
 
   // Context value to be provided
   const contextValue = {
