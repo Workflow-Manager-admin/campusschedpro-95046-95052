@@ -19,7 +19,14 @@ export default [
     },
     rules: {
 
-     'no-unused-vars': ['error', { varsIgnorePattern: 'React|App' }]
+     'no-unused-vars': ['warn', { 
+       varsIgnorePattern: 'React|App',
+       args: 'none',
+       ignoreRestSiblings: true,
+       argsIgnorePattern: '^_'
+     }],
+     'react/jsx-uses-vars': 'error',
+     'react/jsx-uses-react': 'off'
 
     }
   },
