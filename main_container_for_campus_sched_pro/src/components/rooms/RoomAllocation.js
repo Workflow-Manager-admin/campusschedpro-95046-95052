@@ -7,10 +7,16 @@ const RoomAllocation = () => {
   const { 
     courses, 
     rooms, 
-    allocations, 
+    allocations,
     assignRoom,
-    showNotification
+    showNotification,
+    updateAllocations
   } = useSchedule();
+
+  // Ensure allocations are up to date when component mounts
+  useEffect(() => {
+    updateAllocations();
+  }, [updateAllocations]);
 
   const [buildingFilter, setBuildingFilter] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -239,9 +245,13 @@ const RoomAllocation = () => {
                           <button 
                             className="btn-icon"
                             title="Unassign Room"
-                            onClick={() => {
-                              assignRoom(course.id, null);
-                              showNotification(`Unassigned ${course.code} from room`, 'info');
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event bubbling
+                              const success = assignRoom(course.id, null);
+                              if (success) {
+                                showNotification(`Unassigned ${course.code} from room`, 'info');
+                                updateAllocations(); // Ensure allocations are updated
+                              }
                             }}
                           >
                             ✕
