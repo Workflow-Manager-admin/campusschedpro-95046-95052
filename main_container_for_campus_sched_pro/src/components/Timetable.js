@@ -8,8 +8,8 @@ const TIME_SLOTS = [
   '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
 ];
 
-// Destructure props but mark unused ones with underscore to avoid lint warnings
-const Timetable = ({ _courses, schedule, _onCourseMove }) => {
+// Only destructure the props we actually use
+const Timetable = ({ schedule }) => {
   return (
     <div className="timetable">
       <div className="timetable-header">
