@@ -172,11 +172,17 @@ const CourseScheduling = () => {
     };
     
     try {
-      await addCourse(courseToAdd);
+      const courseId = await addCourse(courseToAdd);
+      
+      if (!courseId) {
+        throw new Error('Failed to create course - no ID returned');
+      }
+      
       handleCloseAddDialog();
+      showNotification('Course added successfully', 'success');
     } catch (error) {
       console.error('Error adding course:', error);
-      showNotification('Failed to add course to the database', 'error');
+      showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
