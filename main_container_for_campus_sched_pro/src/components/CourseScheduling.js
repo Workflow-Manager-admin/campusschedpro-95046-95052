@@ -247,9 +247,10 @@ const CourseScheduling = () => {
             </div>
           </div>
           
-          <ReduxDragDropContext onDragEnd={handleDragEnd}>
-            <div className="scheduling-container">
-              <div className="courses-panel">
+          <>
+            <ReduxDragDropContext onDragEnd={handleDragEnd}>
+              <div className="scheduling-container">
+                <div className="courses-panel">
                 <div className="panel-header">
                   <h3>Available Courses</h3>
                   <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
@@ -307,10 +308,10 @@ const CourseScheduling = () => {
                   timetableRef={timetableRef}
                 />
               </div>
-            </div>
-          </ReduxDragDropContext>
+              </div>
+            </ReduxDragDropContext>
 
-          <Snackbar
+            <Snackbar
             open={notification.open}
             autoHideDuration={6000}
             onClose={handleCloseNotification}
