@@ -89,57 +89,94 @@ export const ScheduleProvider = ({ children }) => {
     
     try {
       // Load courses
-      const coursesData = await getAllCourses();
-      setCourses(coursesData);
+      try {
+        const coursesData = await getAllCourses();
+        setCourses(coursesData);
+      } catch (courseError) {
+        console.error('Error loading courses:', courseError);
+        setErrors(prev => ({
+          ...prev,
+          courses: courseError.message || 'Failed to load courses'
+        }));
+        // Don't throw, continue loading other data
+      }
       
       // Load rooms
-      const roomsData = await getAllRooms();
-      setRooms(roomsData);
+      try {
+        const roomsData = await getAllRooms();
+        setRooms(roomsData);
+        
+        // Create room allocations from room data even if schedule fails
+        const newAllocations = roomsData.map(room => ({
+          roomId: room.id,
+          roomName: room.name,
+          building: room.building,
+          courses: []
+        }));
+        setAllocations(newAllocations);
+      } catch (roomError) {
+        console.error('Error loading rooms:', roomError);
+        setErrors(prev => ({
+          ...prev,
+          rooms: roomError.message || 'Failed to load rooms'
+        }));
+        // Don't throw, continue loading other data
+      }
       
       // Load schedule
-      const scheduleData = await getSchedule();
-      setSchedule(scheduleData);
-      
-      // Create room allocations from schedule
-      const newAllocations = roomsData.map(room => ({
-        roomId: room.id,
-        roomName: room.name,
-        building: room.building,
-        courses: []
-      }));
-      
-      // Populate allocations with courses from the schedule
-      Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
-        coursesInSlot.forEach(course => {
-          if (course.room) {
-            const roomAllocation = newAllocations.find(a => a.roomName === course.room);
-            
-            if (roomAllocation) {
-              const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
-              
-              if (existingCourse) {
-                // Add this slot to existing course schedule
-                if (!existingCourse.schedule.includes(slotId)) {
-                  existingCourse.schedule.push(slotId);
+      try {
+        const scheduleData = await getSchedule();
+        setSchedule(scheduleData);
+        
+        // Only update allocations if we have room data and schedule data
+        if (rooms.length > 0 && Object.keys(scheduleData).length > 0) {
+          const newAllocations = rooms.map(room => ({
+            roomId: room.id,
+            roomName: room.name,
+            building: room.building,
+            courses: []
+          }));
+          
+          // Populate allocations with courses from the schedule
+          Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
+            coursesInSlot.forEach(course => {
+              if (course.room) {
+                const roomAllocation = newAllocations.find(a => a.roomName === course.room);
+                
+                if (roomAllocation) {
+                  const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
+                  
+                  if (existingCourse) {
+                    // Add this slot to existing course schedule
+                    if (!existingCourse.schedule.includes(slotId)) {
+                      existingCourse.schedule.push(slotId);
+                    }
+                  } else {
+                    // Add new course to room allocation
+                    roomAllocation.courses.push({
+                      ...course,
+                      schedule: [slotId]
+                    });
+                  }
                 }
-              } else {
-                // Add new course to room allocation
-                roomAllocation.courses.push({
-                  ...course,
-                  schedule: [slotId]
-                });
               }
-            }
-          }
-        });
-      });
-      
-      setAllocations(newAllocations);
-      
+            });
+          });
+          
+          setAllocations(newAllocations);
+        }
+      } catch (scheduleError) {
+        console.error('Error loading schedule:', scheduleError);
+        setErrors(prev => ({
+          ...prev,
+          schedule: scheduleError.message || 'Failed to load schedule'
+        }));
+        // Don't throw, we've already loaded other data
+      }
     } catch (error) {
       console.error('Error loading data from Supabase:', error);
       
-      // Set specific error states based on what failed
+      // Set general error state if we have a truly global error
       setErrors(prev => ({
         ...prev,
         general: error.message || 'Failed to load data from the database'
@@ -156,7 +193,7 @@ export const ScheduleProvider = ({ children }) => {
       setIsLoading(false);
       setDataInitialized(true);
     }
-  }, []); // Remove dependencies that cause re-fetching loops
+  }, [courses.length, rooms, schedule]); // Add dependencies to properly track state
   
   // Load initial data on mount
   useEffect(() => {
