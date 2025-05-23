@@ -501,18 +501,18 @@ export const ScheduleProvider = ({ children }) => {
       const roomId = await saveRoom(updatedRoom);
       
       if (!roomId) {
-        throw new Error('Failed to update room');
+        throw new Error('Failed to update room - database did not return an ID');
       }
       
       // Refresh data
-      await loadInitialData();
+      await loadInitialData(true); // Force reload to ensure we get the latest data
       
       showNotification(`Room ${updatedRoom.name} updated successfully`, 'success');
       return roomId;
     } catch (error) {
       console.error('Error updating room:', error);
       showNotification(`Failed to update room: ${error.message}`, 'error');
-      return null;
+      throw error; // Re-throw to allow components to handle specific errors
     }
   }, [showNotification, loadInitialData]);
 
