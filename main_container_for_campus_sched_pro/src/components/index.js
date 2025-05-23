@@ -13,6 +13,5 @@ export {
   FacultyDetails,
   RoomManagement,
   RoomAllocation,
-  StudentScheduleView,
   ConflictResolution
 };
