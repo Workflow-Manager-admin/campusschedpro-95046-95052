@@ -34,7 +34,7 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
         <>
           {courses.map((course, index) => (
             <Tooltip
-              key={course.id}
+              key={`${course.id}-${index}`}
               title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
               placement="top"
               arrow
