@@ -191,14 +191,16 @@ const FacultyManagement = () => {
               </div>
 
               <div className="faculty-grid">
-                {filteredFaculty.map(f => (
-                  <FacultyCard
-                    key={f.id}
-                    faculty={f}
-                    selected={selectedFaculty?.id === f.id}
-                    onClick={() => handleSelectFaculty(f)}
-                  />
-                ))}
+                <div className="faculty-cards-container">
+                  {filteredFaculty.map(f => (
+                    <FacultyCard
+                      key={f.id}
+                      faculty={f}
+                      selected={selectedFaculty?.id === f.id}
+                      onClick={() => handleSelectFaculty(f)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
