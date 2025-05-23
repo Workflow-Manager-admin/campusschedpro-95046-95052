@@ -75,6 +75,7 @@ export const ScheduleProvider = ({ children }) => {
   // Function to load initial data from Supabase
   const loadInitialData = useCallback(async () => {
     // Skip if we're already initialized (except for forced refreshes)
+    // This prevents excessive API calls to course_schedule_view endpoint
     if (dataInitialized && isLoading === false) return;
     
     setIsLoading(true);
