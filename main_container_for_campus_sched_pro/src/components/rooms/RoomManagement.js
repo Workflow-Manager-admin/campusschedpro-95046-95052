@@ -138,7 +138,11 @@ const RoomManagement = () => {
 
     try {
       // Use the addRoom function from context which handles Supabase integration
-      await addRoom(newRoom);
+      const roomId = await addRoom(newRoom);
+      
+      if (!roomId) {
+        throw new Error('Failed to create room - no ID returned');
+      }
       
       setShowAddModal(false);
       
@@ -151,9 +155,11 @@ const RoomManagement = () => {
         building: BUILDINGS[0],
         floor: '1st Floor'
       });
+      
+      contextShowNotification('Room added successfully', 'success');
     } catch (error) {
       console.error('Error adding room:', error);
-      contextShowNotification('Failed to add room to the database', 'error');
+      contextShowNotification(`Failed to add room: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
