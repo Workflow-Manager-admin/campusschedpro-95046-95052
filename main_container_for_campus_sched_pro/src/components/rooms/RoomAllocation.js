@@ -31,10 +31,11 @@ const RoomAllocation = () => {
   // Only update allocations once when component mounts
   useEffect(() => {
     if (!dataInitialized) {
+      // Fetch data only once on initial mount
       updateAllocations();
       setDataInitialized(true);
     }
-  }, [updateAllocations, dataInitialized]);
+  }, [dataInitialized]); // Remove updateAllocations from dependencies
 
   const [buildingFilter, setBuildingFilter] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState(null);
