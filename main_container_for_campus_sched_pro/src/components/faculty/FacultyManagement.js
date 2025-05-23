@@ -10,7 +10,6 @@ import FacultyCard from './FacultyCard';
 import FacultyDetails from './FacultyDetails';
 
 const FacultyManagement = () => {
-  // Get context functions for notifications
   const { showNotification } = useSchedule();
   
   const [faculty, setFaculty] = useState([]);
@@ -26,14 +25,11 @@ const FacultyManagement = () => {
     expertise: ''
   });
   
-  // Load faculty data from Supabase
   const loadFacultyData = useCallback(async () => {
     setLoading(true);
     try {
-      // Get all faculty members
       const facultyData = await getAllFaculty();
       
-      // Get assignments for each faculty member
       const facultyWithAssignments = await Promise.all(
         facultyData.map(async (fac) => {
           const assignments = await getFacultyAssignments(fac.id);
@@ -42,7 +38,6 @@ const FacultyManagement = () => {
             assignments
           };
           
-          // Calculate faculty status based on assignments
           return {
             ...facultyWithStatus,
             ...getFacultyStatus(facultyWithStatus, assignments)
@@ -59,7 +54,6 @@ const FacultyManagement = () => {
     }
   }, [showNotification]);
   
-  // Load data on component mount
   useEffect(() => {
     loadFacultyData();
   }, [loadFacultyData]);
@@ -85,12 +79,10 @@ const FacultyManagement = () => {
 
   const handleAddFaculty = async () => {
     try {
-      // Format expertise as an array
       const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim());
       
-      // Create faculty object for Supabase
       const newFacultyMember = {
-        id: null, // null id for new faculty
+        id: null,
         name: newFaculty.name,
         department: newFaculty.department,
         email: newFaculty.email,
@@ -98,13 +90,9 @@ const FacultyManagement = () => {
         status: 'Available'
       };
       
-      // Save to Supabase
       await saveFaculty(newFacultyMember);
-      
-      // Refresh faculty data
       await loadFacultyData();
       
-      // Reset UI
       setShowAddDialog(false);
       setNewFaculty({ name: '', department: '', email: '', expertise: '' });
       showNotification('Faculty member added successfully', 'success');
@@ -116,13 +104,8 @@ const FacultyManagement = () => {
 
   const handleUpdateFaculty = async (updatedFaculty) => {
     try {
-      // Save to Supabase
       await saveFaculty(updatedFaculty);
-      
-      // Refresh faculty data
       await loadFacultyData();
-      
-      // Update selected faculty
       setSelectedFaculty(updatedFaculty);
       showNotification('Faculty member updated successfully', 'success');
     } catch (error) {
@@ -133,13 +116,8 @@ const FacultyManagement = () => {
 
   const handleDeleteFaculty = async (facultyId) => {
     try {
-      // Delete from Supabase
       await deleteFaculty(facultyId);
-      
-      // Refresh faculty data
       await loadFacultyData();
-      
-      // Update UI
       setSelectedFaculty(null);
       showNotification('Faculty member deleted successfully', 'success');
     } catch (error) {
@@ -148,130 +126,132 @@ const FacultyManagement = () => {
     }
   };
 
-  return (
-    <div className="faculty-management">
-      {loading && (
+  if (loading) {
+    return (
+      <div className="faculty-management">
         <div className="loading-container">
           <CircularProgress size={40} />
           <p>Loading faculty data...</p>
         </div>
-      )}
-      
-      {!loading && (
-        <div className="faculty-content-container">
-          <div className="faculty-header">
-            <h2>Faculty Management</h2>
-            <button className="btn" onClick={() => setShowAddDialog(true)}>
-              + Add Faculty
-            </button>
-          </div>
+      </div>
+    );
+  }
 
-          <div className="faculty-container">
-            <div className="faculty-list">
-              <div className="search-bar">
-                <input
-                  type="text"
-                  placeholder="Search faculty..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="search-input"
-                />
-              </div>
+  return (
+    <div className="faculty-management">
+      <div className="faculty-content-container">
+        <div className="faculty-header">
+          <h2>Faculty Management</h2>
+          <button className="btn" onClick={() => setShowAddDialog(true)}>
+            + Add Faculty
+          </button>
+        </div>
 
-              <div className="faculty-filters">
-                {['all', 'available', 'partially booked', 'fully booked'].map(status => (
-                  <div
-                    key={status}
-                    className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
-                    onClick={() => handleStatusFilter(status)}
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </div>
+        <div className="faculty-container">
+          <div className="faculty-list">
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Search faculty..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="search-input"
+              />
+            </div>
+
+            <div className="faculty-filters">
+              {['all', 'available', 'partially booked', 'fully booked'].map(status => (
+                <div
+                  key={status}
+                  className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
+                  onClick={() => handleStatusFilter(status)}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </div>
+              ))}
+            </div>
+
+            <div className="faculty-grid">
+              <div className="faculty-cards-container">
+                {filteredFaculty.map(f => (
+                  <FacultyCard
+                    key={f.id}
+                    faculty={f}
+                    selected={selectedFaculty?.id === f.id}
+                    onClick={() => handleSelectFaculty(f)}
+                  />
                 ))}
               </div>
-
-              <div className="faculty-grid">
-                <div className="faculty-cards-container">
-                  {filteredFaculty.map(f => (
-                    <FacultyCard
-                      key={f.id}
-                      faculty={f}
-                      selected={selectedFaculty?.id === f.id}
-                      onClick={() => handleSelectFaculty(f)}
-                    />
-                  ))}
-                </div>
-              </div>
             </div>
-
-            {selectedFaculty && (
-              <FacultyDetails
-                faculty={selectedFaculty}
-                onSave={handleUpdateFaculty}
-                onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
-                onClose={() => setSelectedFaculty(null)}
-              />
-            )}
           </div>
 
-          {showAddDialog && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <div className="dialog-content" style={{ padding: '24px' }}>
-                  <h2>Add New Faculty</h2>
-                  
-                  <div className="form-group">
-                    <label>Name</label>
-                    <input
-                      type="text"
-                      value={newFaculty.name}
-                      onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Department</label>
-                    <input
-                      type="text"
-                      value={newFaculty.department}
-                      onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      value={newFaculty.email}
-                      onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Expertise (comma-separated)</label>
-                    <input
-                      type="text"
-                      value={newFaculty.expertise}
-                      onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="dialog-actions">
-                    <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
-                    <button 
-                      className="btn btn-accent" 
-                      onClick={handleAddFaculty}
-                      disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
-                    >
-                      Add Faculty
-                    </button>
-                  </div>
+          {selectedFaculty && (
+            <FacultyDetails
+              faculty={selectedFaculty}
+              onSave={handleUpdateFaculty}
+              onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
+              onClose={() => setSelectedFaculty(null)}
+            />
+          )}
+        </div>
+
+        {showAddDialog && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="dialog-content" style={{ padding: '24px' }}>
+                <h2>Add New Faculty</h2>
+                
+                <div className="form-group">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    value={newFaculty.name}
+                    onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Department</label>
+                  <input
+                    type="text"
+                    value={newFaculty.department}
+                    onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={newFaculty.email}
+                    onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Expertise (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={newFaculty.expertise}
+                    onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="dialog-actions">
+                  <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
+                  <button 
+                    className="btn btn-accent" 
+                    onClick={handleAddFaculty}
+                    disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
+                  >
+                    Add Faculty
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
