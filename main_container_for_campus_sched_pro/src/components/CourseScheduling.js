@@ -210,6 +210,14 @@ const CourseScheduling = () => {
 
   return (
     <div className="course-scheduling">
+      {isLoading && (
+        <div className="loading-container">
+          <CircularProgress size={40} />
+          <p>Loading course data...</p>
+        </div>
+      )}
+      
+      {!isLoading && (
       <div className="scheduling-header">
         <div className="header-title-section">
           <h2>Course Scheduling</h2>
