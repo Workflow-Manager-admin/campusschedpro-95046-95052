@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Tester - CampusSchedPro</title>
+    <style>
+        :root {
+            --primary-color: #E87A41;
+            --secondary-color: #1A1A1A;
+            --success-color: #4CAF50;
+            --error-color: #F44336;
+            --warning-color: #FF9800;
+            --info-color: #2196F3;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .logo {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #d06535;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+            display: block;
+        }
+        
+        .status-error {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            display: block;
+        }
+        
+        .status-loading {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--info-color);
+            border: 1px solid var(--info-color);
+            display: block;
+        }
+        
+        .test-group {
+            margin-bottom: 20px;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-error {
+            background-color: var(--error-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span class="logo">CampusSchedPro</span> Supabase Connection Tester</h1>
+    </header>
+    
+    <div class="container">
+        <h2>Configuration</h2>
+        <p>Enter your Supabase project credentials to test the connection:</p>
+        
+        <div class="form-group">
+            <label for="supabase-url">Supabase URL:</label>
+            <input type="text" id="supabase-url" placeholder="https://your-project-id.supabase.co">
+        </div>
+        
+        <div class="form-group">
+            <label for="supabase-key">Supabase Anon Key:</label>
+            <input type="text" id="supabase-key" placeholder="your-anon-key">
+        </div>
+        
+        <button id="test-connection-btn">Test Connection</button>
+        
+        <div id="connection-status" class="status">
+            Testing connection...
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Database Tests</h2>
+        
+        <div class="test-group">
+            <h3>Schema Verification</h3>
+            <p>Verify that your database has the correct schema for CampusSchedPro:</p>
+            <button id="verify-schema-btn" disabled>Verify Schema</button>
+            <div id="schema-status" class="status">
+                Waiting for connection...
+            </div>
+            <div id="schema-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-group">
+            <h3>Default Data Check</h3>
+            <p>Check if your database has been populated with the default data:</p>
+            <button id="check-data-btn" disabled>Check Default Data</button>
+            <div id="data-status" class="status">
+                Waiting for connection...
+            </div>
+            <div id="data-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-group">
+            <h3>Performance Test</h3>
+            <p>Test the database query performance:</p>
+            <button id="perf-test-btn" disabled>Run Performance Test</button>
+            <div id="perf-status" class="status">
+                Waiting for connection...
+            </div>
+            <div id="perf-result" class="test-result"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Next Steps</h2>
+        <p>Once your connection is verified, follow these steps to complete the integration:</p>
+        <ol>
+            <li>Create a <code>.env</code> file with your Supabase credentials</li>
+            <li>Set <code>REACT_APP_USE_SUPABASE=true</code> in your <code>.env</code> file</li>
+            <li>If upgrading from localStorage, use the migration utility</li>
+            <li>Test the application thoroughly before deploying to production</li>
+        </ol>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // DOM elements
+        const supabaseUrlInput = document.getElementById('supabase-url');
+        const supabaseKeyInput = document.getElementById('supabase-key');
+        const testConnectionBtn = document.getElementById('test-connection-btn');
+        const connectionStatus = document.getElementById('connection-status');
+        const verifySchemaBtn = document.getElementById('verify-schema-btn');
+        const schemaStatus = document.getElementById('schema-status');
+        const schemaResult = document.getElementById('schema-result');
+        const checkDataBtn = document.getElementById('check-data-btn');
+        const dataStatus = document.getElementById('data-status');
+        const dataResult = document.getElementById('data-result');
+        const perfTestBtn = document.getElementById('perf-test-btn');
+        const perfStatus = document.getElementById('perf-status');
+        const perfResult = document.getElementById('perf-result');
+        
+        // Supabase client
+        let supabase = null;
+        
+        // Test connection
+        testConnectionBtn.addEventListener('click', async () => {
+            const url = supabaseUrlInput.value.trim();
+            const key = supabaseKeyInput.value.trim();
+            
+            if (!url || !key) {
+                connectionStatus.textContent = 'Please enter both Supabase URL and key.';
+                connectionStatus.className = 'status status-error';
+                return;
+            }
+            
+            connectionStatus.textContent = 'Testing connection...';
+            connectionStatus.className = 'status status-loading';
+            
+            try {
+                // Create Supabase client
+                supabase = supabase.createClient(url, key);
+                
+                // Test a simple query
+                const { data, error } = await supabase
+                    .from('departments')
+                    .select('count()')
+                    .limit(1)
+                    .single();
+                    
+                if (error) throw error;
+                
+                connectionStatus.innerHTML = '<span class="spinner"></span> Connection successful! Testing permissions...';
+                
+                // Test write permission with a temporary insert and delete
+                const testId = 'test-' + Date.now();
+                
+                const { error: insertError } = await supabase
+                    .from('departments')
+                    .insert({ id: testId, name: 'Test Department' });
+                    
+                if (insertError) {
+                    connectionStatus.innerHTML = 'Connection successful, but write permissions are limited. ' +
+                        'You may need to set up row-level security policies.';
+                    connectionStatus.className = 'status status-warning';
+                } else {
+                    // Clean up test data
+                    await supabase
+                        .from('departments')
+                        .delete()
+                        .eq('id', testId);
+                        
+                    connectionStatus.innerHTML = 'Connection successful! Full read/write access confirmed. <span class="badge badge-success">OK</span>';
+                    connectionStatus.className = 'status status-success';
+                    
+                    // Enable other test buttons
+                    verifySchemaBtn.disabled = false;
+                    checkDataBtn.disabled = false;
+                    perfTestBtn.disabled = false;
+                    
+                    // Update other statuses
+                    schemaStatus.textContent = 'Ready to verify';
+                    dataStatus.textContent = 'Ready to check';
+                    perfStatus.textContent = 'Ready to test';
+                }
+            } catch (error) {
+                connectionStatus.textContent = `Connection failed: ${error.message}`;
+                connectionStatus.className = 'status status-error';
+                console.error('Connection error:', error);
+            }
+        });
+        
+        // Verify schema
+        verifySchemaBtn.addEventListener('click', async () => {
+            schemaStatus.textContent = 'Verifying schema...';
+            schemaStatus.className = 'status status-loading';
+            schemaResult.textContent = '';
+            
+            try {
+                // Check for required tables
+                const requiredTables = [
+                    'departments', 'buildings', 'equipment_types', 'rooms',
+                    'room_equipment', 'faculty', 'faculty_expertise',
+                    'academic_years', 'courses', 'course_equipment',
+                    'time_slots', 'schedule', 'conflicts'
+                ];
+                
+                const { data, error } = await supabase
+                    .rpc('get_tables');
+                    
+                if (error) throw error;
+                
+                const tables = data || [];
+                
+                let missingTables = [];
+                for (const table of requiredTables) {
+                    if (!tables.includes(table)) {
+                        missingTables.push(table);
+                    }
+                }
+                
+                if (missingTables.length > 0) {
+                    schemaStatus.textContent = `Missing tables: ${missingTables.join(', ')}`;
+                    schemaStatus.className = 'status status-error';
+                    schemaResult.textContent = `The following tables are missing: 
+${missingTables.join('\n')}
+
+Please run the schema.sql script to create all required tables.`;
+                } else {
+                    schemaStatus.innerHTML = 'Schema verification successful! <span class="badge badge-success">OK</span>';
+                    schemaStatus.className = 'status status-success';
+                    
+                    // Check a few key columns
+                    let columnChecks = [];
+                    
+                    // Check courses table
+                    const { data: coursesCheck, error: coursesError } = await supabase
+                        .from('courses')
+                        .select('id, name, code, credits, department_id, academic_year_id')
+                        .limit(1);
+                        
+                    columnChecks.push({ table: 'courses', error: coursesError });
+                    
+                    // Check faculty table
+                    const { data: facultyCheck, error: facultyError } = await supabase
+                        .from('faculty')
+                        .select('id, name, department_id, email, status')
+                        .limit(1);
+                        
+                    columnChecks.push({ table: 'faculty', error: facultyError });
+                    
+                    // Check schedule table
+                    const { data: scheduleCheck, error: scheduleError } = await supabase
+                        .from('schedule')
+                        .select('id, course_id, faculty_id, room_id, time_slot_id')
+                        .limit(1);
+                        
+                    columnChecks.push({ table: 'schedule', error: scheduleError });
+                    
+                    // Report column check results
+                    const columnErrors = columnChecks.filter(check => check.error);
+                    
+                    if (columnErrors.length > 0) {
+                        schemaResult.textContent = `All tables exist, but some columns might be missing:\n\n${
+                            columnErrors.map(check => `${check.table}: ${check.error.message}`).join('\n')
+                        }\n\nPlease verify the schema matches the SQL script exactly.`;
+                    } else {
+                        schemaResult.textContent = `All tables and required columns verified successfully!`;
+                    }
+                }
+            } catch (error) {
+                schemaStatus.textContent = `Schema verification failed: ${error.message}`;
+                schemaStatus.className = 'status status-error';
+                console.error('Schema verification error:', error);
+            }
+        });
+        
+        // Check default data
+        checkDataBtn.addEventListener('click', async () => {
+            dataStatus.textContent = 'Checking default data...';
+            dataStatus.className = 'status status-loading';
+            dataResult.textContent = '';
+            
+            try {
+                // Check counts for main entities
+                const counts = {};
+                const queries = [
+                    { table: 'departments', expected: 5 },
+                    { table: 'buildings', expected: 5 },
+                    { table: 'equipment_types', expected: 11 },
+                    { table: 'rooms', expected: 12 },
+                    { table: 'faculty', expected: 15 },
+                    { table: 'academic_years', expected: 4 },
+                    { table: 'courses', expected: 18 },
+                    { table: 'time_slots', expected: 40 }
+                ];
+                
+                for (const query of queries) {
+                    const { data, error } = await supabase
+                        .from(query.table)
+                        .select('count');
+                        
+                    if (error) throw error;
+                    
+                    counts[query.table] = {
+                        count: data[0]?.count || 0,
+                        expected: query.expected,
+                        status: (data[0]?.count || 0) >= query.expected ? 'ok' : 'low'
+                    };
+                }
+                
+                // Generate results
+                let allGood = true;
+                let resultText = 'Default Data Check Results:\n\n';
+                
+                for (const [table, info] of Object.entries(counts)) {
+                    resultText += `${table}: ${info.count}/${info.expected} records ${info.status === 'ok' ? '✓' : '⚠'}\n`;
+                    if (info.status !== 'ok') allGood = false;
+                }
+                
+                if (allGood) {
+                    dataStatus.innerHTML = 'All default data verified! <span class="badge badge-success">OK</span>';
+                    dataStatus.className = 'status status-success';
+                } else {
+                    dataStatus.textContent = 'Some default data might be missing';
+                    dataStatus.className = 'status status-warning';
+                }
+                
+                dataResult.textContent = resultText;
+            } catch (error) {
+                dataStatus.textContent = `Data check failed: ${error.message}`;
+                dataStatus.className = 'status status-error';
+                console.error('Data check error:', error);
+            }
+        });
+        
+        // Performance test
+        perfTestBtn.addEventListener('click', async () => {
+            perfStatus.textContent = 'Running performance test...';
+            perfStatus.className = 'status status-loading';
+            perfResult.textContent = '';
+            
+            try {
+                const tests = [
+                    {
+                        name: 'Simple query (courses)',
+                        fn: async () => await supabase.from('courses').select('*')
+                    },
+                    {
+                        name: 'Complex join (course schedule view)',
+                        fn: async () => await supabase
+                            .from('schedule')
+                            .select(`
+                                courses:course_id (name, code),
+                                faculty:faculty_id (name),
+                                rooms:room_id (name),
+                                time_slots:time_slot_id (day, time)
+                            `)
+                            .limit(100)
+                    },
+                    {
+                        name: 'Filtered query (IT courses only)',
+                        fn: async () => await supabase
+                            .from('courses')
+                            .select('*')
+                            .eq('department_id', 
+                                supabase
+                                    .from('departments')
+                                    .select('id')
+                                    .eq('name', 'IT')
+                                    .single()
+                                    .then(res => res.data?.id)
+                            )
+                    }
+                ];
+                
+                let results = [];
+                let resultText = 'Performance Test Results:\n\n';
+                
+                for (const test of tests) {
+                    const start = performance.now();
+                    const { data, error } = await test.fn();
+                    const end = performance.now();
+                    const duration = end - start;
+                    
+                    results.push({
+                        name: test.name,
+                        duration,
+                        rows: data?.length || 0,
+                        error
+                    });
+                    
+                    resultText += `${test.name}: ${duration.toFixed(2)}ms\n`;
+                    resultText += `  Rows: ${data?.length || 0}\n`;
+                    resultText += `  Status: ${error ? 'Error: ' + error.message : 'Success'}\n\n`;
+                }
+                
+                const hasErrors = results.some(r => r.error);
+                
+                if (hasErrors) {
+                    perfStatus.textContent = 'Performance test completed with some errors';
+                    perfStatus.className = 'status status-warning';
+                } else {
+                    perfStatus.innerHTML = 'Performance test completed successfully! <span class="badge badge-success">OK</span>';
+                    perfStatus.className = 'status status-success';
+                }
+                
+                perfResult.textContent = resultText;
+            } catch (error) {
+                perfStatus.textContent = `Performance test failed: ${error.message}`;
+                perfStatus.className = 'status status-error';
+                console.error('Performance test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
