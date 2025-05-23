@@ -95,6 +95,7 @@ const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
           </div>
         ))}
       </div>
+      </div>
     </div>
   );
 };
