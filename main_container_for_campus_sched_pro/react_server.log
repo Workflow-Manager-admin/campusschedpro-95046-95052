@@ -205,3 +205,4 @@ SyntaxError: /home/kavia/workspace/code-generation/campusschedpro-95046-95052/ma
     at FlowParserMixin.tryParse (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3665:20)
 
 webpack compiled with 1 error
+Compiling...
