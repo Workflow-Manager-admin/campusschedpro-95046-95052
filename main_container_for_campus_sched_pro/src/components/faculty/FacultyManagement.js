@@ -150,6 +150,14 @@ const FacultyManagement = () => {
 
   return (
     <div className="faculty-management">
+      {loading && (
+        <div className="loading-container">
+          <CircularProgress size={40} />
+          <p>Loading faculty data...</p>
+        </div>
+      )}
+      
+      {!loading && (
       <div className="faculty-header">
         <h2>Faculty Management</h2>
         <button className="btn" onClick={() => setShowAddDialog(true)}>
