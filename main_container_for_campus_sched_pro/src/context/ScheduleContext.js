@@ -13,10 +13,11 @@ import {
   unscheduleCourse,
   parseTimeSlotId,
   getTimeSlotId,
-  getAllFaculty,
-  saveFaculty,
-  deleteFaculty,
-  getFacultyAssignments,
+  // Clean up unused imports
+  // getAllFaculty,
+  // saveFaculty,
+  // deleteFaculty,
+  // getFacultyAssignments,
   supabase
 } from '../utils/supabaseClient';
 
@@ -243,7 +244,8 @@ export const ScheduleProvider = ({ children }) => {
           continue;
         }
         
-        const courseEntry = schedule[slotId].find(c => c.id === courseId);
+        // We don't actually need this variable
+        // const courseEntry = schedule[slotId].find(c => c.id === courseId);
         
         await scheduleCourse(
           courseId, 
