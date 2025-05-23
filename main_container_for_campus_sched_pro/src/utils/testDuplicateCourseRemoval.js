@@ -5,6 +5,7 @@
  * and then tests if removal works correctly by index rather than by courseId
  */
 
+// Import schedule utilities
 import { findScheduleConflicts } from './scheduleUtils';
 
 /**
