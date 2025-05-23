@@ -73,10 +73,10 @@ export const ScheduleProvider = ({ children }) => {
   });
 
   // Function to load initial data from Supabase
-  const loadInitialData = useCallback(async () => {
-    // Skip if we're already initialized (except for forced refreshes)
+  const loadInitialData = useCallback(async (forceReload = false) => {
+    // Skip if we're already initialized and not forcing a reload
     // This prevents excessive API calls to course_schedule_view endpoint
-    if (dataInitialized && isLoading === false) return;
+    if (dataInitialized && !isLoading && !forceReload) return;
     
     setIsLoading(true);
     setErrors({
@@ -328,8 +328,48 @@ export const ScheduleProvider = ({ children }) => {
 
   // Function to update room allocations when schedule changes
   const updateAllocations = useCallback(async () => {
-    await loadInitialData();
-  }, []); // Only run once on mount since loadInitialData has no dependencies now
+    // Skip refresh if already initialized to prevent unnecessary API calls
+    if (dataInitialized && !isLoading) {
+      // Just rebuild allocations from current state
+      const newAllocations = rooms.map(room => ({
+        roomId: room.id,
+        roomName: room.name,
+        building: room.building,
+        courses: []
+      }));
+      
+      // Populate allocations with courses from the schedule
+      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        coursesInSlot.forEach(course => {
+          if (course.room) {
+            const roomAllocation = newAllocations.find(a => a.roomName === course.room);
+            
+            if (roomAllocation) {
+              const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
+              
+              if (existingCourse) {
+                // Add this slot to existing course schedule
+                if (!existingCourse.schedule.includes(slotId)) {
+                  existingCourse.schedule.push(slotId);
+                }
+              } else {
+                // Add new course to room allocation
+                roomAllocation.courses.push({
+                  ...course,
+                  schedule: [slotId]
+                });
+              }
+            }
+          }
+        });
+      });
+      
+      setAllocations(newAllocations);
+    } else {
+      // For initial load or forced refresh, use loadInitialData
+      await loadInitialData();
+    }
+  }, [dataInitialized, isLoading, rooms, schedule, setAllocations]);
 
   // Function to remove a course from a specific time slot
   const removeCourseFromSlot = useCallback(async (slotId, course, index) => {
