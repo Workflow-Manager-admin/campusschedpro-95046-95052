@@ -202,12 +202,7 @@
   position: relative;
 }
 
-.download-button-container {
-  position: absolute;
-  top: -50px;
-  right: 0;
-  z-index: 5;
-}
+/* Button is now in the header section */
 
 .schedule-export-overlay {
   position: fixed;
