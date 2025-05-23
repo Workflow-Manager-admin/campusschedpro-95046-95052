@@ -1,212 +1,29 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { findScheduleConflicts } from '../utils/scheduleUtils';
+import { 
+  getAllCourses, 
+  getAllRooms, 
+  getSchedule, 
+  saveCourse, 
+  saveRoom, 
+  deleteCourse, 
+  deleteRoom,
+  scheduleCourse,
+  unscheduleCourse,
+  parseTimeSlotId,
+  getTimeSlotId,
+  getAllFaculty,
+  saveFaculty,
+  deleteFaculty,
+  getFacultyAssignments,
+  supabase
+} from '../utils/supabaseClient';
 
-// Initial sample data
-const INITIAL_COURSES = [
-  {
-    id: 'course-1',
-    name: 'Introduction to Computer Science',
-    code: 'CS101',
-    credits: 3,
-    instructor: 'Dr. Sarah Johnson',
-    expectedEnrollment: 100,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Projector'],
-    department: 'Computer Science',
-    academicYear: 'First Year'
-  },
-  {
-    id: 'course-2',
-    name: 'Database Systems',
-    code: 'CS301',
-    credits: 4,
-    instructor: 'Prof. Michael Chen',
-    expectedEnrollment: 60,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Database Server'],
-    department: 'Computer Science',
-    academicYear: 'Third Year'
-  },
-  // IT courses for first year
-  {
-    id: 'course-3',
-    name: 'IT Fundamentals',
-    code: 'IT101',
-    credits: 3,
-    instructor: 'Prof. Emily Wilson',
-    expectedEnrollment: 80,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Projector'],
-    department: 'IT',
-    academicYear: 'First Year'
-  },
-  {
-    id: 'course-4',
-    name: 'Introduction to Programming',
-    code: 'IT102',
-    credits: 4,
-    instructor: 'Dr. David Miller',
-    expectedEnrollment: 75,
-    requiresLab: true,
-    requiredEquipment: ['Computers'],
-    department: 'IT',
-    academicYear: 'First Year'
-  },
-  // IT courses for second year
-  {
-    id: 'course-5',
-    name: 'Data Structures',
-    code: 'IT201',
-    credits: 4,
-    instructor: 'Dr. Jennifer Lee',
-    expectedEnrollment: 65,
-    requiresLab: true,
-    requiredEquipment: ['Computers'],
-    department: 'IT',
-    academicYear: 'Second Year'
-  },
-  {
-    id: 'course-6',
-    name: 'Computer Networks',
-    code: 'IT202',
-    credits: 3,
-    instructor: 'Prof. Robert Chen',
-    expectedEnrollment: 60,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Network Equipment'],
-    department: 'IT',
-    academicYear: 'Second Year'
-  },
-  // IT courses for third year
-  {
-    id: 'course-7',
-    name: 'Web Development',
-    code: 'IT301',
-    credits: 3,
-    instructor: 'Prof. Amanda Davis',
-    expectedEnrollment: 55,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Web Servers'],
-    department: 'IT',
-    academicYear: 'Third Year'
-  },
-  {
-    id: 'course-8',
-    name: 'Database Management',
-    code: 'IT302',
-    credits: 4,
-    instructor: 'Dr. Michael Robinson',
-    expectedEnrollment: 50,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Database Server'],
-    department: 'IT',
-    academicYear: 'Third Year'
-  },
-  // IT courses for fourth year
-  {
-    id: 'course-9',
-    name: 'Software Engineering',
-    code: 'IT401',
-    credits: 4,
-    instructor: 'Dr. Laura Morgan',
-    expectedEnrollment: 45,
-    requiresLab: true,
-    requiredEquipment: ['Computers', 'Software Tools'],
-    department: 'IT',
-    academicYear: 'Fourth Year'
-  },
-  {
-    id: 'course-10',
-    name: 'IT Project Management',
-    code: 'IT402',
-    credits: 3,
-    instructor: 'Prof. James Wilson',
-    expectedEnrollment: 40,
-    requiresLab: false,
-    requiredEquipment: ['Projector'],
-    department: 'IT',
-    academicYear: 'Fourth Year'
-  }
-];
-
-const INITIAL_ROOMS = [
-  {
-    id: 'room-1',
-    name: 'Lecture Hall A',
-    type: 'Lecture Hall',
-    capacity: 120,
-    building: 'Science Building',
-    equipment: ['Projector', 'Smart Board', 'Audio System']
-  },
-  {
-    id: 'room-2',
-    name: 'Computer Lab 101',
-    type: 'Computer Lab',
-    capacity: 60,
-    building: 'Engineering Building',
-    equipment: ['Computers', 'Projector', 'Database Server']
-  }
-];
-
-const INITIAL_ALLOCATIONS = [
-  {
-    roomId: 'room-1',
-    roomName: 'Lecture Hall A',
-    building: 'Science Building',
-    courses: []
-  },
-  {
-    roomId: 'room-2',
-    roomName: 'Computer Lab 101',
-    building: 'Engineering Building',
-    courses: []
-  }
-];
-
-// Storage configuration
-const STORAGE_CONFIG = {
-  keys: {
-    COURSES: 'campusSchedPro_courses',
-    SCHEDULE: 'campusSchedPro_schedule',
-    ROOMS: 'campusSchedPro_rooms',
-    ALLOCATIONS: 'campusSchedPro_allocations'
-  },
-  
-  load(key, fallback) {
-    if (typeof window === 'undefined') return fallback;
-    try {
-      const stored = window.localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : fallback;
-    } catch {
-      return fallback;
-    }
-  },
-  
-  save(key, data) {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(key, JSON.stringify(data));
-    } catch {
-      // Fail silently in production
-      if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to save to localStorage');
-      }
-    }
-  },
-  
-  clear() {
-    if (typeof window === 'undefined') return;
-    try {
-      Object.values(this.keys).forEach(key => 
-        window.localStorage.removeItem(key)
-      );
-    } catch {
-      // Fail silently
-    }
-  }
-};
+// Initial sample data for fallback if database connection fails
+const INITIAL_COURSES = [];
+const INITIAL_ROOMS = [];
+const INITIAL_ALLOCATIONS = [];
 
 // Create the context
 const ScheduleContext = createContext(undefined);
@@ -231,178 +48,65 @@ export const useSchedule = () => {
  * @param {React.ReactNode} props.children - Child components
  */
 export const ScheduleProvider = ({ children }) => {
-  // Initialize state from storage with fallback to initial data
-  const [courses, setCourses] = useState(() => 
-    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.COURSES, INITIAL_COURSES)
-  );
-  
-  const [schedule, setSchedule] = useState(() => 
-    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.SCHEDULE, {})
-  );
-  
-  const [rooms, setRooms] = useState(() => 
-    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.ROOMS, INITIAL_ROOMS)
-  );
-  
-  const [allocations, setAllocations] = useState(() => 
-    STORAGE_CONFIG.load(STORAGE_CONFIG.keys.ALLOCATIONS, INITIAL_ALLOCATIONS)
-  );
-
+  // Application state
+  const [courses, setCourses] = useState([]);
+  const [schedule, setSchedule] = useState({});
+  const [rooms, setRooms] = useState([]);
+  const [allocations, setAllocations] = useState([]);
   const [conflicts, setConflicts] = useState([]);
+  
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(true);
+  const [errors, setErrors] = useState({
+    courses: null,
+    rooms: null,
+    schedule: null,
+    faculty: null
+  });
+  
+  // Notification state
   const [notification, setNotification] = useState({
     open: false,
     message: '',
     severity: 'info'
   });
 
-  // Persist state changes to storage
-  useEffect(() => {
-    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.COURSES, courses);
-  }, [courses]);
-
-  useEffect(() => {
-    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.SCHEDULE, schedule);
-  }, [schedule]);
-
-  useEffect(() => {
-    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.ROOMS, rooms);
-  }, [rooms]);
-
-  useEffect(() => {
-    STORAGE_CONFIG.save(STORAGE_CONFIG.keys.ALLOCATIONS, allocations);
-  }, [allocations]);
-
-  // Update conflicts whenever schedule changes
-  useEffect(() => {
-    const newConflicts = findScheduleConflicts(schedule);
-    setConflicts(newConflicts);
-  }, [schedule]);
-
-  // Function to show notifications across components
-  const showNotification = useCallback((message, severity = 'info') => {
-    setNotification({
-      open: true,
-      message,
-      severity
+  // Function to load initial data from Supabase
+  const loadInitialData = useCallback(async () => {
+    setIsLoading(true);
+    setErrors({
+      courses: null,
+      rooms: null,
+      schedule: null,
+      faculty: null
     });
-  }, []);
-
-  const handleCloseNotification = useCallback(() => {
-    setNotification(prev => ({ ...prev, open: false }));
-  }, []);
-
-  // Function to assign a room to a course
-  const assignRoom = useCallback((courseId, roomId) => {
-    const course = courses.find(c => c.id === courseId);
-    const room = roomId ? rooms.find(r => r.id === roomId) : null;
     
-    if (!course) return false;
-    if (roomId && !room) return false;
-
-    // Update course with room assignment (or remove assignment if roomId is null)
-    const updatedCourses = courses.map(c => 
-      c.id === courseId ? { ...c, room: room?.name || null } : c
-    );
-    setCourses(updatedCourses);
-
-    // Update schedule to reflect room assignment
-    const updatedSchedule = { ...schedule };
-    Object.keys(updatedSchedule).forEach(slotId => {
-      updatedSchedule[slotId] = updatedSchedule[slotId].map(c => 
-        c.id === courseId ? { ...c, room: room?.name || null } : c
-      );
-    });
-    setSchedule(updatedSchedule);
-
-    // Update allocations immutably
-    const updatedAllocations = allocations.map(allocation => ({
-      ...allocation,
-      courses: allocation.courses.filter(c => c.id !== courseId)
-    }));
-
-    // Add course to new room allocation if room is assigned
-    if (room) {
-      const roomIndex = updatedAllocations.findIndex(a => a.roomId === roomId);
-      if (roomIndex !== -1) {
-        const courseSchedule = Object.entries(updatedSchedule)
-          .filter(([_, courses]) => courses.some(c => c.id === courseId))
-          .map(([slotId]) => slotId);
-
-        updatedAllocations[roomIndex] = {
-          ...updatedAllocations[roomIndex],
-          courses: [
-            ...updatedAllocations[roomIndex].courses,
-            {
-              ...course,
-              room: room.name,
-              schedule: courseSchedule
-            }
-          ]
-        };
-      }
-    }
-
-    setAllocations(updatedAllocations);
-
-    // Check for conflicts after assignment
-    const newConflicts = findScheduleConflicts(updatedSchedule);
-    if (newConflicts.length > 0) {
-      showNotification(`Warning: Found ${newConflicts.length} scheduling conflicts after room assignment`, 'warning');
-    } else {
-      const message = room 
-        ? `Successfully assigned ${course.code} to ${room.name}`
-        : `Successfully removed room assignment from ${course.code}`;
-      showNotification(message, 'success');
-    }
-
-    return true;
-  }, [courses, rooms, schedule, showNotification]);
-
-  // Function to resolve a conflict by moving a course to a different slot
-  const resolveConflict = useCallback((conflictId, courseIdToMove, newSlotId) => {
-    const conflict = conflicts.find(c => c.id === conflictId);
-    if (!conflict) return false;
-
-    const courseToMove = courses.find(c => c.id === courseIdToMove);
-    if (!courseToMove) return false;
-
-    // Remove course from its current slot
-    const currentSlot = conflict.slotId;
-    const updatedSchedule = { ...schedule };
-    updatedSchedule[currentSlot] = updatedSchedule[currentSlot].filter(
-      c => c.id !== courseIdToMove
-    );
-
-    // Add course to new slot
-    if (!updatedSchedule[newSlotId]) {
-      updatedSchedule[newSlotId] = [];
-    }
-    updatedSchedule[newSlotId].push(courseToMove);
-
-    setSchedule(updatedSchedule);
-    showNotification(`Moved ${courseToMove.code} to resolve conflict`, 'success');
-
-    return true;
-  }, [conflicts, courses, schedule, showNotification]);
-
-  // Function to update room allocations when schedule changes
-  // Extracted from useCallback to avoid dependency array issues
-  function updateAllocationsImpl() {
-    setAllocations(currentAllocations => {
-      const newAllocations = [...currentAllocations];
-
-      // Clear existing course assignments
-      newAllocations.forEach(allocation => {
-        allocation.courses = [];
-      });
-
-      // Rebuild allocations based on scheduled courses
-      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+    try {
+      // Load courses
+      const coursesData = await getAllCourses();
+      setCourses(coursesData);
+      
+      // Load rooms
+      const roomsData = await getAllRooms();
+      setRooms(roomsData);
+      
+      // Load schedule
+      const scheduleData = await getSchedule();
+      setSchedule(scheduleData);
+      
+      // Create room allocations from schedule
+      const newAllocations = roomsData.map(room => ({
+        roomId: room.id,
+        roomName: room.name,
+        building: room.building,
+        courses: []
+      }));
+      
+      // Populate allocations with courses from the schedule
+      Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
         coursesInSlot.forEach(course => {
           if (course.room) {
-            const roomAllocation = newAllocations.find(
-              a => a.roomName === course.room
-            );
+            const roomAllocation = newAllocations.find(a => a.roomName === course.room);
             
             if (roomAllocation) {
               const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
@@ -423,33 +127,206 @@ export const ScheduleProvider = ({ children }) => {
           }
         });
       });
-
-      return newAllocations;
-    });
-  }
-
-  // Wrapped in useCallback for references stability
-  const updateAllocations = useCallback(() => {
-    updateAllocationsImpl();
-  }, [schedule]); // schedule is the only external dependency
-
-  // Call updateAllocations whenever schedule or courses change
+      
+      setAllocations(newAllocations);
+      
+    } catch (error) {
+      console.error('Error loading data from Supabase:', error);
+      
+      // Set specific error states based on what failed
+      setErrors(prev => ({
+        ...prev,
+        general: error.message || 'Failed to load data from the database'
+      }));
+      
+      // Use initial data as fallback
+      if (courses.length === 0) setCourses(INITIAL_COURSES);
+      if (rooms.length === 0) setRooms(INITIAL_ROOMS);
+      if (Object.keys(schedule).length === 0) setSchedule({});
+      if (allocations.length === 0) setAllocations(INITIAL_ALLOCATIONS);
+      
+      showNotification('Failed to load data from the database. Using local data instead.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [courses.length, rooms.length, schedule, allocations.length]);
+  
+  // Load initial data on mount
   useEffect(() => {
-    updateAllocations();
-  }, [schedule, courses, updateAllocations]);
+    loadInitialData();
+    
+    // Set up real-time subscription for updates
+    const coursesSubscription = supabase
+      .channel('public:courses')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
+        // Refresh data when courses change
+        getAllCourses().then(data => setCourses(data));
+      })
+      .subscribe();
+      
+    const roomsSubscription = supabase
+      .channel('public:rooms')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
+        // Refresh data when rooms change
+        getAllRooms().then(data => setRooms(data));  
+      })
+      .subscribe();
+      
+    const scheduleSubscription = supabase
+      .channel('public:schedule')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
+        // Refresh data when schedule changes
+        getSchedule().then(data => setSchedule(data));
+      })
+      .subscribe();
+    
+    // Clean up subscriptions
+    return () => {
+      supabase.removeChannel(coursesSubscription);
+      supabase.removeChannel(roomsSubscription);
+      supabase.removeChannel(scheduleSubscription);
+    };
+  }, [loadInitialData]);
+  
+  // Update conflicts whenever schedule changes
+  useEffect(() => {
+    const newConflicts = findScheduleConflicts(schedule);
+    setConflicts(newConflicts);
+  }, [schedule]);
 
-  // Function to clear all stored data
-  const clearStoredData = useCallback(() => {
-    STORAGE_CONFIG.clear();
-    setCourses(INITIAL_COURSES);
-    setSchedule({});
-    setRooms(INITIAL_ROOMS);
-    setAllocations(INITIAL_ALLOCATIONS);
-    showNotification('All stored data has been cleared', 'info');
-  }, [showNotification]);
+  // Function to show notifications across components
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
+
+  const handleCloseNotification = useCallback(() => {
+    setNotification(prev => ({ ...prev, open: false }));
+  }, []);
+
+  // Function to assign a room to a course
+  const assignRoom = useCallback(async (courseId, roomId) => {
+    const course = courses.find(c => c.id === courseId);
+    const room = roomId ? rooms.find(r => r.id === roomId) : null;
+    
+    if (!course) return false;
+    if (roomId && !room) return false;
+
+    try {
+      // Show loading notification
+      showNotification('Updating room assignment...', 'info');
+      
+      // Get all schedule entries for this course
+      const courseSlots = [];
+      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        if (coursesInSlot.some(c => c.id === courseId)) {
+          courseSlots.push(slotId);
+        }
+      });
+      
+      // Update each schedule entry with the new room
+      for (const slotId of courseSlots) {
+        const { day, time } = parseTimeSlotId(slotId);
+        const timeSlotId = await getTimeSlotId(day, time);
+        
+        if (!timeSlotId) {
+          console.error(`Time slot not found for ${slotId}`);
+          continue;
+        }
+        
+        const courseEntry = schedule[slotId].find(c => c.id === courseId);
+        
+        await scheduleCourse(
+          courseId, 
+          null, // Faculty ID would need to be looked up by name
+          roomId,
+          timeSlotId
+        );
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      // Show success message
+      const message = room 
+        ? `Successfully assigned ${course.code} to ${room.name}`
+        : `Successfully removed room assignment from ${course.code}`;
+      showNotification(message, 'success');
+      
+      return true;
+    } catch (error) {
+      console.error('Error assigning room:', error);
+      showNotification(`Failed to assign room: ${error.message}`, 'error');
+      return false;
+    }
+  }, [courses, rooms, schedule, showNotification, loadInitialData]);
+
+  // Function to resolve a conflict by moving a course to a different slot
+  const resolveConflict = useCallback(async (conflictId, courseIdToMove, newSlotId) => {
+    const conflict = conflicts.find(c => c.id === conflictId);
+    if (!conflict) return false;
+
+    const courseToMove = courses.find(c => c.id === courseIdToMove);
+    if (!courseToMove) return false;
+
+    try {
+      showNotification('Resolving scheduling conflict...', 'info');
+      
+      // Remove course from its current slot
+      const currentSlot = conflict.slotId;
+      const { day: currentDay, time: currentTime } = parseTimeSlotId(currentSlot);
+      const currentTimeSlotId = await getTimeSlotId(currentDay, currentTime);
+      
+      if (!currentTimeSlotId) {
+        showNotification(`Error: Cannot find time slot for ${currentSlot}`, 'error');
+        return false;
+      }
+      
+      // Remove from current slot
+      await unscheduleCourse(courseIdToMove, currentTimeSlotId);
+      
+      // Add to new slot
+      const { day: newDay, time: newTime } = parseTimeSlotId(newSlotId);
+      const newTimeSlotId = await getTimeSlotId(newDay, newTime);
+      
+      if (!newTimeSlotId) {
+        showNotification(`Error: Cannot find time slot for ${newSlotId}`, 'error');
+        return false;
+      }
+      
+      // Get current course info from schedule
+      const courseInfo = schedule[currentSlot].find(c => c.id === courseIdToMove);
+      
+      // Schedule in new slot
+      await scheduleCourse(
+        courseIdToMove, 
+        null, // Faculty ID would need to be looked up
+        null, // Room ID would need to be looked up
+        newTimeSlotId
+      );
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Moved ${courseToMove.code} to resolve conflict`, 'success');
+      return true;
+    } catch (error) {
+      console.error('Error resolving conflict:', error);
+      showNotification(`Failed to resolve conflict: ${error.message}`, 'error');
+      return false;
+    }
+  }, [conflicts, courses, schedule, showNotification, loadInitialData]);
+
+  // Function to update room allocations when schedule changes
+  const updateAllocations = useCallback(async () => {
+    await loadInitialData();
+  }, [loadInitialData]);
 
   // Function to remove a course from a specific time slot
-  const removeCourseFromSlot = useCallback((slotId, course, index) => {
+  const removeCourseFromSlot = useCallback(async (slotId, course, index) => {
     // Check if the slot exists and has courses
     if (!schedule[slotId] || schedule[slotId].length === 0) {
       return false;
@@ -461,33 +338,193 @@ export const ScheduleProvider = ({ children }) => {
       return false;
     }
     
-    // Create a new schedule with the specific course instance removed at the exact index
-    const newSchedule = { ...schedule };
-    
-    // Remove ONLY the specific course instance at the provided index
-    // This ensures that other instances of the same course (with same courseId)
-    // in the same slot will not be affected
-    newSchedule[slotId] = [
-      ...schedule[slotId].slice(0, index),
-      ...schedule[slotId].slice(index + 1)
-    ];
-    
-    // Remove empty slots to keep the schedule clean
-    if (newSchedule[slotId].length === 0) {
-      delete newSchedule[slotId];
+    try {
+      showNotification('Removing course from schedule...', 'info');
+      
+      const { day, time } = parseTimeSlotId(slotId);
+      const timeSlotId = await getTimeSlotId(day, time);
+      
+      if (!timeSlotId) {
+        showNotification(`Error: Cannot find time slot for ${slotId}`, 'error');
+        return false;
+      }
+      
+      // Unschedule the course
+      await unscheduleCourse(course.id, timeSlotId);
+      
+      // Refresh data
+      await loadInitialData();
+      
+      // Show notification
+      showNotification(`Removed ${course.code} from schedule`, 'success');
+      
+      return true;
+    } catch (error) {
+      console.error('Error removing course from slot:', error);
+      showNotification(`Failed to remove course: ${error.message}`, 'error');
+      return false;
     }
+  }, [schedule, showNotification, loadInitialData]);
 
-    // Update the schedule
-    setSchedule(newSchedule);
-    
-    // Show notification
-    showNotification(`Removed ${course.code} from schedule`, 'success');
-    
-    return true;
-  }, [schedule, setSchedule, showNotification]);
+  // Function to add a new course
+  const addCourse = useCallback(async (newCourse) => {
+    try {
+      showNotification('Adding new course...', 'info');
+      
+      // Save course to Supabase
+      const courseId = await saveCourse({
+        ...newCourse,
+        id: null // Ensure ID is null to create a new course
+      });
+      
+      if (!courseId) {
+        throw new Error('Failed to create course');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Course ${newCourse.code} added successfully`, 'success');
+      return courseId;
+    } catch (error) {
+      console.error('Error adding course:', error);
+      showNotification(`Failed to add course: ${error.message}`, 'error');
+      return null;
+    }
+  }, [showNotification, loadInitialData]);
+
+  // Function to add a new room
+  const addRoom = useCallback(async (newRoom) => {
+    try {
+      showNotification('Adding new room...', 'info');
+      
+      // Save room to Supabase
+      const roomId = await saveRoom({
+        ...newRoom,
+        id: null // Ensure ID is null to create a new room
+      });
+      
+      if (!roomId) {
+        throw new Error('Failed to create room');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Room ${newRoom.name} added successfully`, 'success');
+      return roomId;
+    } catch (error) {
+      console.error('Error adding room:', error);
+      showNotification(`Failed to add room: ${error.message}`, 'error');
+      return null;
+    }
+  }, [showNotification, loadInitialData]);
+
+  // Function to update a course
+  const updateCourse = useCallback(async (updatedCourse) => {
+    try {
+      showNotification('Updating course...', 'info');
+      
+      // Save course to Supabase
+      const courseId = await saveCourse(updatedCourse);
+      
+      if (!courseId) {
+        throw new Error('Failed to update course');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
+      return courseId;
+    } catch (error) {
+      console.error('Error updating course:', error);
+      showNotification(`Failed to update course: ${error.message}`, 'error');
+      return null;
+    }
+  }, [showNotification, loadInitialData]);
+
+  // Function to update a room
+  const updateRoom = useCallback(async (updatedRoom) => {
+    try {
+      showNotification('Updating room...', 'info');
+      
+      // Save room to Supabase
+      const roomId = await saveRoom(updatedRoom);
+      
+      if (!roomId) {
+        throw new Error('Failed to update room');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Room ${updatedRoom.name} updated successfully`, 'success');
+      return roomId;
+    } catch (error) {
+      console.error('Error updating room:', error);
+      showNotification(`Failed to update room: ${error.message}`, 'error');
+      return null;
+    }
+  }, [showNotification, loadInitialData]);
+
+  // Function to delete a course
+  const deleteCourseById = useCallback(async (courseId) => {
+    try {
+      showNotification('Deleting course...', 'info');
+      
+      // Delete course from Supabase
+      const success = await deleteCourse(courseId);
+      
+      if (!success) {
+        throw new Error('Failed to delete course');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Course deleted successfully`, 'success');
+      return true;
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      showNotification(`Failed to delete course: ${error.message}`, 'error');
+      return false;
+    }
+  }, [showNotification, loadInitialData]);
+
+  // Function to delete a room
+  const deleteRoomById = useCallback(async (roomId) => {
+    try {
+      showNotification('Deleting room...', 'info');
+      
+      // Delete room from Supabase
+      const success = await deleteRoom(roomId);
+      
+      if (!success) {
+        throw new Error('Failed to delete room');
+      }
+      
+      // Refresh data
+      await loadInitialData();
+      
+      showNotification(`Room deleted successfully`, 'success');
+      return true;
+    } catch (error) {
+      console.error('Error deleting room:', error);
+      showNotification(`Failed to delete room: ${error.message}`, 'error');
+      return false;
+    }
+  }, [showNotification, loadInitialData]);
+  
+  // Function to refresh data on demand
+  const refreshData = useCallback(async () => {
+    await loadInitialData();
+    showNotification('Data refreshed from database', 'info');
+  }, [loadInitialData, showNotification]);
 
   // Context value to be provided
   const contextValue = {
+    // Data
     courses,
     setCourses,
     schedule,
@@ -497,14 +534,34 @@ export const ScheduleProvider = ({ children }) => {
     setRooms,
     allocations,
     setAllocations,
+    
+    // UI state
     notification,
+    isLoading,
+    errors,
+    
+    // Notification functions
     showNotification,
     handleCloseNotification,
+    
+    // Course CRUD operations
+    addCourse,
+    updateCourse,
+    deleteCourseById,
+    
+    // Room CRUD operations
+    addRoom,
+    updateRoom,
+    deleteRoomById,
+    
+    // Schedule operations
     assignRoom,
     resolveConflict,
     updateAllocations,
-    clearStoredData,
-    removeCourseFromSlot
+    removeCourseFromSlot,
+    
+    // Data refresh
+    refreshData
   };
 
   return (
