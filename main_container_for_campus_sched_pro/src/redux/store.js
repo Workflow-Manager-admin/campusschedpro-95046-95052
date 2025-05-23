@@ -27,11 +27,16 @@ const rootReducer = combineReducers({
 
 // Simple logging middleware for debugging (can be removed in production)
 const logger = store => next => action => {
-  if (process.env.NODE_ENV !== 'production') {
+  // Disable console logs in CI environment
+  if (process.env.NODE_ENV !== 'production' && !process.env.CI) {
+    // eslint-disable-next-line no-console
     console.group(action.type);
+    // eslint-disable-next-line no-console
     console.info('dispatching', action);
     const result = next(action);
+    // eslint-disable-next-line no-console
     console.log('next state', store.getState());
+    // eslint-disable-next-line no-console
     console.groupEnd();
     return result;
   }
