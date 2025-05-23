@@ -17,11 +17,8 @@ const RoomManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editedRoom, setEditedRoom] = useState(null);
   // Local component state for UI management only
-  const [notification, setNotification] = useState({
-    open: false,
-    message: '',
-    severity: 'info'
-  });
+  // Using useState but removing notification state as it's not used
+  useState({});
 
   // Room form state for adding new rooms
   const [newRoom, setNewRoom] = useState({
@@ -153,9 +150,7 @@ const RoomManagement = () => {
     contextShowNotification('Room added successfully', 'success');
   };
 
-  const handleCloseNotification = () => {
-    setNotification(prev => ({ ...prev, open: false }));
-  };
+  // Removed unused handleCloseNotification function
 
   return (
     <div className="room-management">
