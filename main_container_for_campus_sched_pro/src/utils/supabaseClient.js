@@ -584,17 +584,10 @@ const getAcademicYearId = async (yearName) => {
   return created?.id || null;
 };
 
-// Get time slot ID by day and time
-export const getTimeSlotId = async (day, time) => {
-  const { data } = await supabase
-    .from('time_slots')
-    .select('id')
-    .eq('day', day)
-    .eq('time', time)
-    .maybeSingle();
-    
-  return data?.id || null;
-};
+// Import the getTimeSlotId function from its own module
+import { getTimeSlotId } from './getTimeSlotId';
+// Re-export the getTimeSlotId function
+export { getTimeSlotId };
 
 // Parse time slot ID to get day and time
 export const parseTimeSlotId = (slotId) => {
