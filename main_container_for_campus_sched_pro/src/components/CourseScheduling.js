@@ -207,7 +207,15 @@ const CourseScheduling = () => {
   return (
     <div className="course-scheduling">
       <div className="scheduling-header">
-        <h2>Course Scheduling</h2>
+        <div className="header-title-section">
+          <h2>Course Scheduling</h2>
+          <div className="share-button-container">
+            <ShareScheduleButton 
+              targetRef={timetableRef} 
+              onNotification={showNotification} 
+            />
+          </div>
+        </div>
         <div className="header-actions">
           <button 
             className="btn"
@@ -281,6 +289,7 @@ const CourseScheduling = () => {
             <Timetable
               schedule={schedule}
               onCourseMove={setSchedule}
+              timetableRef={timetableRef}
             />
           </div>
         </div>
