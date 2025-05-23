@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { getTimeSlotId } from './getTimeSlotId';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL||'https://alsthvnrqazftrtluxss.supabase.co';
@@ -583,9 +584,6 @@ const getAcademicYearId = async (yearName) => {
     
   return created?.id || null;
 };
-
-// Import getTimeSlotId from its module
-import { getTimeSlotId } from './getTimeSlotId';
 
 // Re-export getTimeSlotId
 export { getTimeSlotId };
