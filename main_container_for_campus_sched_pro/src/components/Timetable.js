@@ -19,31 +19,31 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
   return (
     <div className="timetable-container">
       <div className="timetable timetable-for-export" ref={timetableRef}>
-      <div className="timetable-header">
-        <div className="time-column">Time</div>
-        {DAYS.map(day => (
-          <div key={day} className="day-column">{day}</div>
-        ))}
-      </div>
-      <div className="timetable-body">
-        {TIME_SLOTS.map(time => (
-          <div key={time} className="time-row">
-            <div className="time-label">{time}</div>
-            {DAYS.map(day => {
-              const slotId = `${day}-${time}`;
-              return (
-                <TimeSlot
-                  key={slotId}
-                  day={day}
-                  time={time}
-                  courses={schedule[slotId] || []}
-                  removeCourseFromSlot={removeCourseFromSlot}
-                />
-              );
-            })}
-          </div>
-        ))}
-      </div>
+        <div className="timetable-header">
+          <div className="time-column">Time</div>
+          {DAYS.map(day => (
+            <div key={day} className="day-column">{day}</div>
+          ))}
+        </div>
+        <div className="timetable-body">
+          {TIME_SLOTS.map(time => (
+            <div key={time} className="time-row">
+              <div className="time-label">{time}</div>
+              {DAYS.map(day => {
+                const slotId = `${day}-${time}`;
+                return (
+                  <TimeSlot
+                    key={slotId}
+                    day={day}
+                    time={time}
+                    courses={schedule[slotId] || []}
+                    removeCourseFromSlot={removeCourseFromSlot}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
