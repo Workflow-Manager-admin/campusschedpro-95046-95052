@@ -62,14 +62,6 @@ function App() {
               <span className="nav-icon">⚠️</span>
               <span className="nav-text">Conflict Resolution</span>
             </NavLink>
-            
-            <NavLink 
-              to="/student-view" 
-              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-            >
-              <span className="nav-icon">👨‍🎓</span>
-              <span className="nav-text">Student View</span>
-            </NavLink>
           </nav>
 
           <main className="main-content">
@@ -79,7 +71,6 @@ function App() {
               <Route path="/rooms" element={<RoomManagement />} />
               <Route path="/room-allocation" element={<RoomAllocation />} />
               <Route path="/conflicts" element={<ConflictResolution />} />
-              <Route path="/student-view" element={<StudentScheduleView />} />
             </Routes>
           </main>
         </div>
