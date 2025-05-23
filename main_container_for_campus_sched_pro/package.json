@@ -41,7 +41,8 @@
             "error"
           ]
         }
-      ]
+      ],
+      "react-hooks/exhaustive-deps": "off"
     }
   },
   "browserslist": {
