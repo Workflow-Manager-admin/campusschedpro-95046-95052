@@ -57,6 +57,7 @@ export const ScheduleProvider = ({ children }) => {
   
   // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
+  const [dataInitialized, setDataInitialized] = useState(false);
   const [errors, setErrors] = useState({
     courses: null,
     rooms: null,
@@ -73,6 +74,9 @@ export const ScheduleProvider = ({ children }) => {
 
   // Function to load initial data from Supabase
   const loadInitialData = useCallback(async () => {
+    // Skip if we're already initialized (except for forced refreshes)
+    if (dataInitialized && isLoading === false) return;
+    
     setIsLoading(true);
     setErrors({
       courses: null,
@@ -148,6 +152,7 @@ export const ScheduleProvider = ({ children }) => {
       showNotification('Failed to load data from the database. Using local data instead.', 'error');
     } finally {
       setIsLoading(false);
+      setDataInitialized(true);
     }
   }, []); // Remove dependencies that cause re-fetching loops
   
