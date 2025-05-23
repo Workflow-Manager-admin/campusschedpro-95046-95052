@@ -387,46 +387,49 @@ export const ScheduleProvider = ({ children }) => {
 
   // Function to update room allocations when schedule changes
   const updateAllocations = useCallback(() => {
-    const newAllocations = [...allocations];
+    // Use allocations from state closure to avoid dependency issues
+    setAllocations(currentAllocations => {
+      const newAllocations = [...currentAllocations];
 
-    // Clear existing course assignments
-    newAllocations.forEach(allocation => {
-      allocation.courses = [];
-    });
+      // Clear existing course assignments
+      newAllocations.forEach(allocation => {
+        allocation.courses = [];
+      });
 
-    // Rebuild allocations based on scheduled courses
-    Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
-      coursesInSlot.forEach(course => {
-        if (course.room) {
-          const roomAllocation = newAllocations.find(
-            a => a.roomName === course.room
-          );
-          
-          if (roomAllocation) {
-            const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
+      // Rebuild allocations based on scheduled courses
+      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        coursesInSlot.forEach(course => {
+          if (course.room) {
+            const roomAllocation = newAllocations.find(
+              a => a.roomName === course.room
+            );
             
-            if (existingCourse) {
-              // Add this slot to existing course schedule
-              if (!existingCourse.schedule.includes(slotId)) {
-                existingCourse.schedule.push(slotId);
+            if (roomAllocation) {
+              const existingCourse = roomAllocation.courses.find(c => c.id === course.id);
+              
+              if (existingCourse) {
+                // Add this slot to existing course schedule
+                if (!existingCourse.schedule.includes(slotId)) {
+                  existingCourse.schedule.push(slotId);
+                }
+              } else {
+                // Add new course to room allocation
+                roomAllocation.courses.push({
+                  ...course,
+                  schedule: [slotId]
+                });
               }
-            } else {
-              // Add new course to room allocation
-              roomAllocation.courses.push({
-                ...course,
-                schedule: [slotId]
-              });
             }
           }
-        }
+        });
       });
-    });
 
-    setAllocations(newAllocations);
-  // We include allocations since we're modifying it, but we need to be careful
-  // to avoid circular dependencies - hence the explicit dependency array
+      return newAllocations;
+    });
+  // Now we can safely omit allocations from the dependency array
+  // since we're using the functional state update pattern
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedule, allocations]); // Including allocations since we're using it
+  }, [schedule]);
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
