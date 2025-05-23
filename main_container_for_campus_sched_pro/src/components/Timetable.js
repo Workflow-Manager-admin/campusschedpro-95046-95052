@@ -51,7 +51,11 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
 
 Timetable.propTypes = {
   schedule: PropTypes.object,
-  onCourseMove: PropTypes.func
+  onCourseMove: PropTypes.func,
+  timetableRef: PropTypes.oneOfType([
+    PropTypes.func, 
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+  ])
 };
 
 export default Timetable;
