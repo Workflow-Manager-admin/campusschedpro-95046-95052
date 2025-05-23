@@ -457,7 +457,9 @@ export const ScheduleProvider = ({ children }) => {
     // Create a new schedule with the specific course instance removed at the exact index
     const newSchedule = { ...schedule };
     
-    // Remove the specific course instance at the provided index
+    // Remove ONLY the specific course instance at the provided index
+    // This ensures that other instances of the same course (with same courseId)
+    // in the same slot will not be affected
     newSchedule[slotId] = [
       ...schedule[slotId].slice(0, index),
       ...schedule[slotId].slice(index + 1)
