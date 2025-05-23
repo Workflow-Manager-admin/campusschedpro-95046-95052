@@ -80,7 +80,8 @@ TimeSlot.propTypes = {
       instructor: PropTypes.string.isRequired,
       room: PropTypes.string
     })
-  ).isRequired
+  ).isRequired,
+  removeCourseFromSlot: PropTypes.func
 };
 
 export default TimeSlot;
