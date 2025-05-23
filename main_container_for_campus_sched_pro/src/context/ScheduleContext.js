@@ -305,8 +305,8 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
       
-      // Get current course info from schedule
-      const courseInfo = schedule[currentSlot].find(c => c.id === courseIdToMove);
+      // We don't need this variable
+      // const courseInfo = schedule[currentSlot].find(c => c.id === courseIdToMove);
       
       // Schedule in new slot
       await scheduleCourse(
