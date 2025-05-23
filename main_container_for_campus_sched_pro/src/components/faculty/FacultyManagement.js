@@ -271,7 +271,6 @@ const FacultyManagement = () => {
               </div>
             </div>
           )}
-        </div>
           </div>
         )}
     </div>

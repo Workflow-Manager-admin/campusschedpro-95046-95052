@@ -312,19 +312,19 @@ const CourseScheduling = () => {
             </ReduxDragDropContext>
 
             <Snackbar
-            open={notification.open}
-            autoHideDuration={6000}
-            onClose={handleCloseNotification}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <Alert
+              open={notification.open}
+              autoHideDuration={6000}
               onClose={handleCloseNotification}
-              severity={notification.severity}
-              variant="filled"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              {notification.message}
-            </Alert>
-          </Snackbar>
+              <Alert
+                onClose={handleCloseNotification}
+                severity={notification.severity}
+                variant="filled"
+              >
+                {notification.message}
+              </Alert>
+            </Snackbar>
           
           {/* Add Course Dialog */}
           <Dialog 
