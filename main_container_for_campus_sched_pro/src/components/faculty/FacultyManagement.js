@@ -158,8 +158,9 @@ const FacultyManagement = () => {
       )}
       
       {!loading && (
-        <div className="faculty-content-container">
-          <div className="faculty-header">
+        <>
+          <div className="faculty-content-container">
+            <div className="faculty-header">
             <h2>Faculty Management</h2>
             <button className="btn" onClick={() => setShowAddDialog(true)}>
               + Add Faculty
