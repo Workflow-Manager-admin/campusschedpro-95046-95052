@@ -138,8 +138,7 @@ const RoomAllocation = () => {
       // Queue the assignment (will be executed later)
       assignmentPromises.push({
         course,
-        roomId: suitableRooms[0].id,
-        promise: null
+        roomId: suitableRooms[0].id
       });
     });
 
@@ -150,6 +149,9 @@ const RoomAllocation = () => {
 
     // Process assignments in smaller batches to avoid overwhelming the API
     const batchSize = 5;
+    const successResults = [];
+    const failureResults = [];
+    
     for (let i = 0; i < assignmentPromises.length; i += batchSize) {
       const batch = assignmentPromises.slice(i, i + batchSize);
       
@@ -157,18 +159,24 @@ const RoomAllocation = () => {
       const results = await Promise.all(
         batch.map(({ course, roomId }) => 
           assignRoom(course.id, roomId)
+            .then(success => ({ success, course }))
+            .catch(() => ({ success: false, course }))
         )
       );
       
-      // Count results
-      results.forEach((success, index) => {
-        if (success) {
-          assignedCount++;
+      // Sort results
+      results.forEach(result => {
+        if (result.success) {
+          successResults.push(result.course);
         } else {
-          failedCount++;
+          failureResults.push(result.course);
         }
       });
     }
+    
+    // Update counts outside the loop
+    assignedCount = successResults.length;
+    failedCount = failureResults.length;
     
     // Show final results
     if (assignedCount > 0) {
