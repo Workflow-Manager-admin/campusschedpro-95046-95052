@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import html2canvas from 'html2canvas';
-import { Button, CircularProgress } from '@mui/material';
+import { 
+  Button, 
+  CircularProgress, 
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Box
+} from '@mui/material';
 
 /**
  * Component for capturing and downloading a schedule as an image
@@ -9,6 +18,8 @@ import { Button, CircularProgress } from '@mui/material';
  */
 const ShareScheduleButton = ({ targetRef, onNotification }) => {
   const [isCapturing, setIsCapturing] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [capturedPreviewUrl, setCapturedPreviewUrl] = useState('');
 
   /**
    * Generates a meaningful filename for the downloaded schedule
@@ -73,6 +84,9 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
       // Convert to high-quality image data
       const imageData = canvas.toDataURL('image/png', 1.0);
       
+      // Save the preview URL for the success dialog
+      setCapturedPreviewUrl(imageData);
+      
       // Create download link with better filename
       const link = document.createElement('a');
       link.href = imageData;
@@ -82,6 +96,9 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Show success dialog
+      setShowSuccessDialog(true);
       
       if (onNotification) {
         onNotification('Schedule image downloaded successfully!', 'success');
@@ -96,17 +113,68 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
     }
   };
 
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+    setCapturedPreviewUrl('');
+  };
+
   return (
-    <Button 
-      variant="contained" 
-      color="primary"
-      onClick={handleCaptureSchedule}
-      className="download-button"
-      disabled={isCapturing}
-      startIcon={isCapturing ? <CircularProgress size={20} color="inherit" /> : '📥'}
-    >
-      {isCapturing ? 'Capturing...' : 'Export Schedule as Image'}
-    </Button>
+    <>
+      <Button 
+        variant="contained" 
+        color="primary"
+        onClick={handleCaptureSchedule}
+        className="download-button"
+        disabled={isCapturing}
+        startIcon={isCapturing ? <CircularProgress size={20} color="inherit" /> : '📥'}
+      >
+        {isCapturing ? 'Capturing...' : 'Export Schedule as Image'}
+      </Button>
+
+      {/* Success Dialog with Preview */}
+      <Dialog
+        open={showSuccessDialog}
+        onClose={handleCloseSuccessDialog}
+        maxWidth="md"
+        PaperProps={{
+          sx: {
+            borderRadius: '8px',
+            p: 2
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: 'var(--primary-green)' }}>
+          Schedule Exported Successfully
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            Your schedule has been exported as an image and downloaded to your device.
+          </Typography>
+          
+          {capturedPreviewUrl && (
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary' }}>Preview:</Typography>
+              <img 
+                src={capturedPreviewUrl} 
+                alt="Captured Schedule Preview" 
+                style={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '300px',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }} 
+              />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSuccessDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
