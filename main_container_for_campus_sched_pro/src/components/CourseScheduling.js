@@ -224,22 +224,6 @@ const CourseScheduling = () => {
             View Conflicts
           </button>
           <button 
-            className="btn"
-            onClick={() => {
-              // Get the first available course and slot
-              const firstSlotId = Object.keys(schedule)[0];
-              if (firstSlotId && schedule[firstSlotId].length > 0) {
-                const firstCourseId = schedule[firstSlotId][0].id;
-                addDuplicateCourseToSlot(firstSlotId, firstCourseId);
-              } else {
-                showNotification('Add at least one course to a slot first', 'warning');
-              }
-            }}
-            style={{ marginLeft: '10px' }}
-          >
-            Test Duplicate Course
-          </button>
-          <button 
             className="btn btn-accent"
             onClick={handleSaveSchedule}
             style={{ marginLeft: '10px' }}
