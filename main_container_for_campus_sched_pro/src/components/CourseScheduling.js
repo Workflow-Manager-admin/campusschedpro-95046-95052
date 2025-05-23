@@ -251,63 +251,63 @@ const CourseScheduling = () => {
             <ReduxDragDropContext onDragEnd={handleDragEnd}>
               <div className="scheduling-container">
                 <div className="courses-panel">
-                <div className="panel-header">
-                  <h3>Available Courses</h3>
-                  <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
-                </div>
-                
-                <div className="course-filters">
-                  <div className="filter-header">
-                    <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                      Filter courses by academic year:
-                    </Typography>
+                  <div className="panel-header">
+                    <h3>Available Courses</h3>
+                    <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
                   </div>
-                  <FormControl variant="outlined" size="small" fullWidth sx={{ minWidth: 150 }}>
-                    <InputLabel id="year-filter-label">Academic Year</InputLabel>
-                    <Select
-                      labelId="year-filter-label"
-                      id="year-filter"
-                      value={yearFilter}
-                      onChange={(e) => setYearFilter(e.target.value)}
-                      label="Academic Year"
-                    >
-                      <MenuItem value="All Years">All Years</MenuItem>
-                      {ACADEMIC_YEARS.map(year => (
-                        <MenuItem key={year} value={year}>{year}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  {yearFilter !== 'All Years' && (
-                    <Typography variant="body2" sx={{ mt: 1, fontSize: '0.8rem', display: 'flex', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--primary-green)', marginRight: '4px' }}>✓</span> 
-                      Showing {filteredCourses.length} courses for {yearFilter}
-                    </Typography>
-                  )}
+                  
+                  <div className="course-filters">
+                    <div className="filter-header">
+                      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                        Filter courses by academic year:
+                      </Typography>
+                    </div>
+                    <FormControl variant="outlined" size="small" fullWidth sx={{ minWidth: 150 }}>
+                      <InputLabel id="year-filter-label">Academic Year</InputLabel>
+                      <Select
+                        labelId="year-filter-label"
+                        id="year-filter"
+                        value={yearFilter}
+                        onChange={(e) => setYearFilter(e.target.value)}
+                        label="Academic Year"
+                      >
+                        <MenuItem value="All Years">All Years</MenuItem>
+                        {ACADEMIC_YEARS.map(year => (
+                          <MenuItem key={year} value={year}>{year}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {yearFilter !== 'All Years' && (
+                      <Typography variant="body2" sx={{ mt: 1, fontSize: '0.8rem', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ color: 'var(--primary-green)', marginRight: '4px' }}>✓</span> 
+                        Showing {filteredCourses.length} courses for {yearFilter}
+                      </Typography>
+                    )}
+                  </div>
+                  
+                  <ReduxDroppable droppableId="courses-list" className="courses-list">
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {filteredCourses.map((course, index) => (
+                          <Course 
+                            key={course.id} 
+                            course={course} 
+                            index={index}
+                          />
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </ReduxDroppable>
                 </div>
                 
-                <ReduxDroppable droppableId="courses-list" className="courses-list">
-                  {(provided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {filteredCourses.map((course, index) => (
-                        <Course 
-                          key={course.id} 
-                          course={course} 
-                          index={index}
-                        />
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </ReduxDroppable>
-              </div>
-              
-              <div className="timetable-panel">
-                <Timetable
-                  schedule={schedule}
-                  onCourseMove={setSchedule}
-                  timetableRef={timetableRef}
-                />
-              </div>
+                <div className="timetable-panel">
+                  <Timetable
+                    schedule={schedule}
+                    onCourseMove={setSchedule}
+                    timetableRef={timetableRef}
+                  />
+                </div>
               </div>
             </ReduxDragDropContext>
 
@@ -326,121 +326,121 @@ const CourseScheduling = () => {
               </Alert>
             </Snackbar>
           
-          {/* Add Course Dialog */}
-          <Dialog 
-            open={showAddDialog} 
-            onClose={handleCloseAddDialog}
-            fullWidth
-            maxWidth="sm"
-          >
-            <DialogTitle>Add New Course</DialogTitle>
-            <DialogContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
-                <TextField
-                  label="Course Name"
-                  name="name"
-                  value={newCourse.name}
-                  onChange={handleInputChange}
-                  fullWidth
-                  margin="dense"
-                />
-                
-                <TextField
-                  label="Course Code"
-                  name="code"
-                  value={newCourse.code}
-                  onChange={handleInputChange}
-                  fullWidth
-                  margin="dense"
-                />
-                
-                <TextField
-                  label="Instructor"
-                  name="instructor"
-                  value={newCourse.instructor}
-                  onChange={handleInputChange}
-                  fullWidth
-                  margin="dense"
-                />
-                
-                <div style={{ display: 'flex', gap: '16px' }}>
+            {/* Add Course Dialog */}
+            <Dialog 
+              open={showAddDialog} 
+              onClose={handleCloseAddDialog}
+              fullWidth
+              maxWidth="sm"
+            >
+              <DialogTitle>Add New Course</DialogTitle>
+              <DialogContent>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '16px' }}>
                   <TextField
-                    label="Credits"
-                    name="credits"
-                    value={newCourse.credits}
+                    label="Course Name"
+                    name="name"
+                    value={newCourse.name}
                     onChange={handleInputChange}
-                    type="number"
                     fullWidth
                     margin="dense"
                   />
                   
                   <TextField
-                    label="Expected Enrollment"
-                    name="expectedEnrollment"
-                    value={newCourse.expectedEnrollment}
+                    label="Course Code"
+                    name="code"
+                    value={newCourse.code}
                     onChange={handleInputChange}
-                    type="number"
                     fullWidth
                     margin="dense"
                   />
-                </div>
-                
-                <FormControl fullWidth margin="dense">
-                  <InputLabel id="department-label">Department</InputLabel>
-                  <Select
-                    labelId="department-label"
-                    name="department"
-                    value={newCourse.department}
+                  
+                  <TextField
+                    label="Instructor"
+                    name="instructor"
+                    value={newCourse.instructor}
                     onChange={handleInputChange}
-                    label="Department"
-                  >
-                    <MenuItem value="IT">IT</MenuItem>
-                    <MenuItem value="Computer Science">Computer Science</MenuItem>
-                    <MenuItem value="Engineering">Engineering</MenuItem>
-                    <MenuItem value="Mathematics">Mathematics</MenuItem>
-                  </Select>
-                </FormControl>
-                
-                <FormControl fullWidth margin="dense">
-                  <InputLabel id="academic-year-label">Academic Year</InputLabel>
-                  <Select
-                    labelId="academic-year-label"
-                    name="academicYear"
-                    value={newCourse.academicYear}
-                    onChange={handleInputChange}
-                    label="Academic Year"
-                  >
-                    {ACADEMIC_YEARS.map(year => (
-                      <MenuItem key={year} value={year}>{year}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                
-                <FormGroup>
-                  <FormControlLabel 
-                    control={
-                      <Checkbox 
-                        checked={newCourse.requiresLab}
-                        onChange={handleCheckboxChange}
-                        name="requiresLab"
-                      />
-                    } 
-                    label="Requires Lab"
+                    fullWidth
+                    margin="dense"
                   />
-                </FormGroup>
-              </div>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseAddDialog}>Cancel</Button>
-              <Button 
-                onClick={handleAddCourse}
-                variant="contained"
-                color="primary"
-                disabled={!newCourse.name || !newCourse.code || !newCourse.instructor}
-              >
-                Add Course
-              </Button>
-            </DialogActions>
+                  
+                  <div style={{ display: 'flex', gap: '16px' }}>
+                    <TextField
+                      label="Credits"
+                      name="credits"
+                      value={newCourse.credits}
+                      onChange={handleInputChange}
+                      type="number"
+                      fullWidth
+                      margin="dense"
+                    />
+                    
+                    <TextField
+                      label="Expected Enrollment"
+                      name="expectedEnrollment"
+                      value={newCourse.expectedEnrollment}
+                      onChange={handleInputChange}
+                      type="number"
+                      fullWidth
+                      margin="dense"
+                    />
+                  </div>
+                  
+                  <FormControl fullWidth margin="dense">
+                    <InputLabel id="department-label">Department</InputLabel>
+                    <Select
+                      labelId="department-label"
+                      name="department"
+                      value={newCourse.department}
+                      onChange={handleInputChange}
+                      label="Department"
+                    >
+                      <MenuItem value="IT">IT</MenuItem>
+                      <MenuItem value="Computer Science">Computer Science</MenuItem>
+                      <MenuItem value="Engineering">Engineering</MenuItem>
+                      <MenuItem value="Mathematics">Mathematics</MenuItem>
+                    </Select>
+                  </FormControl>
+                  
+                  <FormControl fullWidth margin="dense">
+                    <InputLabel id="academic-year-label">Academic Year</InputLabel>
+                    <Select
+                      labelId="academic-year-label"
+                      name="academicYear"
+                      value={newCourse.academicYear}
+                      onChange={handleInputChange}
+                      label="Academic Year"
+                    >
+                      {ACADEMIC_YEARS.map(year => (
+                        <MenuItem key={year} value={year}>{year}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  
+                  <FormGroup>
+                    <FormControlLabel 
+                      control={
+                        <Checkbox 
+                          checked={newCourse.requiresLab}
+                          onChange={handleCheckboxChange}
+                          name="requiresLab"
+                        />
+                      } 
+                      label="Requires Lab"
+                    />
+                  </FormGroup>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseAddDialog}>Cancel</Button>
+                <Button 
+                  onClick={handleAddCourse}
+                  variant="contained"
+                  color="primary"
+                  disabled={!newCourse.name || !newCourse.code || !newCourse.instructor}
+                >
+                  Add Course
+                </Button>
+              </DialogActions>
             </Dialog>
           </div>
         </div>
