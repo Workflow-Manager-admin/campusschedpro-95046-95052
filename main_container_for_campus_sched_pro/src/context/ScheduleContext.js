@@ -453,18 +453,18 @@ export const ScheduleProvider = ({ children }) => {
       });
       
       if (!roomId) {
-        throw new Error('Failed to create room');
+        throw new Error('Failed to create room - database did not return an ID');
       }
       
       // Refresh data
-      await loadInitialData();
+      await loadInitialData(true); // Force reload to ensure we get the latest data
       
       showNotification(`Room ${newRoom.name} added successfully`, 'success');
       return roomId;
     } catch (error) {
       console.error('Error adding room:', error);
       showNotification(`Failed to add room: ${error.message}`, 'error');
-      return null;
+      throw error; // Re-throw to allow components to handle specific errors
     }
   }, [showNotification, loadInitialData]);
 
