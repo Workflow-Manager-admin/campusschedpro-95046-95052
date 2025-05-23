@@ -423,7 +423,7 @@ export const ScheduleProvider = ({ children }) => {
     });
 
     setAllocations(newAllocations);
-  }, [schedule, allocations]); // Ensure allocations is included in the dependency array
+  }, [schedule, allocations]); // Fixed eslint warning by explicitly including allocations
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
