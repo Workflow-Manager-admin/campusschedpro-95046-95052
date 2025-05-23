@@ -25,6 +25,44 @@ const FacultyManagement = () => {
     email: '',
     expertise: ''
   });
+  
+  // Load faculty data from Supabase
+  const loadFacultyData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Get all faculty members
+      const facultyData = await getAllFaculty();
+      
+      // Get assignments for each faculty member
+      const facultyWithAssignments = await Promise.all(
+        facultyData.map(async (fac) => {
+          const assignments = await getFacultyAssignments(fac.id);
+          const facultyWithStatus = {
+            ...fac,
+            assignments
+          };
+          
+          // Calculate faculty status based on assignments
+          return {
+            ...facultyWithStatus,
+            ...getFacultyStatus(facultyWithStatus, assignments)
+          };
+        })
+      );
+      
+      setFaculty(facultyWithAssignments);
+    } catch (error) {
+      console.error('Error loading faculty data:', error);
+      showNotification('Failed to load faculty data from the database', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showNotification]);
+  
+  // Load data on component mount
+  useEffect(() => {
+    loadFacultyData();
+  }, [loadFacultyData]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
