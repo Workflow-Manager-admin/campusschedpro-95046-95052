@@ -113,10 +113,13 @@ const FacultyManagement = () => {
 
   const handleUpdateFaculty = async (updatedFaculty) => {
     try {
-      const facultyId = await saveFaculty(updatedFaculty);
+      // Use the safer faculty update function
+      showNotification('Updating faculty member...', 'info');
       
-      if (!facultyId) {
-        throw new Error('Failed to update faculty - no ID returned');
+      const result = await safeSaveFaculty(updatedFaculty);
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to update faculty');
       }
       
       await loadFacultyData();
