@@ -448,24 +448,20 @@ export const ScheduleProvider = ({ children }) => {
       return false;
     }
     
-    // Validate the index if provided
-    if (index !== undefined && (index < 0 || index >= schedule[slotId].length)) {
+    // Index must be provided to ensure we remove the specific instance
+    if (index === undefined || index < 0 || index >= schedule[slotId].length) {
+      console.warn('Invalid index provided for course removal');
       return false;
     }
     
-    // Create a new schedule with the specific course instance removed
+    // Create a new schedule with the specific course instance removed at the exact index
     const newSchedule = { ...schedule };
     
-    if (index !== undefined) {
-      // If index is provided, remove the specific course instance at that index
-      newSchedule[slotId] = [
-        ...schedule[slotId].slice(0, index),
-        ...schedule[slotId].slice(index + 1)
-      ];
-    } else {
-      // Fallback behavior - remove first matching course by ID (shouldn't happen with new implementation)
-      newSchedule[slotId] = newSchedule[slotId].filter(c => c.id !== course.id);
-    }
+    // Remove the specific course instance at the provided index
+    newSchedule[slotId] = [
+      ...schedule[slotId].slice(0, index),
+      ...schedule[slotId].slice(index + 1)
+    ];
     
     // Remove empty slots to keep the schedule clean
     if (newSchedule[slotId].length === 0) {
