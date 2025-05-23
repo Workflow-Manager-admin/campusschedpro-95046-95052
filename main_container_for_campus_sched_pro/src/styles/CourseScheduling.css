@@ -133,11 +133,36 @@
   height: 100%;
 }
 
-.timetable {
-  min-width: 900px;
-  height: 100%;
+.timetable-container {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.timetable-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 8px;
+}
+
+.download-button {
+  text-transform: none !important;
+  background-color: var(--primary-green) !important;
+  color: white !important;
+}
+
+.download-button:hover {
+  background-color: var(--primary-dark) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.timetable {
+  min-width: 900px;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  background-color: white;
 }
 
 .timetable-header {
