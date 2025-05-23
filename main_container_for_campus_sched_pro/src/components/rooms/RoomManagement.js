@@ -10,7 +10,7 @@ const RoomManagement = () => {
   // Use room data from context instead of local state
   const { 
     rooms, 
-    isLoading,
+    // Removed unused variable isLoading
     showNotification: contextShowNotification,
     addRoom,
     updateRoom,
