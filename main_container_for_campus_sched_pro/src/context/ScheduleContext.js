@@ -442,47 +442,30 @@ export const ScheduleProvider = ({ children }) => {
   }, [showNotification]);
 
   // Function to remove a course from a specific time slot
-  const removeCourseFromSlot = useCallback((slotId, courseId, courseIndex) => {
+  const removeCourseFromSlot = useCallback((slotId, course, index) => {
     // Check if the slot exists and has courses
     if (!schedule[slotId] || schedule[slotId].length === 0) {
       return false;
     }
-
-    // Check if the index is valid
-    if (courseIndex === undefined || courseIndex < 0 || courseIndex >= schedule[slotId].length) {
-      // Fallback to the old behavior if no valid index is provided
-      const courseInSlot = schedule[slotId].find(c => c.id === courseId);
-      if (!courseInSlot) {
-        return false;
-      }
-      
-      // Create a new schedule with the course removed from the slot
-      const newSchedule = { ...schedule };
-      newSchedule[slotId] = newSchedule[slotId].filter(c => c.id !== courseId);
-      
-      // Remove empty slots to keep the schedule clean
-      if (newSchedule[slotId].length === 0) {
-        delete newSchedule[slotId];
-      }
-  
-      // Update the schedule
-      setSchedule(newSchedule);
-      
-      // Show notification
-      showNotification(`Removed ${courseInSlot.code} from schedule`, 'success');
-      
-      return true;
-    }
-
-    // Get the specific course instance using the index
-    const courseToRemove = schedule[slotId][courseIndex];
     
-    // Create a new schedule with only that specific course instance removed
+    // Validate the index if provided
+    if (index !== undefined && (index < 0 || index >= schedule[slotId].length)) {
+      return false;
+    }
+    
+    // Create a new schedule with the specific course instance removed
     const newSchedule = { ...schedule };
-    newSchedule[slotId] = [
-      ...schedule[slotId].slice(0, courseIndex),
-      ...schedule[slotId].slice(courseIndex + 1)
-    ];
+    
+    if (index !== undefined) {
+      // If index is provided, remove the specific course instance at that index
+      newSchedule[slotId] = [
+        ...schedule[slotId].slice(0, index),
+        ...schedule[slotId].slice(index + 1)
+      ];
+    } else {
+      // Fallback behavior - remove first matching course by ID (shouldn't happen with new implementation)
+      newSchedule[slotId] = newSchedule[slotId].filter(c => c.id !== course.id);
+    }
     
     // Remove empty slots to keep the schedule clean
     if (newSchedule[slotId].length === 0) {
@@ -493,7 +476,7 @@ export const ScheduleProvider = ({ children }) => {
     setSchedule(newSchedule);
     
     // Show notification
-    showNotification(`Removed ${courseToRemove.code} from schedule`, 'success');
+    showNotification(`Removed ${course.code} from schedule`, 'success');
     
     return true;
   }, [schedule, setSchedule, showNotification]);
