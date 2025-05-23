@@ -4,14 +4,12 @@ import CourseScheduling from './components/CourseScheduling';
 import { FacultyManagement } from './components/faculty';
 import { RoomManagement, RoomAllocation } from './components/rooms';
 import { ConflictResolution } from './components/conflicts';
-import { StudentScheduleView } from './components/student';
 import { ScheduleProvider } from './context/ScheduleContext';
 import './App.css';
 import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
 import './styles/ConflictResolution.css';
-import './styles/StudentView.css';
 
 function App() {
   return (
