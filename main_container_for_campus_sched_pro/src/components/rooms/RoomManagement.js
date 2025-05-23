@@ -129,34 +129,32 @@ const RoomManagement = () => {
     }
   };
 
-  const handleAddRoom = () => {
+  const handleAddRoom = async () => {
     // Validate new room
     if (!newRoom.name || !newRoom.type || !newRoom.building) {
       contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
-    // Create new room with unique ID
-    const newRoomWithId = {
-      ...newRoom,
-      id: `room-${Date.now()}`
-    };
-
-    // Add to rooms array
-    setRooms([...rooms, newRoomWithId]);
-    setShowAddModal(false);
-    
-    // Reset new room form
-    setNewRoom({
-      name: '',
-      type: ROOM_TYPES[0],
-      capacity: 30,
-      equipment: [],
-      building: BUILDINGS[0],
-      floor: '1st Floor'
-    });
-    
-    contextShowNotification('Room added successfully', 'success');
+    try {
+      // Use the addRoom function from context which handles Supabase integration
+      await addRoom(newRoom);
+      
+      setShowAddModal(false);
+      
+      // Reset new room form
+      setNewRoom({
+        name: '',
+        type: ROOM_TYPES[0],
+        capacity: 30,
+        equipment: [],
+        building: BUILDINGS[0],
+        floor: '1st Floor'
+      });
+    } catch (error) {
+      console.error('Error adding room:', error);
+      contextShowNotification('Failed to add room to the database', 'error');
+    }
   };
 
   // Removed unused handleCloseNotification function
