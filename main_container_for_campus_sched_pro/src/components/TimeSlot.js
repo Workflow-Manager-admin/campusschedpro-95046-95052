@@ -44,6 +44,15 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
                 <div className="course-item-header">
                   <span className="course-code">{course.code}</span>
                   <span className="course-credits">{course.credits} cr</span>
+                  <IconButton 
+                    className="remove-course-btn"
+                    size="small"
+                    onClick={(e) => handleRemoveCourse(course.id, e)}
+                    aria-label="Remove course"
+                    title="Remove from schedule"
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
                 </div>
                 <div className="course-name">{course.name}</div>
                 <div className="course-details">
