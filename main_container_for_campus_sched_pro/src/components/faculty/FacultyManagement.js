@@ -109,13 +109,18 @@ const FacultyManagement = () => {
 
   const handleUpdateFaculty = async (updatedFaculty) => {
     try {
-      await saveFaculty(updatedFaculty);
+      const facultyId = await saveFaculty(updatedFaculty);
+      
+      if (!facultyId) {
+        throw new Error('Failed to update faculty - no ID returned');
+      }
+      
       await loadFacultyData();
       setSelectedFaculty(updatedFaculty);
       showNotification('Faculty member updated successfully', 'success');
     } catch (error) {
       console.error('Error updating faculty:', error);
-      showNotification('Failed to update faculty member in the database', 'error');
+      showNotification(`Failed to update faculty: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
