@@ -258,13 +258,9 @@ const CourseScheduling = () => {
               )}
             </div>
             
-            <Droppable droppableId="courses-list">
+            <ReduxDroppable droppableId="courses-list" className="courses-list">
               {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="courses-list"
-                >
+                <>
                   {filteredCourses.map((course, index) => (
                     <Course 
                       key={course.id} 
@@ -272,10 +268,9 @@ const CourseScheduling = () => {
                       index={index}
                     />
                   ))}
-                  {provided.placeholder}
-                </div>
+                </>
               )}
-            </Droppable>
+            </ReduxDroppable>
           </div>
           
           <div className="timetable-panel">
