@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { getTimeSlotId } from './getTimeSlotId';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL||'https://alsthvnrqazftrtluxss.supabase.co';
