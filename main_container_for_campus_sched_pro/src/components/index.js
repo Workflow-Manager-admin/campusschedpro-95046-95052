@@ -1,7 +1,6 @@
-// Faculty, Room, Student and Conflict components
+// Faculty, Room and Conflict components
 import { FacultyManagement, FacultyCard, FacultyDetails } from './faculty';
 import { RoomManagement, RoomAllocation } from './rooms';
-import { StudentScheduleView } from './student';
 import { ConflictResolution } from './conflicts';
 
 export { default as TimeSlot } from './TimeSlot';
