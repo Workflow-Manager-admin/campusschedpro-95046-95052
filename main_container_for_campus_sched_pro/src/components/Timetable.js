@@ -23,10 +23,12 @@ const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
   return (
     <div className="timetable-container">
       <div className="timetable-actions">
-        <ShareScheduleButton 
-          targetRef={timetableRef} 
-          onNotification={showNotification} 
-        />
+        <div className="download-button-container">
+          <ShareScheduleButton 
+            targetRef={timetableRef} 
+            onNotification={showNotification} 
+          />
+        </div>
       </div>
       <div className="timetable timetable-for-export" ref={timetableRef}>
       <div className="timetable-header">
