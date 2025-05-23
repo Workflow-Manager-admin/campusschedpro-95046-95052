@@ -2,109 +2,11 @@
 > react-kavia@0.1.0 start
 > react-scripts start
 
-(node:4455) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:6088) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:4455) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:6088) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
-Compiled with warnings.
-
-[eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-Compiling...
-Failed to compile.
-
-[eslint] 
-src/App.js
-  Line 82:53:  'StudentScheduleView' is not defined  react/jsx-no-undef
-
-Search for the keywords to learn more about each error.
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-ERROR in [eslint] 
-src/App.js
-  Line 82:53:  'StudentScheduleView' is not defined  react/jsx-no-undef
-
-Search for the keywords to learn more about each error.
-
-webpack compiled with 1 error and 1 warning
-Compiling...
-Failed to compile.
-
-[eslint] 
-src/App.js
-  Line 74:53:  'StudentScheduleView' is not defined  react/jsx-no-undef
-
-Search for the keywords to learn more about each error.
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-ERROR in [eslint] 
-src/App.js
-  Line 74:53:  'StudentScheduleView' is not defined  react/jsx-no-undef
-
-Search for the keywords to learn more about each error.
-
-webpack compiled with 1 error and 1 warning
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/context/ScheduleContext.js
-  Line 359:6:  React Hook useCallback has a missing dependency: 'allocations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-Compiling...
 Compiled with warnings.
 
 [eslint] 
