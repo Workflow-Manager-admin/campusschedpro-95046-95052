@@ -38,6 +38,9 @@ const CourseScheduling = () => {
     handleCloseNotification
   } = useSchedule();
   
+  // Create a ref for the timetable element to be used with ShareScheduleButton
+  const timetableRef = useRef(null);
+  
   // State for add course dialog
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newCourse, setNewCourse] = useState({
