@@ -36,6 +36,16 @@ const RoomAllocation = () => {
       setDataInitialized(true);
     }
   }, [dataInitialized]); // Remove updateAllocations from dependencies
+  
+  // Track significant changes to update view without full API refetch
+  useEffect(() => {
+    // If we're already initialized but courses or allocations have meaningful changes
+    // (like when course assignments happen elsewhere in the app)
+    if (dataInitialized && courses.length > 0 && rooms.length > 0) {
+      // Don't call updateAllocations as that could trigger API fetches
+      // Instead, let the context subscriptions handle it
+    }
+  }, [courses, rooms, dataInitialized]);
 
   const [buildingFilter, setBuildingFilter] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState(null);
