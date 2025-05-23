@@ -128,67 +128,7 @@ export const suggestAlternativeTimeSlots = (schedule, course, currentSlotId) => 
   return sameDayOptions;
 };
 
-/**
- * Create a student-specific view of the schedule
- * @param {Object} schedule - Full schedule with all courses
- * @param {Array} enrolledCourseIds - List of course IDs the student is enrolled in
- * @returns {Object} - Schedule filtered to show only the student's courses
- */
-export const getStudentSchedule = (schedule, enrolledCourseIds) => {
-  const studentSchedule = {};
-  
-  Object.entries(schedule).forEach(([slotId, courses]) => {
-    const studentCourses = courses.filter(course => 
-      enrolledCourseIds.includes(course.id)
-    );
-    
-    if (studentCourses.length > 0) {
-      studentSchedule[slotId] = studentCourses;
-    }
-  });
-  
-  return studentSchedule;
-};
 
-/**
- * Generate a printable version of the schedule
- * @param {Object} schedule - Schedule to format
- * @returns {Object} - Formatted schedule by day and time
- */
-export const formatPrintableSchedule = (schedule) => {
-  const formatted = {
-    Monday: [],
-    Tuesday: [],
-    Wednesday: [],
-    Thursday: [],
-    Friday: []
-  };
-  
-  Object.entries(schedule).forEach(([slotId, courses]) => {
-    const { day, time } = formatSlotId(slotId);
-    
-    courses.forEach(course => {
-      formatted[day].push({
-        time,
-        course: `${course.code} - ${course.name}`,
-        instructor: course.instructor,
-        room: course.room || 'TBA'
-      });
-    });
-  });
-  
-  // Sort each day's schedule by time
-  Object.keys(formatted).forEach(day => {
-    formatted[day].sort((a, b) => {
-      // Convert times to comparable format (assuming AM/PM format)
-      const timeA = a.time.replace('AM', '0').replace('PM', '1');
-      const timeB = b.time.replace('AM', '0').replace('PM', '1');
-      return timeA.localeCompare(timeB);
-    });
-  });
-  
-  return formatted;
-};
 
 /**
  * Format time slot ID into readable format
