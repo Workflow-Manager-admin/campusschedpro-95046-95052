@@ -26,7 +26,16 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
    * Handle the image capture and download process
    */
   const handleCaptureSchedule = async () => {
-    if (!targetRef.current || isCapturing) {
+    // Validate ref existence
+    if (!targetRef || !targetRef.current) {
+      if (onNotification) {
+        onNotification('Unable to find schedule element to capture', 'error');
+      }
+      return;
+    }
+
+    // Prevent multiple captures
+    if (isCapturing) {
       return;
     }
 
@@ -38,13 +47,16 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
         onNotification('Capturing schedule as image...', 'info');
       }
 
-      // Create a clone of the target element to modify for better capture
+      // Get the target element
       const timetableEl = targetRef.current;
+      
+      // Add a temporary class for better capture quality
+      timetableEl.classList.add('capturing');
       
       // Use html2canvas with optimized settings
       const canvas = await html2canvas(timetableEl, {
         backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
+        scale: 2, // Higher quality for better resolution
         useCORS: true,
         logging: false,
         allowTaint: true,
@@ -55,7 +67,10 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
         windowHeight: document.documentElement.offsetHeight
       });
       
-      // Convert to image data
+      // Remove the temporary class
+      timetableEl.classList.remove('capturing');
+      
+      // Convert to high-quality image data
       const imageData = canvas.toDataURL('image/png', 1.0);
       
       // Create download link with better filename
