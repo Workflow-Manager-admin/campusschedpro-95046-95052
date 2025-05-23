@@ -1,0 +1,261 @@
+{
+  "localStorage": {
+    "campusSchedPro_courses": {
+      "description": "Array of course objects",
+      "structure": {
+        "id": "string",
+        "name": "string",
+        "code": "string",
+        "credits": "number",
+        "instructor": "string",
+        "expectedEnrollment": "number",
+        "requiresLab": "boolean",
+        "requiredEquipment": "string[]",
+        "department": "string",
+        "academicYear": "string"
+      }
+    },
+    "campusSchedPro_schedule": {
+      "description": "Object with time slots as keys and arrays of courses as values",
+      "structure": {
+        "[day]-[time]": [
+          {
+            "id": "string",
+            "name": "string",
+            "code": "string",
+            "credits": "number",
+            "instructor": "string",
+            "room": "string (optional)"
+          }
+        ]
+      }
+    },
+    "campusSchedPro_rooms": {
+      "description": "Array of room objects",
+      "structure": {
+        "id": "string",
+        "name": "string",
+        "type": "string",
+        "capacity": "number",
+        "building": "string",
+        "equipment": "string[]"
+      }
+    },
+    "campusSchedPro_allocations": {
+      "description": "Array of room allocations with courses",
+      "structure": {
+        "roomId": "string",
+        "roomName": "string",
+        "building": "string",
+        "courses": [
+          {
+            "id": "string",
+            "name": "string",
+            "code": "string",
+            "schedule": "string[]"
+          }
+        ]
+      }
+    },
+    "campusSchedPro_faculty": {
+      "description": "Not directly stored, but present in component state",
+      "structure": {
+        "id": "string",
+        "name": "string",
+        "department": "string",
+        "email": "string",
+        "expertise": "string[]",
+        "assignments": [
+          {
+            "id": "string",
+            "code": "string",
+            "name": "string",
+            "schedule": "string[]"
+          }
+        ]
+      }
+    }
+  },
+  "supabaseDatabase": {
+    "departments": {
+      "description": "Academic departments",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "buildings": {
+      "description": "Campus buildings",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL",
+        "location": "TEXT",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "equipment_types": {
+      "description": "Available equipment types",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL UNIQUE",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "rooms": {
+      "description": "Classrooms, labs, and lecture halls",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL",
+        "type": "TEXT NOT NULL",
+        "capacity": "INTEGER NOT NULL DEFAULT 0",
+        "building_id": "UUID REFERENCES buildings(id)",
+        "floor": "TEXT",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "room_equipment": {
+      "description": "Equipment assigned to rooms (many-to-many)",
+      "fields": {
+        "room_id": "UUID REFERENCES rooms(id)",
+        "equipment_id": "UUID REFERENCES equipment_types(id)",
+        "PRIMARY KEY": "(room_id, equipment_id)"
+      }
+    },
+    "faculty": {
+      "description": "Faculty members",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL",
+        "department_id": "UUID REFERENCES departments(id)",
+        "email": "TEXT NOT NULL UNIQUE",
+        "status": "TEXT DEFAULT 'Available'",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "faculty_expertise": {
+      "description": "Areas of expertise for faculty (many-to-many)",
+      "fields": {
+        "faculty_id": "UUID REFERENCES faculty(id)",
+        "expertise": "TEXT NOT NULL",
+        "PRIMARY KEY": "(faculty_id, expertise)"
+      }
+    },
+    "academic_years": {
+      "description": "Academic year classifications",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL UNIQUE",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "courses": {
+      "description": "Course definitions",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "name": "TEXT NOT NULL",
+        "code": "TEXT NOT NULL UNIQUE",
+        "credits": "INTEGER NOT NULL DEFAULT 3",
+        "department_id": "UUID REFERENCES departments(id)",
+        "academic_year_id": "UUID REFERENCES academic_years(id)",
+        "expected_enrollment": "INTEGER NOT NULL DEFAULT 0",
+        "requires_lab": "BOOLEAN NOT NULL DEFAULT false",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    },
+    "course_equipment": {
+      "description": "Equipment required for courses (many-to-many)",
+      "fields": {
+        "course_id": "UUID REFERENCES courses(id)",
+        "equipment_id": "UUID REFERENCES equipment_types(id)",
+        "PRIMARY KEY": "(course_id, equipment_id)"
+      }
+    },
+    "time_slots": {
+      "description": "Defined time slots for scheduling",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "day": "TEXT NOT NULL",
+        "time": "TEXT NOT NULL",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "UNIQUE": "(day, time)"
+      }
+    },
+    "schedule": {
+      "description": "Course scheduling assignments",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "course_id": "UUID REFERENCES courses(id)",
+        "faculty_id": "UUID REFERENCES faculty(id)",
+        "room_id": "UUID REFERENCES rooms(id)",
+        "time_slot_id": "UUID REFERENCES time_slots(id)",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE",
+        "UNIQUE": ["(faculty_id, time_slot_id)", "(room_id, time_slot_id)"]
+      }
+    },
+    "conflicts": {
+      "description": "Detected scheduling conflicts",
+      "fields": {
+        "id": "UUID PRIMARY KEY",
+        "schedule_id_1": "UUID REFERENCES schedule(id)",
+        "schedule_id_2": "UUID REFERENCES schedule(id)",
+        "conflict_type": "TEXT NOT NULL",
+        "resolved": "BOOLEAN DEFAULT FALSE",
+        "created_at": "TIMESTAMP WITH TIME ZONE",
+        "updated_at": "TIMESTAMP WITH TIME ZONE"
+      }
+    }
+  },
+  "mappings": {
+    "campusSchedPro_courses": {
+      "main": "courses",
+      "fieldMappings": {
+        "id": "id",
+        "name": "name",
+        "code": "code",
+        "credits": "credits",
+        "instructor": "← lookup from schedule table",
+        "expectedEnrollment": "expected_enrollment",
+        "requiresLab": "requires_lab",
+        "requiredEquipment": "← from course_equipment junction table",
+        "department": "← from departments table via department_id",
+        "academicYear": "← from academic_years table via academic_year_id"
+      }
+    },
+    "campusSchedPro_rooms": {
+      "main": "rooms",
+      "fieldMappings": {
+        "id": "id",
+        "name": "name",
+        "type": "type",
+        "capacity": "capacity",
+        "building": "← from buildings table via building_id",
+        "equipment": "← from room_equipment junction table"
+      }
+    },
+    "campusSchedPro_faculty": {
+      "main": "faculty",
+      "fieldMappings": {
+        "id": "id",
+        "name": "name",
+        "department": "← from departments table via department_id",
+        "email": "email",
+        "expertise": "← from faculty_expertise junction table",
+        "assignments": "← derived from schedule table"
+      }
+    },
+    "campusSchedPro_schedule": {
+      "main": "schedule",
+      "structure": "The schedule table connects courses, faculty, rooms, and time slots",
+      "note": "The localStorage schedule uses day-time strings as keys, while Supabase uses a more normalized approach"
+    }
+  }
+}
