@@ -1,8 +1,10 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import dragDropReducer from './reducers/dragDropReducer';
+import studentReducer from './reducers/studentReducer';
 
 // Combine all reducers
 const rootReducer = combineReducers({
+  student: studentReducer,
   dragDrop: dragDropReducer,
   // Add other reducers here as the app grows
   ui: (state = { selectedTab: null, darkMode: false }, action) => {
