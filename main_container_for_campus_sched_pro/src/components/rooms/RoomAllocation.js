@@ -271,12 +271,12 @@ const RoomAllocation = () => {
                             <button 
                               className="btn-icon"
                               title="Unassign Room"
-                              onClick={(e) => {
+                              onClick={async (e) => {
                                 e.stopPropagation(); // Prevent event bubbling
-                                const success = assignRoom(course.id, null);
+                                const success = await assignRoom(course.id, null);
                                 if (success) {
                                   showNotification(`Unassigned ${course.code} from room`, 'info');
-                                  updateAllocations(); // Ensure allocations are updated
+                                  // The loadInitialData in ScheduleContext will handle updating allocations
                                 }
                               }}
                             >
