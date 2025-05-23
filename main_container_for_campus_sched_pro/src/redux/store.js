@@ -1,24 +1,29 @@
-import { configureStore } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import studentReducer from './reducers/studentReducer';
 import dragDropReducer from './reducers/dragDropReducer';
 
-// UI reducer as a slice
-const uiReducer = (state = { selectedTab: null, darkMode: false }, action) => {
-  switch (action.type) {
-    case 'SET_SELECTED_TAB':
-      return {
-        ...state,
-        selectedTab: action.payload
-      };
-    case 'TOGGLE_DARK_MODE':
-      return {
-        ...state,
-        darkMode: !state.darkMode
-      };
-    default:
-      return state;
+// Combine all reducers
+const rootReducer = combineReducers({
+  student: studentReducer,
+  dragDrop: dragDropReducer,
+  // Add other reducers here as the app grows
+  ui: (state = { selectedTab: null, darkMode: false }, action) => {
+    switch (action.type) {
+      case 'SET_SELECTED_TAB':
+        return {
+          ...state,
+          selectedTab: action.payload
+        };
+      case 'TOGGLE_DARK_MODE':
+        return {
+          ...state,
+          darkMode: !state.darkMode
+        };
+      default:
+        return state;
+    }
   }
-};
+});
 
 // Simple logging middleware for debugging (can be removed in production)
 const logger = store => next => action => {
@@ -38,15 +43,15 @@ const logger = store => next => action => {
   return next(action);
 };
 
-// Create store with configureStore API from Redux Toolkit
-const store = configureStore({
-  reducer: {
-    student: studentReducer,
-    dragDrop: dragDropReducer,
-    ui: uiReducer
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
-  devTools: process.env.NODE_ENV !== 'production'
-});
+// Setup Redux DevTools
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+// Create store with middleware
+const store = createStore(
+  rootReducer,
+  composeEnhancers(
+    applyMiddleware(logger)
+  )
+);
 
 export default store;
