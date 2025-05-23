@@ -25,10 +25,16 @@ const RoomAllocation = () => {
     updateAllocations
   } = useSchedule();
 
-  // Ensure allocations are up to date when component mounts
+  // Only update allocations once when component mounts or when explicitly needed
+  const [dataInitialized, setDataInitialized] = useState(false);
+
+  // Only update allocations once when component mounts
   useEffect(() => {
-    updateAllocations();
-  }, [updateAllocations]);
+    if (!dataInitialized) {
+      updateAllocations();
+      setDataInitialized(true);
+    }
+  }, [updateAllocations, dataInitialized]);
 
   const [buildingFilter, setBuildingFilter] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState(null);
