@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import ReduxDragDropContext from './ReduxDragDropContext';
 import ReduxDroppable from './ReduxDroppable';
 import { 
@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import Timetable from './Timetable';
 import Course from './Course';
+import ShareScheduleButton from './ShareScheduleButton';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
 import { useSchedule } from '../context/ScheduleContext';
 
