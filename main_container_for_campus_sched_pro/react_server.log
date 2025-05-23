@@ -75,3 +75,19 @@ src/utils/supabaseClient.js
 
 webpack compiled with 2 errors
 Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/getTimeSlotId.js
+  Line 26:5:  Unexpected console statement  no-console
+  Line 39:5:  Unexpected console statement  no-console
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/getTimeSlotId.js
+  Line 26:5:  Unexpected console statement  no-console
+  Line 39:5:  Unexpected console statement  no-console
+
+webpack compiled with 1 warning
