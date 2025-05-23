@@ -1,5 +1,4 @@
-import StudentScheduleView from './StudentScheduleView';
+// This file is intentionally empty
+// Student view has been removed from the application
 
-export {
-  StudentScheduleView
-};
+export const StudentScheduleView = () => null;
