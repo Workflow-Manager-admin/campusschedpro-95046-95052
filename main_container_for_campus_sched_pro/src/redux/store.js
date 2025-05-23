@@ -1,38 +1,27 @@
-import { createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
+import studentReducer from './reducers/studentReducer';
 
-// Initial state
-const initialState = {
-  // We can keep this minimal since most state is managed by ScheduleContext
-  // Just adding a placeholder state to start with
-  ui: {
-    selectedTab: null,
-    darkMode: false,
-  }
-};
-
-// Simple reducer - can be expanded as needed
-const rootReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'SET_SELECTED_TAB':
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
+// Combine all reducers
+const rootReducer = combineReducers({
+  student: studentReducer,
+  // Add other reducers here as the app grows
+  ui: (state = { selectedTab: null, darkMode: false }, action) => {
+    switch (action.type) {
+      case 'SET_SELECTED_TAB':
+        return {
+          ...state,
           selectedTab: action.payload
-        }
-      };
-    case 'TOGGLE_DARK_MODE':
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          darkMode: !state.ui.darkMode
-        }
-      };
-    default:
-      return state;
+        };
+      case 'TOGGLE_DARK_MODE':
+        return {
+          ...state,
+          darkMode: !state.darkMode
+        };
+      default:
+        return state;
+    }
   }
-};
+});
 
 // Create store
 const store = createStore(
