@@ -35,8 +35,7 @@ const CourseScheduling = () => {
     setSchedule,
     notification,
     showNotification,
-    handleCloseNotification,
-    addDuplicateCourseToSlot
+    handleCloseNotification
   } = useSchedule();
   
   // Create a ref for the timetable element to be used with ShareScheduleButton
