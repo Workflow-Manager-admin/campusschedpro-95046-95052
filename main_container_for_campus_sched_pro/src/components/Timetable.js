@@ -18,43 +18,8 @@ const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
   // Use provided schedule or fall back to context
   const schedule = propSchedule || contextSchedule;
 
-  // Function to capture the timetable as an image and download it
-  const handleDownloadImage = async () => {
-    try {
-      if (!timetableRef.current) {
-        return;
-      }
-
-      // Show notification that capture is in progress
-      showNotification('Capturing schedule as image...', 'info');
-      
-      // Use html2canvas to capture the timetable
-      const canvas = await html2canvas(timetableRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
-        logging: false,
-        useCORS: true
-      });
-      
-      // Convert to image data
-      const imageData = canvas.toDataURL('image/png');
-      
-      // Create download link
-      const link = document.createElement('a');
-      link.href = imageData;
-      link.download = 'schedule.png';
-      
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      showNotification('Schedule image downloaded successfully!', 'success');
-    } catch (error) {
-      console.error('Error capturing schedule:', error);
-      showNotification('Failed to capture schedule. Please try again.', 'error');
-    }
-  };
+  // Timetable ref for capturing the element
+  const timetableRef = useRef(null);
 
   return (
     <div className="timetable-container">
