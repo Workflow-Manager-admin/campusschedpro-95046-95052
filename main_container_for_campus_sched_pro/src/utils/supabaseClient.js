@@ -586,10 +586,9 @@ const getAcademicYearId = async (yearName) => {
 
 // Import getTimeSlotId from its module
 import { getTimeSlotId } from './getTimeSlotId';
-export { getTimeSlotId };
 
-=======
-=======
+// Re-export getTimeSlotId
+export { getTimeSlotId };
 
 // Parse time slot ID to get day and time
 export const parseTimeSlotId = (slotId) => {
