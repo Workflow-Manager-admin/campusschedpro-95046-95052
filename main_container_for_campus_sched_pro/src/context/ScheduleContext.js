@@ -442,21 +442,47 @@ export const ScheduleProvider = ({ children }) => {
   }, [showNotification]);
 
   // Function to remove a course from a specific time slot
-  const removeCourseFromSlot = useCallback((slotId, courseId) => {
+  const removeCourseFromSlot = useCallback((slotId, courseId, courseIndex) => {
     // Check if the slot exists and has courses
     if (!schedule[slotId] || schedule[slotId].length === 0) {
       return false;
     }
 
-    // Find the course in the slot
-    const courseInSlot = schedule[slotId].find(c => c.id === courseId);
-    if (!courseInSlot) {
-      return false;
+    // Check if the index is valid
+    if (courseIndex === undefined || courseIndex < 0 || courseIndex >= schedule[slotId].length) {
+      // Fallback to the old behavior if no valid index is provided
+      const courseInSlot = schedule[slotId].find(c => c.id === courseId);
+      if (!courseInSlot) {
+        return false;
+      }
+      
+      // Create a new schedule with the course removed from the slot
+      const newSchedule = { ...schedule };
+      newSchedule[slotId] = newSchedule[slotId].filter(c => c.id !== courseId);
+      
+      // Remove empty slots to keep the schedule clean
+      if (newSchedule[slotId].length === 0) {
+        delete newSchedule[slotId];
+      }
+  
+      // Update the schedule
+      setSchedule(newSchedule);
+      
+      // Show notification
+      showNotification(`Removed ${courseInSlot.code} from schedule`, 'success');
+      
+      return true;
     }
 
-    // Create a new schedule with the course removed from the slot
+    // Get the specific course instance using the index
+    const courseToRemove = schedule[slotId][courseIndex];
+    
+    // Create a new schedule with only that specific course instance removed
     const newSchedule = { ...schedule };
-    newSchedule[slotId] = newSchedule[slotId].filter(c => c.id !== courseId);
+    newSchedule[slotId] = [
+      ...schedule[slotId].slice(0, courseIndex),
+      ...schedule[slotId].slice(courseIndex + 1)
+    ];
     
     // Remove empty slots to keep the schedule clean
     if (newSchedule[slotId].length === 0) {
@@ -467,7 +493,7 @@ export const ScheduleProvider = ({ children }) => {
     setSchedule(newSchedule);
     
     // Show notification
-    showNotification(`Removed ${courseInSlot.code} from schedule`, 'success');
+    showNotification(`Removed ${courseToRemove.code} from schedule`, 'success');
     
     return true;
   }, [schedule, setSchedule, showNotification]);
