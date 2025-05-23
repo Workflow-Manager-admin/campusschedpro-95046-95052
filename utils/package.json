@@ -1,0 +1,18 @@
+{
+  "name": "campusschedpro-utils",
+  "version": "1.0.0",
+  "description": "Utility scripts for CampusSchedPro Supabase integration",
+  "private": true,
+  "scripts": {
+    "initialize": "node initialize_supabase.js",
+    "verify": "node verify_supabase_connection.js",
+    "test-connection": "node testSupabaseConnection.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.8.0",
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
