@@ -96,35 +96,37 @@ const RoomManagement = () => {
     }));
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     // Validate edited room
     if (!editedRoom.name || !editedRoom.type || !editedRoom.building) {
       contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
-    // Update rooms array
-    const updatedRooms = rooms.map(room => 
-      room.id === editedRoom.id ? editedRoom : room
-    );
-    
-    setRooms(updatedRooms);
-    setSelectedRoom(editedRoom);
-    setIsEditing(false);
-    
-    contextShowNotification('Room updated successfully', 'success');
+    try {
+      // Use the updateRoom function from context which handles Supabase integration
+      await updateRoom(editedRoom);
+      setSelectedRoom(editedRoom);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating room:', error);
+      contextShowNotification('Failed to update room in the database', 'error');
+    }
   };
 
-  const handleDeleteRoom = () => {
+  const handleDeleteRoom = async () => {
     if (!selectedRoom) return;
 
-    // Filter out the selected room
-    const updatedRooms = rooms.filter(room => room.id !== selectedRoom.id);
-    
-    setRooms(updatedRooms);
-    setSelectedRoom(null);
-    
-    contextShowNotification('Room deleted successfully', 'success');
+    try {
+      // Use the deleteRoomById function from context which handles Supabase integration
+      const success = await deleteRoomById(selectedRoom.id);
+      if (success) {
+        setSelectedRoom(null);
+      }
+    } catch (error) {
+      console.error('Error deleting room:', error);
+      contextShowNotification('Failed to delete room from the database', 'error');
+    }
   };
 
   const handleAddRoom = () => {
