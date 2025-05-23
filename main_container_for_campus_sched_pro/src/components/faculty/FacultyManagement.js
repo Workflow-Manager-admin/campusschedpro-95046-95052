@@ -83,19 +83,35 @@ const FacultyManagement = () => {
     setSelectedFaculty(selected);
   };
 
-  const handleAddFaculty = () => {
-    const newId = `faculty-${faculty.length + 1}`;
-    const newFacultyMember = {
-      ...newFaculty,
-      id: newId,
-      assignments: [],
-      expertise: newFaculty.expertise.split(',').map(e => e.trim())
-    };
-    
-    const updatedFaculty = getFacultyStatus(newFacultyMember, []);
-    setFaculty(prev => [...prev, updatedFaculty]);
-    setShowAddDialog(false);
-    setNewFaculty({ name: '', department: '', email: '', expertise: '' });
+  const handleAddFaculty = async () => {
+    try {
+      // Format expertise as an array
+      const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim());
+      
+      // Create faculty object for Supabase
+      const newFacultyMember = {
+        id: null, // null id for new faculty
+        name: newFaculty.name,
+        department: newFaculty.department,
+        email: newFaculty.email,
+        expertise: expertiseArray,
+        status: 'Available'
+      };
+      
+      // Save to Supabase
+      await saveFaculty(newFacultyMember);
+      
+      // Refresh faculty data
+      await loadFacultyData();
+      
+      // Reset UI
+      setShowAddDialog(false);
+      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
+      showNotification('Faculty member added successfully', 'success');
+    } catch (error) {
+      console.error('Error adding faculty:', error);
+      showNotification('Failed to add faculty member to the database', 'error');
+    }
   };
 
   const handleUpdateFaculty = (updatedFaculty) => {
