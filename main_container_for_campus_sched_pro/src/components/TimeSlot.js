@@ -4,13 +4,22 @@ import { Tooltip, Paper, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ReduxDroppable from './ReduxDroppable';
 
-const TimeSlot = ({ day, time, courses }) => {
+const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
   
   const getSlotColor = () => {
     if (!courses.length) return 'var(--background-light)';
     if (courses.length > 1) return 'rgba(255, 87, 34, 0.1)'; // Conflict color
     return 'rgba(46, 125, 50, 0.1)'; // Occupied color
+  };
+
+  const handleRemoveCourse = (courseId, event) => {
+    // Stop propagation to prevent drag event conflicts
+    event.stopPropagation();
+    
+    if (removeCourseFromSlot) {
+      removeCourseFromSlot(slotId, courseId);
+    }
   };
 
   return (
