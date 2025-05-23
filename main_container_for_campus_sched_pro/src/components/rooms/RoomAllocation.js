@@ -13,7 +13,7 @@ import {
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
 import RoomAllocationErrorBoundary from './RoomAllocationErrorBoundary';
-import PropTypes from 'prop-types';
+// Removed unused import: import PropTypes from 'prop-types';
 
 const RoomAllocation = () => {
   const { 
