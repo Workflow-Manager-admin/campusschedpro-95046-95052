@@ -17,13 +17,11 @@
 export const verifyTimeSlotFix = () => {
   console.log('Starting TimeSlot fix verification test...');
   
-  // This would be run from within a React component
-  // For testing in console, you would need to access the React app's context
-  const runTest = () => {
-    const { schedule, removeCourseFromSlot } = useSchedule();
-    
+  // This would be run from within a React component using the context API
+  // For demonstration purposes, we'll show how it would work if we had access to the context
+  const runTest = (schedule, removeCourseFromSlot) => {
     // Find a slot with duplicate courses
-    const slotsWithDuplicates = Object.entries(schedule)
+    const slotsWithDuplicates = Object.entries(schedule || {})
       .filter(([_, courses]) => {
         // Check if there are multiple courses with the same ID
         const ids = courses.map(c => c.id);
