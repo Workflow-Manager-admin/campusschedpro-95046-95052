@@ -91,10 +91,13 @@ const FacultyManagement = () => {
         status: 'Available'
       };
       
-      const facultyId = await saveFaculty(newFacultyMember);
+      // Use the safer faculty creation function
+      showNotification('Adding new faculty member...', 'info');
       
-      if (!facultyId) {
-        throw new Error('Failed to create faculty - no ID returned');
+      const result = await safeSaveFaculty(newFacultyMember);
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to create faculty');
       }
       
       await loadFacultyData();
