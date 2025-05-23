@@ -486,6 +486,28 @@ export const ScheduleProvider = ({ children }) => {
     return true;
   }, [schedule, setSchedule, showNotification]);
 
+  // Add function for testing duplicate course removal
+  const addDuplicateCourseToSlot = useCallback((slotId, courseId) => {
+    if (!schedule[slotId]) {
+      console.error(`Slot ${slotId} does not exist`);
+      return false;
+    }
+    
+    const course = courses.find(c => c.id === courseId);
+    if (!course) {
+      console.error(`Course with ID ${courseId} not found`);
+      return false;
+    }
+    
+    const newSchedule = { ...schedule };
+    // Add the same course again (will create a duplicate)
+    newSchedule[slotId].push({ ...course });
+    setSchedule(newSchedule);
+    
+    showNotification(`Added duplicate course ${course.code} to test removal logic`, 'info');
+    return true;
+  }, [courses, schedule, setSchedule, showNotification]);
+
   // Context value to be provided
   const contextValue = {
     courses,
@@ -504,7 +526,8 @@ export const ScheduleProvider = ({ children }) => {
     resolveConflict,
     updateAllocations,
     clearStoredData,
-    removeCourseFromSlot
+    removeCourseFromSlot,
+    addDuplicateCourseToSlot  // Added for testing
   };
 
   return (
