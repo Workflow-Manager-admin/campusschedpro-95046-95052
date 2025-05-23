@@ -272,6 +272,7 @@ const FacultyManagement = () => {
             </div>
           )}
         </div>
+        </>
       )}
     </div>
   );
