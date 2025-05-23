@@ -441,7 +441,8 @@ const CourseScheduling = () => {
                 Add Course
               </Button>
             </DialogActions>
-          </Dialog>
+            </Dialog>
+          </>
         </div>
       )}
     </div>
