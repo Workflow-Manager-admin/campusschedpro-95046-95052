@@ -13,12 +13,12 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     return 'rgba(46, 125, 50, 0.1)'; // Occupied color
   };
 
-  const handleRemoveCourse = (courseId, courseIndex, event) => {
+  const handleRemoveCourse = (course, index, event) => {
     // Stop propagation to prevent drag event conflicts
     event.stopPropagation();
     
     if (removeCourseFromSlot) {
-      removeCourseFromSlot(slotId, courseId, courseIndex);
+      removeCourseFromSlot(slotId, course, index);
     }
   };
 
@@ -47,7 +47,7 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
                   <IconButton 
                     className="remove-course-btn"
                     size="small"
-                    onClick={(e) => handleRemoveCourse(course.id, index, e)}
+                    onClick={(e) => handleRemoveCourse(course, index, e)}
                     aria-label="Remove course"
                     title="Remove from schedule"
                   >
