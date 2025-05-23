@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import html2canvas from 'html2canvas';
 import { Button, CircularProgress } from '@mui/material';
-import ShareIcon from '@mui/icons-material/Share';
 
 /**
  * Component for capturing and downloading a schedule as an image
@@ -89,7 +88,7 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
       onClick={handleCaptureSchedule}
       className="download-button"
       disabled={isCapturing}
-      startIcon={isCapturing ? <CircularProgress size={20} color="inherit" /> : <ShareIcon />}
+      startIcon={isCapturing ? <CircularProgress size={20} color="inherit" /> : '📥'}
     >
       {isCapturing ? 'Capturing...' : 'Export Schedule as Image'}
     </Button>
