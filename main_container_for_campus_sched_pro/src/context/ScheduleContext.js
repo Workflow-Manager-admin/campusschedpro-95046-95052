@@ -386,6 +386,7 @@ export const ScheduleProvider = ({ children }) => {
   }, [conflicts, courses, schedule, showNotification]);
 
   // Function to update room allocations when schedule changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateAllocations = useCallback(() => {
     const newAllocations = [...allocations];
 
