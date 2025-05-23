@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import html2canvas from 'html2canvas';
 import TimeSlot from './TimeSlot';
-import { Button } from '@mui/material';
+import ShareScheduleButton from './ShareScheduleButton';
 import { useSchedule } from '../context/ScheduleContext';
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
