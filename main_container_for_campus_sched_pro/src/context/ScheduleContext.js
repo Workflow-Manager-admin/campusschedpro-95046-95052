@@ -149,7 +149,7 @@ export const ScheduleProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [courses.length, rooms.length, schedule, allocations.length]);
+  }, []); // Remove dependencies that cause re-fetching loops
   
   // Load initial data on mount
   useEffect(() => {
@@ -186,7 +186,7 @@ export const ScheduleProvider = ({ children }) => {
       supabase.removeChannel(roomsSubscription);
       supabase.removeChannel(scheduleSubscription);
     };
-  }, [loadInitialData]);
+  }, []); // Only run once on mount since loadInitialData has no dependencies now
   
   // Update conflicts whenever schedule changes
   useEffect(() => {
@@ -323,7 +323,7 @@ export const ScheduleProvider = ({ children }) => {
   // Function to update room allocations when schedule changes
   const updateAllocations = useCallback(async () => {
     await loadInitialData();
-  }, [loadInitialData]);
+  }, []); // Only run once on mount since loadInitialData has no dependencies now
 
   // Function to remove a course from a specific time slot
   const removeCourseFromSlot = useCallback(async (slotId, course, index) => {
