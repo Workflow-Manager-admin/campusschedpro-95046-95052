@@ -179,24 +179,27 @@ const CourseScheduling = () => {
   };
   
   // Function to handle adding a new course
-  const handleAddCourse = () => {
+  const handleAddCourse = async () => {
     // Validate form
     if (!newCourse.name || !newCourse.code || !newCourse.instructor) {
       showNotification('Please fill in all required fields', 'error');
       return;
     }
     
-    // Create new course with unique ID
-    const newCourseWithId = {
+    // Prepare course object with required equipment
+    const courseToAdd = {
       ...newCourse,
-      id: `course-${Date.now()}`,
       requiredEquipment: newCourse.requiresLab ? ['Computers'] : []
     };
     
-    // Add to courses array
-    setCourses(prev => [...prev, newCourseWithId]);
-    showNotification(`Course ${newCourseWithId.code} added successfully`, 'success');
-    handleCloseAddDialog();
+    try {
+      // Use the addCourse function from context which handles Supabase integration
+      await addCourse(courseToAdd);
+      handleCloseAddDialog();
+    } catch (error) {
+      console.error('Error adding course:', error);
+      showNotification('Failed to add course to the database', 'error');
+    }
   };
 
   // Filter courses by academic year - safely handle courses that might not have academicYear

@@ -8,7 +8,14 @@ const BUILDINGS = ['Science Building', 'Engineering Building', 'Humanities Build
 
 const RoomManagement = () => {
   // Use room data from context instead of local state
-  const { rooms, setRooms, showNotification: contextShowNotification } = useSchedule();
+  const { 
+    rooms, 
+    isLoading,
+    showNotification: contextShowNotification,
+    addRoom,
+    updateRoom,
+    deleteRoomById
+  } = useSchedule();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
