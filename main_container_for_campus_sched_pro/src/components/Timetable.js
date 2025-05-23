@@ -1,7 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import TimeSlot from './TimeSlot';
-import ShareScheduleButton from './ShareScheduleButton';
 import { useSchedule } from '../context/ScheduleContext';
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -11,25 +10,14 @@ export const TIME_SLOTS = [
 ];
 
 // Use the schedule from props but fall back to context if not provided
-const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
-  const { schedule: contextSchedule, removeCourseFromSlot, showNotification } = useSchedule();
+const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
+  const { schedule: contextSchedule, removeCourseFromSlot } = useSchedule();
   
   // Use provided schedule or fall back to context
   const schedule = propSchedule || contextSchedule;
 
-  // Timetable ref for capturing the element
-  const timetableRef = useRef(null);
-
   return (
     <div className="timetable-container">
-      <div className="timetable-actions">
-        <div className="download-button-container">
-          <ShareScheduleButton 
-            targetRef={timetableRef} 
-            onNotification={showNotification} 
-          />
-        </div>
-      </div>
       <div className="timetable timetable-for-export" ref={timetableRef}>
       <div className="timetable-header">
         <div className="time-column">Time</div>
