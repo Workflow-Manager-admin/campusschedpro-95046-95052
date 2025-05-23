@@ -441,7 +441,7 @@ const CourseScheduling = () => {
               </Button>
             </DialogActions>
           </Dialog>
-        </>
+        </div>
       )}
     </div>
   );
