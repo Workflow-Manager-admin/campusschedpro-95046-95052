@@ -584,6 +584,10 @@ const getAcademicYearId = async (yearName) => {
   return created?.id || null;
 };
 
+// Import getTimeSlotId from its module
+import { getTimeSlotId } from './getTimeSlotId';
+export { getTimeSlotId };
+
 =======
 =======
 
