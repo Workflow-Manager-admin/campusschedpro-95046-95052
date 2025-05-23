@@ -477,18 +477,18 @@ export const ScheduleProvider = ({ children }) => {
       const courseId = await saveCourse(updatedCourse);
       
       if (!courseId) {
-        throw new Error('Failed to update course');
+        throw new Error('Failed to update course - database did not return an ID');
       }
       
       // Refresh data
-      await loadInitialData();
+      await loadInitialData(true); // Force reload to ensure we get the latest data
       
       showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
       return courseId;
     } catch (error) {
       console.error('Error updating course:', error);
       showNotification(`Failed to update course: ${error.message}`, 'error');
-      return null;
+      throw error; // Re-throw to allow components to handle specific errors
     }
   }, [showNotification, loadInitialData]);
 
