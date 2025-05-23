@@ -13,7 +13,6 @@ export const TIME_SLOTS = [
 // Use the schedule from props but fall back to context if not provided
 const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
   const { schedule: contextSchedule, removeCourseFromSlot, showNotification } = useSchedule();
-  const timetableRef = useRef(null);
   
   // Use provided schedule or fall back to context
   const schedule = propSchedule || contextSchedule;
