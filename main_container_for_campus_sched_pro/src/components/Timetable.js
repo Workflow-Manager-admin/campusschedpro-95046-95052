@@ -24,16 +24,12 @@ const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
   return (
     <div className="timetable-container">
       <div className="timetable-actions">
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={handleDownloadImage}
-          className="download-button"
-        >
-          Share/Download Schedule as Image
-        </Button>
+        <ShareScheduleButton 
+          targetRef={timetableRef} 
+          onNotification={showNotification} 
+        />
       </div>
-      <div className="timetable" ref={timetableRef}>
+      <div className="timetable timetable-for-export" ref={timetableRef}>
       <div className="timetable-header">
         <div className="time-column">Time</div>
         {DAYS.map(day => (
