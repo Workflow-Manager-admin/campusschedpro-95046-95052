@@ -110,27 +110,29 @@ const RoomAllocation = () => {
   }, [selectedCourse, selectedRoom, showNotification, assignRoom]);
 
   // Handle auto assign all unassigned courses
-  const handleAutoAssign = useCallback(() => {
+  const handleAutoAssign = useCallback(async () => {
     let assignedCount = 0;
     let failedCount = 0;
+    let hasChanges = false;
 
     // Try to assign each unassigned course to a suitable room
-    unassignedCourses.forEach(course => {
+    for (const course of unassignedCourses) {
       // Find suitable rooms
       const suitableRooms = findSuitableRooms(rooms, course);
       if (suitableRooms.length === 0) {
         failedCount++;
-        return;
+        continue;
       }
 
       // Assign to first suitable room
-      const success = assignRoom(course.id, suitableRooms[0].id);
+      const success = await assignRoom(course.id, suitableRooms[0].id);
       if (success) {
         assignedCount++;
+        hasChanges = true;
       } else {
         failedCount++;
       }
-    });
+    }
     
     if (assignedCount > 0) {
       showNotification(`Auto-assigned ${assignedCount} courses to rooms`, 'success');
@@ -140,8 +142,10 @@ const RoomAllocation = () => {
       showNotification(`Could not find suitable rooms for ${failedCount} courses`, 'warning');
     }
     
-    // Refresh allocations after assignments
-    updateAllocations();
+    // Only refresh allocations if changes were made
+    if (hasChanges) {
+      updateAllocations();
+    }
   }, [unassignedCourses, rooms, assignRoom, showNotification, updateAllocations]);
 
   // Get suitable rooms for selected course
