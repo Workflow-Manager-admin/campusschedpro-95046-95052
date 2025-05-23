@@ -423,8 +423,10 @@ export const ScheduleProvider = ({ children }) => {
     });
 
     setAllocations(newAllocations);
+  // We include allocations since we're modifying it, but we need to be careful
+  // to avoid circular dependencies - hence the explicit dependency array
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedule]); // Only depend on schedule to avoid circular dependencies
+  }, [schedule, allocations]); // Including allocations since we're using it
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
