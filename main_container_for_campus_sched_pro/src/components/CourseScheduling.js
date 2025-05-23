@@ -221,7 +221,7 @@ const CourseScheduling = () => {
         </div>
       </div>
       
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <ReduxDragDropContext onDragEnd={handleDragEnd}>
         <div className="scheduling-container">
           <div className="courses-panel">
             <div className="panel-header">
@@ -285,7 +285,7 @@ const CourseScheduling = () => {
             />
           </div>
         </div>
-      </DragDropContext>
+      </ReduxDragDropContext>
 
       <Snackbar
         open={notification.open}
