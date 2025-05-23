@@ -426,18 +426,18 @@ export const ScheduleProvider = ({ children }) => {
       });
       
       if (!courseId) {
-        throw new Error('Failed to create course');
+        throw new Error('Failed to create course - database did not return an ID');
       }
       
       // Refresh data
-      await loadInitialData();
+      await loadInitialData(true); // Force reload to ensure we get the latest data
       
       showNotification(`Course ${newCourse.code} added successfully`, 'success');
       return courseId;
     } catch (error) {
       console.error('Error adding course:', error);
       showNotification(`Failed to add course: ${error.message}`, 'error');
-      return null;
+      throw error; // Re-throw to allow components to handle specific errors
     }
   }, [showNotification, loadInitialData]);
 
