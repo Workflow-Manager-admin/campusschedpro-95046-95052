@@ -13,12 +13,12 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     return 'rgba(46, 125, 50, 0.1)'; // Occupied color
   };
 
-  const handleRemoveCourse = (courseId, event) => {
+  const handleRemoveCourse = (courseId, courseIndex, event) => {
     // Stop propagation to prevent drag event conflicts
     event.stopPropagation();
     
     if (removeCourseFromSlot) {
-      removeCourseFromSlot(slotId, courseId);
+      removeCourseFromSlot(slotId, courseId, courseIndex);
     }
   };
 
@@ -30,7 +30,7 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     >
       {(provided, snapshot) => (
         <>
-          {courses.map((course) => (
+          {courses.map((course, index) => (
             <Tooltip
               key={course.id}
               title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
