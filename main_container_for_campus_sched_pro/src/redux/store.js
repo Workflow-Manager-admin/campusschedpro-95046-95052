@@ -38,11 +38,15 @@ const logger = store => next => action => {
   return next(action);
 };
 
-// Create store
+// Setup Redux DevTools
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+// Create store with middleware
 const store = createStore(
   rootReducer,
-  // Enable Redux DevTools Extension if available
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(logger)
+  )
 );
 
 export default store;
