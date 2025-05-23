@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Checkbox, 
   FormControlLabel, 
@@ -9,6 +10,7 @@ import {
 import { useSchedule } from '../../context/ScheduleContext';
 import Timetable from '../Timetable';
 import { getStudentSchedule, formatPrintableSchedule } from '../../utils/scheduleUtils';
+import { setSelectedCourses, setYearFilter, togglePrintView } from '../../redux/actions/studentActions';
 
 // Sample student data - in a real app this would come from authentication/user state
 const SAMPLE_STUDENT = {
@@ -19,10 +21,21 @@ const SAMPLE_STUDENT = {
 
 const StudentScheduleView = () => {
   const { courses, schedule } = useSchedule();
+  const dispatch = useDispatch();
+  const studentState = useSelector(state => state.student);
+  
   const [student] = useState(SAMPLE_STUDENT);
-  const [selectedCourses, setSelectedCourses] = useState(student.courses);
-  const [showPrintView, setShowPrintView] = useState(false);
-  const [yearFilter, setYearFilter] = useState('All Years');
+  const selectedCourses = studentState.selectedCourses.length > 0 ? 
+    studentState.selectedCourses : student.courses;
+  const showPrintView = studentState.printViewActive;
+  const yearFilter = studentState.yearFilter;
+  
+  // Initialize Redux state with student courses
+  useEffect(() => {
+    if (studentState.selectedCourses.length === 0) {
+      dispatch(setSelectedCourses(student.courses));
+    }
+  }, [dispatch, student.courses, studentState.selectedCourses.length]);
   
   // Get only the courses this student is enrolled in
   const enrolledCourses = courses.filter(course => 
