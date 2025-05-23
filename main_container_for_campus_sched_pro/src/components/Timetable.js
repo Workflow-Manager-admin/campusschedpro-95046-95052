@@ -11,7 +11,7 @@ export const TIME_SLOTS = [
 
 // Use the schedule from props but fall back to context if not provided
 const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
-  const { schedule: contextSchedule } = useSchedule();
+  const { schedule: contextSchedule, removeCourseFromSlot } = useSchedule();
   
   // Use provided schedule or fall back to context
   const schedule = propSchedule || contextSchedule;
@@ -36,6 +36,7 @@ const Timetable = ({ schedule: propSchedule, onCourseMove }) => {
                   day={day}
                   time={time}
                   courses={schedule[slotId] || []}
+                  removeCourseFromSlot={removeCourseFromSlot}
                 />
               );
             })}
