@@ -219,7 +219,7 @@ const CourseScheduling = () => {
       )}
       
       {!isLoading && (
-        <>
+        <div className="course-scheduling-content">
           <div className="scheduling-header">
             <div className="header-title-section">
               <h2>Course Scheduling</h2>
