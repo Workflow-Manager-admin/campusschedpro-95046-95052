@@ -247,7 +247,7 @@ const CourseScheduling = () => {
             </div>
           </div>
           
-          <>
+          <div className="scheduling-content">
             <ReduxDragDropContext onDragEnd={handleDragEnd}>
               <div className="scheduling-container">
                 <div className="courses-panel">
@@ -442,7 +442,7 @@ const CourseScheduling = () => {
               </Button>
             </DialogActions>
             </Dialog>
-          </>
+          </div>
         </div>
       )}
     </div>
