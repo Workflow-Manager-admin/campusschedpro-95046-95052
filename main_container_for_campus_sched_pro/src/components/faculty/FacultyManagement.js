@@ -5,7 +5,8 @@ import {
   getFacultyStatus 
 } from '../../utils/facultyUtils';
 import { useSchedule } from '../../context/ScheduleContext';
-import { getAllFaculty, getFacultyAssignments, saveFaculty, deleteFaculty } from '../../utils/supabaseClient';
+import { getAllFaculty, getFacultyAssignments, deleteFaculty } from '../../utils/supabaseClient';
+import { safeSaveFaculty } from '../../utils/contextHelpers';
 import FacultyCard from './FacultyCard';
 import FacultyDetails from './FacultyDetails';
 
