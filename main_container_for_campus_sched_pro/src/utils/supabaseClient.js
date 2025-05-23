@@ -584,7 +584,7 @@ const getAcademicYearId = async (yearName) => {
   return created?.id || null;
 };
 
-// The getTimeSlotId function is imported in components directly from its module
+=======
 =======
 
 // Parse time slot ID to get day and time
