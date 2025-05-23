@@ -10,8 +10,6 @@
  * 4. Verify that only that specific instance is removed, not both
  */
 
-import { useSchedule } from '../context/ScheduleContext';
-
 /**
  * Function to run the verification test from the console
  * You can run this from the browser console after importing it
