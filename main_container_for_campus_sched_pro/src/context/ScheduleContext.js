@@ -386,8 +386,8 @@ export const ScheduleProvider = ({ children }) => {
   }, [conflicts, courses, schedule, showNotification]);
 
   // Function to update room allocations when schedule changes
-  const updateAllocations = useCallback(() => {
-    // Use allocations from state closure to avoid dependency issues
+  // Extracted from useCallback to avoid dependency array issues
+  function updateAllocationsImpl() {
     setAllocations(currentAllocations => {
       const newAllocations = [...currentAllocations];
 
@@ -426,10 +426,12 @@ export const ScheduleProvider = ({ children }) => {
 
       return newAllocations;
     });
-  // Now we can safely omit allocations from the dependency array
-  // since we're using the functional state update pattern
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedule]);
+  }
+
+  // Wrapped in useCallback for references stability
+  const updateAllocations = useCallback(() => {
+    updateAllocationsImpl();
+  }, [schedule]); // schedule is the only external dependency
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
