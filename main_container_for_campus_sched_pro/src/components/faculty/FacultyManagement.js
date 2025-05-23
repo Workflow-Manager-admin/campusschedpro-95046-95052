@@ -79,7 +79,7 @@ const FacultyManagement = () => {
 
   const handleAddFaculty = async () => {
     try {
-      const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim());
+      const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim()).filter(e => e);
       
       const newFacultyMember = {
         id: null,
@@ -90,7 +90,12 @@ const FacultyManagement = () => {
         status: 'Available'
       };
       
-      await saveFaculty(newFacultyMember);
+      const facultyId = await saveFaculty(newFacultyMember);
+      
+      if (!facultyId) {
+        throw new Error('Failed to create faculty - no ID returned');
+      }
+      
       await loadFacultyData();
       
       setShowAddDialog(false);
@@ -98,7 +103,7 @@ const FacultyManagement = () => {
       showNotification('Faculty member added successfully', 'success');
     } catch (error) {
       console.error('Error adding faculty:', error);
-      showNotification('Failed to add faculty member to the database', 'error');
+      showNotification(`Failed to add faculty: ${error.message || 'Unknown error'}`, 'error');
     }
   };
 
