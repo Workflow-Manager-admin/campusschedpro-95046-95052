@@ -18,7 +18,8 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     event.stopPropagation();
     
     if (removeCourseFromSlot) {
-      // Always pass the index to ensure we remove the specific course instance
+      // Pass the array index to ensure we remove only this specific course instance
+      // even if multiple instances of the same course exist in this slot
       removeCourseFromSlot(slotId, course, index);
     }
   };
