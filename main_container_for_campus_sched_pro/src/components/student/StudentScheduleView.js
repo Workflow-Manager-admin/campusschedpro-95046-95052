@@ -53,29 +53,26 @@ const StudentScheduleView = () => {
     filteredEnrolledCourses.map(course => course.id)
   );
   
-  // Handle course selection changes
-  // Update filtered courses when course selection changes
+  // Handle course selection changes using Redux
   const handleCourseToggle = useCallback((courseId) => {
-    setSelectedCourses(prev => {
-      const newSelection = prev.includes(courseId)
-        ? prev.filter(id => id !== courseId)
-        : [...prev, courseId];
-      
-      return newSelection;
-    });
-  }, []);
+    const newSelection = selectedCourses.includes(courseId)
+      ? selectedCourses.filter(id => id !== courseId)
+      : [...selectedCourses, courseId];
+    
+    dispatch(setSelectedCourses(newSelection));
+  }, [dispatch, selectedCourses]);
 
   // Generate printable schedule
   const printableSchedule = formatPrintableSchedule(studentSchedule);
 
-  // Handle print functionality
+  // Handle print functionality using Redux
   const handlePrint = useCallback(() => {
-    setShowPrintView(true);
+    dispatch(togglePrintView());
     setTimeout(() => {
       window.print();
-      setShowPrintView(false);
+      dispatch(togglePrintView());
     }, 100);
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className={`student-schedule ${showPrintView ? 'print-view' : ''}`}>
@@ -102,7 +99,7 @@ const StudentScheduleView = () => {
             <select
               id="year-filter-select"
               value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
+              onChange={(e) => dispatch(setYearFilter(e.target.value))}
               className="year-filter-select"
             >
               <option value="All Years">All Years</option>
