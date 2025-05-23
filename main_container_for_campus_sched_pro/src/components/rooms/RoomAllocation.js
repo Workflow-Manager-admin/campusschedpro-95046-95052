@@ -114,27 +114,53 @@ const RoomAllocation = () => {
   const handleAutoAssign = useCallback(async () => {
     let assignedCount = 0;
     let failedCount = 0;
-    let hasChanges = false;
+    let assignmentPromises = [];
 
-    // Try to assign each unassigned course to a suitable room
-    for (const course of unassignedCourses) {
+    // Prepare all assignments in parallel to reduce repeated API calls
+    unassignedCourses.forEach(course => {
       // Find suitable rooms
       const suitableRooms = findSuitableRooms(rooms, course);
       if (suitableRooms.length === 0) {
         failedCount++;
-        continue;
+        return;
       }
 
-      // Assign to first suitable room
-      const success = await assignRoom(course.id, suitableRooms[0].id);
-      if (success) {
-        assignedCount++;
-        hasChanges = true;
-      } else {
-        failedCount++;
-      }
+      // Queue the assignment (will be executed later)
+      assignmentPromises.push({
+        course,
+        roomId: suitableRooms[0].id,
+        promise: null
+      });
+    });
+
+    // Show notification for in-progress assignments
+    if (assignmentPromises.length > 0) {
+      showNotification(`Assigning ${assignmentPromises.length} courses to rooms...`, 'info');
+    }
+
+    // Process assignments in smaller batches to avoid overwhelming the API
+    const batchSize = 5;
+    for (let i = 0; i < assignmentPromises.length; i += batchSize) {
+      const batch = assignmentPromises.slice(i, i + batchSize);
+      
+      // Execute this batch in parallel
+      const results = await Promise.all(
+        batch.map(({ course, roomId }) => 
+          assignRoom(course.id, roomId)
+        )
+      );
+      
+      // Count results
+      results.forEach((success, index) => {
+        if (success) {
+          assignedCount++;
+        } else {
+          failedCount++;
+        }
+      });
     }
     
+    // Show final results
     if (assignedCount > 0) {
       showNotification(`Auto-assigned ${assignedCount} courses to rooms`, 'success');
     }
@@ -143,8 +169,8 @@ const RoomAllocation = () => {
       showNotification(`Could not find suitable rooms for ${failedCount} courses`, 'warning');
     }
     
-    // Only refresh allocations if changes were made
-    if (hasChanges) {
+    // Only update allocations once after all changes
+    if (assignedCount > 0) {
       updateAllocations();
     }
   }, [unassignedCourses, rooms, assignRoom, showNotification, updateAllocations]);
