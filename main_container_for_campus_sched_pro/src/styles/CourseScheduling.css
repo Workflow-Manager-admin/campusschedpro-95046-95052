@@ -167,6 +167,24 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Styles applied during capture */
+.timetable.capturing {
+  background-color: white !important;
+  box-shadow: none !important;
+  border-color: var(--primary-green) !important;
+}
+
+.timetable-container {
+  position: relative;
+}
+
+.download-button-container {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  z-index: 5;
+}
+
 .schedule-export-overlay {
   position: fixed;
   top: 0;
