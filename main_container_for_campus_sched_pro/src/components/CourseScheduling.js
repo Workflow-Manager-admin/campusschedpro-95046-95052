@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { Droppable } from '@hello-pangea/dnd';
 import ReduxDragDropContext from './ReduxDragDropContext';
+import ReduxDroppable from './ReduxDroppable';
 import { 
   Alert, 
   Snackbar, 

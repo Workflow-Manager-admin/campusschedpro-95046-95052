@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Droppable } from '@hello-pangea/dnd';
 import { Tooltip, Paper } from '@mui/material';
+import ReduxDroppable from './ReduxDroppable';
 
 const TimeSlot = ({ day, time, courses }) => {
   const slotId = `${day}-${time}`;
@@ -13,14 +13,13 @@ const TimeSlot = ({ day, time, courses }) => {
   };
 
   return (
-    <Droppable droppableId={slotId}>
+    <ReduxDroppable 
+      droppableId={slotId}
+      className="time-slot"
+      style={{ backgroundColor: getSlotColor() }}
+    >
       {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.droppableProps}
-          className={`time-slot ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
-          style={{ backgroundColor: getSlotColor() }}
-        >
+        <>
           {courses.map((course) => (
             <Tooltip
               key={course.id}
@@ -44,10 +43,9 @@ const TimeSlot = ({ day, time, courses }) => {
               </Paper>
             </Tooltip>
           ))}
-          {provided.placeholder}
-        </div>
+        </>
       )}
-    </Droppable>
+    </ReduxDroppable>
   );
 };
 
