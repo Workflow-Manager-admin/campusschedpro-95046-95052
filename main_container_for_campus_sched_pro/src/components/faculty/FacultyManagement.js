@@ -158,120 +158,118 @@ const FacultyManagement = () => {
       )}
       
       {!loading && (
-      <div className="faculty-header">
-        <h2>Faculty Management</h2>
-        <button className="btn" onClick={() => setShowAddDialog(true)}>
-          + Add Faculty
-        </button>
-      </div>
-
-      <div className="faculty-container">
-        <div className="faculty-list">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search faculty..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="search-input"
-            />
+        <>
+          <div className="faculty-header">
+            <h2>Faculty Management</h2>
+            <button className="btn" onClick={() => setShowAddDialog(true)}>
+              + Add Faculty
+            </button>
           </div>
 
-          <div className="faculty-filters">
-            {['all', 'available', 'partially booked', 'fully booked'].map(status => (
-              <div
-                key={status}
-                className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
-                onClick={() => handleStatusFilter(status)}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </div>
-            ))}
-          </div>
-
-          <div className="faculty-grid">
-            {filteredFaculty.map(f => (
-              <FacultyCard
-                key={f.id}
-                faculty={f}
-                selected={selectedFaculty?.id === f.id}
-                onClick={() => handleSelectFaculty(f)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {selectedFaculty && (
-          <FacultyDetails
-            faculty={selectedFaculty}
-            onSave={handleUpdateFaculty}
-            onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
-            onClose={() => setSelectedFaculty(null)}
-          />
-        )}
-      </div>
-
-      {showAddDialog && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="dialog-content" style={{ padding: '24px' }}>
-              <h2>Add New Faculty</h2>
-              
-              <div className="form-group">
-                <label>Name</label>
+          <div className="faculty-container">
+            <div className="faculty-list">
+              <div className="search-bar">
                 <input
                   type="text"
-                  value={newFaculty.name}
-                  onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Search faculty..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="search-input"
                 />
               </div>
-              
-              <div className="form-group">
-                <label>Department</label>
-                <input
-                  type="text"
-                  value={newFaculty.department}
-                  onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
-                />
+
+              <div className="faculty-filters">
+                {['all', 'available', 'partially booked', 'fully booked'].map(status => (
+                  <div
+                    key={status}
+                    className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
+                    onClick={() => handleStatusFilter(status)}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </div>
+                ))}
               </div>
-              
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  value={newFaculty.email}
-                  onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Expertise (comma-separated)</label>
-                <input
-                  type="text"
-                  value={newFaculty.expertise}
-                  onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
-                />
-              </div>
-              
-              <div className="dialog-actions">
-                <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
-                <button 
-                  className="btn btn-accent" 
-                  onClick={handleAddFaculty}
-                  disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
-                >
-                  Add Faculty
-                </button>
+
+              <div className="faculty-grid">
+                {filteredFaculty.map(f => (
+                  <FacultyCard
+                    key={f.id}
+                    faculty={f}
+                    selected={selectedFaculty?.id === f.id}
+                    onClick={() => handleSelectFaculty(f)}
+                  />
+                ))}
               </div>
             </div>
+
+            {selectedFaculty && (
+              <FacultyDetails
+                faculty={selectedFaculty}
+                onSave={handleUpdateFaculty}
+                onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
+                onClose={() => setSelectedFaculty(null)}
+              />
+            )}
           </div>
-        </div>
+
+          {showAddDialog && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="dialog-content" style={{ padding: '24px' }}>
+                  <h2>Add New Faculty</h2>
+                  
+                  <div className="form-group">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      value={newFaculty.name}
+                      onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Department</label>
+                    <input
+                      type="text"
+                      value={newFaculty.department}
+                      onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={newFaculty.email}
+                      onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Expertise (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={newFaculty.expertise}
+                      onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="dialog-actions">
+                    <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
+                    <button 
+                      className="btn btn-accent" 
+                      onClick={handleAddFaculty}
+                      disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
+                    >
+                      Add Faculty
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
-=======
-}
-</div>
-);
-};
     </div>
   );
 };
