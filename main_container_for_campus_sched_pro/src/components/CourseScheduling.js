@@ -30,12 +30,13 @@ const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'
 const CourseScheduling = () => {
   const { 
     courses,
-    setCourses,
     schedule, 
     setSchedule,
     notification,
     showNotification,
-    handleCloseNotification
+    handleCloseNotification,
+    addCourse,
+    isLoading
   } = useSchedule();
   
   // Create a ref for the timetable element to be used with ShareScheduleButton
