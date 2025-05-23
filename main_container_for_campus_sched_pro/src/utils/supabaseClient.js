@@ -586,8 +586,6 @@ const getAcademicYearId = async (yearName) => {
   return created?.id || null;
 };
 
-=======
-
 // Parse time slot ID to get day and time
 export const parseTimeSlotId = (slotId) => {
   const [day, time] = slotId.split('-');
