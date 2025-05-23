@@ -1,43 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CircularProgress } from '@mui/material';
 
 import { 
   getFacultyStatus 
 } from '../../utils/facultyUtils';
+import { useSchedule } from '../../context/ScheduleContext';
+import { getAllFaculty, getFacultyAssignments, saveFaculty, deleteFaculty } from '../../utils/supabaseClient';
 import FacultyCard from './FacultyCard';
 import FacultyDetails from './FacultyDetails';
 
-// Sample initial data
-const INITIAL_FACULTY = [
-  {
-    id: 'faculty-1',
-    name: 'Dr. Sarah Johnson',
-    department: 'Computer Science',
-    email: 'sarah.johnson@university.edu',
-    expertise: ['Algorithms', 'Data Structures', 'Machine Learning'],
-    assignments: [
-      {
-        id: 'course-1',
-        code: 'CS101',
-        name: 'Introduction to Computer Science',
-        schedule: ['Monday-9:00 AM', 'Wednesday-9:00 AM']
-      }
-    ]
-  },
-  {
-    id: 'faculty-2',
-    name: 'Prof. Michael Chen',
-    department: 'Computer Science',
-    email: 'michael.chen@university.edu',
-    expertise: ['Database Systems', 'Web Development'],
-    assignments: []
-  }
-].map(faculty => ({
-  ...faculty,
-  ...getFacultyStatus(faculty, faculty.assignments)
-}));
-
 const FacultyManagement = () => {
-  const [faculty, setFaculty] = useState(INITIAL_FACULTY);
+  // Get context functions for notifications
+  const { showNotification } = useSchedule();
+  
+  const [faculty, setFaculty] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedFaculty, setSelectedFaculty] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
