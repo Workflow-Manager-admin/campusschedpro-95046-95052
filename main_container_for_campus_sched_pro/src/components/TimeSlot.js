@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip, Paper } from '@mui/material';
+import { Tooltip, Paper, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import ReduxDroppable from './ReduxDroppable';
 
 const TimeSlot = ({ day, time, courses }) => {
