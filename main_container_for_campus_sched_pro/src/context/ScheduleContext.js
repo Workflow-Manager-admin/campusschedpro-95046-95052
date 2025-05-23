@@ -564,8 +564,8 @@ export const ScheduleProvider = ({ children }) => {
   
   // Function to refresh data on demand
   const refreshData = useCallback(async () => {
-    setIsLoading(true); // This will allow loadInitialData to run again
-    await loadInitialData();
+    // Explicitly force a reload of data
+    await loadInitialData(true);
     showNotification('Data refreshed from database', 'info');
   }, [loadInitialData, showNotification]);
 
