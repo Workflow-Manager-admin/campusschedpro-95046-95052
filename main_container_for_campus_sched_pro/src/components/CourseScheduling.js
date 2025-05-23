@@ -219,7 +219,8 @@ const CourseScheduling = () => {
       )}
       
       {!isLoading && (
-      <div className="scheduling-header">
+        <>
+          <div className="scheduling-header">
         <div className="header-title-section">
           <h2>Course Scheduling</h2>
           <div className="share-button-container">
@@ -324,6 +325,7 @@ const CourseScheduling = () => {
       </Snackbar>
       
       {/* Add Course Dialog */}
+        </>
       <Dialog 
         open={showAddDialog} 
         onClose={handleCloseAddDialog}
