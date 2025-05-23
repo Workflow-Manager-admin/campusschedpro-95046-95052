@@ -154,12 +154,7 @@
   height: 100%;
 }
 
-.timetable-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 8px;
-  margin-bottom: 16px;
-}
+/* Removed timetable-actions class as it's no longer needed */
 
 .download-button {
   text-transform: none !important;
