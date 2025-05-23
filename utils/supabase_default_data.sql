@@ -307,14 +307,22 @@ INSERT INTO course_equipment (course_id, equipment_id) VALUES
 -- IT405 - Data Science for IT
 ((SELECT id FROM courses WHERE code = 'IT405'), (SELECT id FROM equipment_types WHERE name = 'Computers'));
 
--- Create some sample schedule entries
+-- Create comprehensive sample schedule entries
 INSERT INTO schedule (course_id, faculty_id, room_id, time_slot_id) VALUES
+-- First Year Courses Schedule
 -- IT101 - IT Fundamentals with Dr. Emily Wilson in Lecture Hall A on Monday at 9:00 AM
 (
     (SELECT id FROM courses WHERE code = 'IT101'),
     (SELECT id FROM faculty WHERE name = 'Dr. Emily Wilson'),
     (SELECT id FROM rooms WHERE name = 'Lecture Hall A'),
     (SELECT id FROM time_slots WHERE day = 'Monday' AND time = '9:00 AM')
+),
+-- IT101 Lab - Thursday at 10:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT101'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Emily Wilson'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 101'),
+    (SELECT id FROM time_slots WHERE day = 'Thursday' AND time = '10:00 AM')
 ),
 -- IT102 - Introduction to Programming with Prof. David Miller in Computer Lab 101 on Monday at 1:00 PM
 (
@@ -323,12 +331,42 @@ INSERT INTO schedule (course_id, faculty_id, room_id, time_slot_id) VALUES
     (SELECT id FROM rooms WHERE name = 'Computer Lab 101'),
     (SELECT id FROM time_slots WHERE day = 'Monday' AND time = '1:00 PM')
 ),
--- IT201 - Data Structures with Dr. Jennifer Lee in Computer Lab 102 on Tuesday at 10:00 AM
+-- IT102 Lab - Wednesday at 11:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT102'),
+    (SELECT id FROM faculty WHERE name = 'Prof. David Miller'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 102'),
+    (SELECT id FROM time_slots WHERE day = 'Wednesday' AND time = '11:00 AM')
+),
+-- IT103 - Computer Hardware Essentials with Prof. Amanda Davis on Tuesday at 9:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT103'),
+    (SELECT id FROM faculty WHERE name = 'Prof. Amanda Davis'),
+    (SELECT id FROM rooms WHERE name = 'Classroom 101'),
+    (SELECT id FROM time_slots WHERE day = 'Tuesday' AND time = '9:00 AM')
+),
+-- IT104 - Information Technology Ethics with Prof. James Wilson on Wednesday at 9:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT104'),
+    (SELECT id FROM faculty WHERE name = 'Prof. James Wilson'),
+    (SELECT id FROM rooms WHERE name = 'Classroom 201'),
+    (SELECT id FROM time_slots WHERE day = 'Wednesday' AND time = '9:00 AM')
+),
+
+-- Second Year Courses Schedule
+-- IT201 - Data Structures with Dr. Sarah Johnson in Computer Lab 102 on Tuesday at 10:00 AM
 (
     (SELECT id FROM courses WHERE code = 'IT201'),
-    (SELECT id FROM faculty WHERE name = 'Dr. Jennifer Lee'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Sarah Johnson'),
     (SELECT id FROM rooms WHERE name = 'Computer Lab 102'),
     (SELECT id FROM time_slots WHERE day = 'Tuesday' AND time = '10:00 AM')
+),
+-- IT201 Lab - Thursday at 11:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT201'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Sarah Johnson'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 102'),
+    (SELECT id FROM time_slots WHERE day = 'Thursday' AND time = '11:00 AM')
 ),
 -- IT202 - Computer Networks with Prof. Robert Chen in Computer Lab 201 on Wednesday at 2:00 PM
 (
@@ -337,12 +375,42 @@ INSERT INTO schedule (course_id, faculty_id, room_id, time_slot_id) VALUES
     (SELECT id FROM rooms WHERE name = 'Computer Lab 201'),
     (SELECT id FROM time_slots WHERE day = 'Wednesday' AND time = '2:00 PM')
 ),
+-- IT203 - Operating Systems with Prof. Daniel Clark on Thursday at 1:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT203'),
+    (SELECT id FROM faculty WHERE name = 'Prof. Daniel Clark'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 201'),
+    (SELECT id FROM time_slots WHERE day = 'Thursday' AND time = '1:00 PM')
+),
+-- IT204 - Database Design with Dr. Michael Robinson on Monday at 11:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT204'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Michael Robinson'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 101'),
+    (SELECT id FROM time_slots WHERE day = 'Monday' AND time = '11:00 AM')
+),
+-- IT204 Lab - Friday at 10:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT204'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Michael Robinson'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 301'),
+    (SELECT id FROM time_slots WHERE day = 'Friday' AND time = '10:00 AM')
+),
+
+-- Third Year Courses Schedule
 -- IT301 - Web Development with Prof. Amanda Davis in Computer Lab 101 on Thursday at 9:00 AM
 (
     (SELECT id FROM courses WHERE code = 'IT301'),
     (SELECT id FROM faculty WHERE name = 'Prof. Amanda Davis'),
-    (SELECT id FROM rooms WHERE name = 'Computer Lab 101'),
-    (SELECT id FROM time_slots WHERE day = 'Thursday' AND time = '9:00 AM')
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 301'),
+    (SELECT id FROM time_slots WHERE day = 'Monday' AND time = '10:00 AM')
+),
+-- IT301 Lab - Wednesday at 10:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT301'),
+    (SELECT id FROM faculty WHERE name = 'Prof. Amanda Davis'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 301'),
+    (SELECT id FROM time_slots WHERE day = 'Wednesday' AND time = '10:00 AM')
 ),
 -- IT302 - Database Management with Dr. Michael Robinson in Computer Lab 301 on Friday at 1:00 PM
 (
@@ -350,4 +418,55 @@ INSERT INTO schedule (course_id, faculty_id, room_id, time_slot_id) VALUES
     (SELECT id FROM faculty WHERE name = 'Dr. Michael Robinson'),
     (SELECT id FROM rooms WHERE name = 'Computer Lab 301'),
     (SELECT id FROM time_slots WHERE day = 'Friday' AND time = '1:00 PM')
+),
+-- IT303 - System Analysis and Design with Dr. Laura Morgan on Tuesday at 1:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT303'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Laura Morgan'),
+    (SELECT id FROM rooms WHERE name = 'Classroom 102'),
+    (SELECT id FROM time_slots WHERE day = 'Tuesday' AND time = '1:00 PM')
+),
+-- IT304 - Mobile Applications Development with Prof. David Miller on Thursday at 2:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT304'),
+    (SELECT id FROM faculty WHERE name = 'Prof. David Miller'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 101'),
+    (SELECT id FROM time_slots WHERE day = 'Thursday' AND time = '2:00 PM')
+),
+
+-- Fourth Year Courses Schedule
+-- IT401 - Software Engineering with Dr. Laura Morgan on Monday at 2:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT401'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Laura Morgan'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 301'),
+    (SELECT id FROM time_slots WHERE day = 'Monday' AND time = '2:00 PM')
+),
+-- IT402 - IT Project Management with Prof. James Wilson on Friday at 9:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT402'),
+    (SELECT id FROM faculty WHERE name = 'Prof. James Wilson'),
+    (SELECT id FROM rooms WHERE name = 'Classroom 201'),
+    (SELECT id FROM time_slots WHERE day = 'Friday' AND time = '9:00 AM')
+),
+-- IT403 - Cloud Computing with Dr. Rebecca Martinez on Tuesday at 3:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT403'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Rebecca Martinez'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 201'),
+    (SELECT id FROM time_slots WHERE day = 'Tuesday' AND time = '3:00 PM')
+),
+-- IT404 - Cybersecurity with Prof. Thomas Anderson on Wednesday at 1:00 PM
+(
+    (SELECT id FROM courses WHERE code = 'IT404'),
+    (SELECT id FROM faculty WHERE name = 'Prof. Thomas Anderson'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 201'),
+    (SELECT id FROM time_slots WHERE day = 'Wednesday' AND time = '1:00 PM')
+),
+-- IT405 - Data Science for IT with Dr. Sophia Garcia on Friday at 11:00 AM
+(
+    (SELECT id FROM courses WHERE code = 'IT405'),
+    (SELECT id FROM faculty WHERE name = 'Dr. Sophia Garcia'),
+    (SELECT id FROM rooms WHERE name = 'Computer Lab 102'),
+    (SELECT id FROM time_slots WHERE day = 'Friday' AND time = '11:00 AM')
 );
