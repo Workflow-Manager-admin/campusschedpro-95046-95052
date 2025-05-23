@@ -125,9 +125,9 @@ const AppContent = () => {
 
 function App() {
   return (
-    <ScheduleProvider>
+    <EnhancedScheduleProvider>
       <AppContent />
-    </ScheduleProvider>
+    </EnhancedScheduleProvider>
   );
 }
 
