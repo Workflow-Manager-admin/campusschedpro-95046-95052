@@ -423,7 +423,7 @@ export const ScheduleProvider = ({ children }) => {
     });
 
     setAllocations(newAllocations);
-  }, [schedule, allocations]);
+  }, [schedule, allocations]); // Ensure allocations is included in the dependency array
 
   // Call updateAllocations whenever schedule or courses change
   useEffect(() => {
