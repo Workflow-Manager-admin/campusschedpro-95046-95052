@@ -114,16 +114,38 @@ const FacultyManagement = () => {
     }
   };
 
-  const handleUpdateFaculty = (updatedFaculty) => {
-    setFaculty(prev => prev.map(f => 
-      f.id === updatedFaculty.id ? { ...updatedFaculty } : f
-    ));
-    setSelectedFaculty(updatedFaculty);
+  const handleUpdateFaculty = async (updatedFaculty) => {
+    try {
+      // Save to Supabase
+      await saveFaculty(updatedFaculty);
+      
+      // Refresh faculty data
+      await loadFacultyData();
+      
+      // Update selected faculty
+      setSelectedFaculty(updatedFaculty);
+      showNotification('Faculty member updated successfully', 'success');
+    } catch (error) {
+      console.error('Error updating faculty:', error);
+      showNotification('Failed to update faculty member in the database', 'error');
+    }
   };
 
-  const handleDeleteFaculty = (facultyId) => {
-    setFaculty(prev => prev.filter(f => f.id !== facultyId));
-    setSelectedFaculty(null);
+  const handleDeleteFaculty = async (facultyId) => {
+    try {
+      // Delete from Supabase
+      await deleteFaculty(facultyId);
+      
+      // Refresh faculty data
+      await loadFacultyData();
+      
+      // Update UI
+      setSelectedFaculty(null);
+      showNotification('Faculty member deleted successfully', 'success');
+    } catch (error) {
+      console.error('Error deleting faculty:', error);
+      showNotification('Failed to delete faculty member from the database', 'error');
+    }
   };
 
   return (
