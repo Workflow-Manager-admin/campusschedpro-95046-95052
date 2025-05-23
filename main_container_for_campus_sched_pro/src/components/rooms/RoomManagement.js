@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Snackbar } from '@mui/material';
+// Removed unused imports
 import { useSchedule } from '../../context/ScheduleContext';
 
 const ROOM_TYPES = ['Lecture Hall', 'Computer Lab', 'Seminar Room', 'Classroom', 'Conference Room'];
