@@ -87,7 +87,7 @@ const RoomAllocation = () => {
   }, [selectedCourse, showNotification]);
 
   // Handle room assignment
-  const handleAssignRoom = useCallback(() => {
+  const handleAssignRoom = useCallback(async () => {
     if (!selectedCourse || !selectedRoom) {
       showNotification('Please select both a course and a room', 'error');
       return;
@@ -101,7 +101,7 @@ const RoomAllocation = () => {
     }
     
     // Use context's assignRoom function
-    assignRoom(selectedCourse.id, selectedRoom.id);
+    await assignRoom(selectedCourse.id, selectedRoom.id);
     
     // Reset selection
     setSelectedCourse(null);
