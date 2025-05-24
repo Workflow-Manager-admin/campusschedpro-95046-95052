@@ -4,6 +4,17 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import BulkImportModal from '../common/BulkImportModal';
 import { generateFacultyTemplate, importFacultyFromExcel } from '../../utils/excelUtils';
 
+// Fallback functions in case imports fail
+const safeBulkImport = {
+  generateFacultyTemplate: generateFacultyTemplate || function() {
+    console.warn('Template generation function not available');
+  },
+  importFacultyFromExcel: importFacultyFromExcel || function() {
+    console.warn('Import function not available');
+    return Promise.resolve({ success: 0, errors: [] });
+  }
+};
+
 /**
  * Component for bulk importing faculty data
  * 
