@@ -95,9 +95,8 @@ const FacultyManagement = () => {
         status: 'Available'
       };
       
-      // First close the dialog to prevent unnecessary rerenders
+      // First close the dialog to prevent UI updates during API call
       setShowAddDialog(false);
-      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
       
       // Use the safer faculty creation function
       showNotification('Adding new faculty member...', 'info');
@@ -108,22 +107,11 @@ const FacultyManagement = () => {
         throw new Error(result.message || 'Failed to create faculty');
       }
 
-      // Instead of reloading all faculty data, just add the new one to the state
-      if (result.id) {
-        const newFacultyWithId = {
-          ...newFacultyMember,
-          id: result.id,
-          assignments: [],
-          load: 0,
-          maxLoad: 12, // Default max load
-          status: 'Available'
-        };
-        
-        setFaculty(prevFaculty => [...prevFaculty, newFacultyWithId]);
-      } else {
-        // Fall back to full reload if we don't have the ID
-        await loadFacultyData();
-      }
+      // Reset form after successful save
+      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
+      
+      // Do a clean reload of faculty data instead of partial state updates
+      await loadFacultyData();
       
       showNotification('Faculty member added successfully', 'success');
     } catch (error) {
