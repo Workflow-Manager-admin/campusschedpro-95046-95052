@@ -135,13 +135,7 @@ export const ScheduleProvider = ({ children }) => {
           throw new Error('Invalid schedule data format');
         }
         
-        // Log the schedule for debugging
-        console.log(`Loaded ${Object.keys(scheduleData).length} schedule time slots`);
-        
-        // Count total courses in schedule
-        const totalCourses = Object.values(scheduleData).reduce((sum, courses) => 
-          sum + (Array.isArray(courses) ? courses.length : 0), 0);
-        console.log(`Total courses in schedule: ${totalCourses}`);
+        // Removed debugging logs for production build
         
         setSchedule(scheduleData);
         
