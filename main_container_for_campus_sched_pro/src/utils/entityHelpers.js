@@ -327,7 +327,7 @@ async function getOrCreateDepartment(name) {
       return null;
     }
     
-    return created ? created.id : null;
+    return data ? data.id : null;
   } catch (error) {
     console.error('Error in getOrCreateDepartment:', error);
     return null;
