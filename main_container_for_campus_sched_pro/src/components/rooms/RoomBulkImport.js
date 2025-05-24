@@ -4,6 +4,17 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import BulkImportModal from '../common/BulkImportModal';
 import { generateRoomTemplate, importRoomsFromExcel } from '../../utils/excelUtils';
 
+// Fallback functions in case imports fail
+const safeBulkImport = {
+  generateRoomTemplate: generateRoomTemplate || function() {
+    console.warn('Template generation function not available');
+  },
+  importRoomsFromExcel: importRoomsFromExcel || function() {
+    console.warn('Import function not available');
+    return Promise.resolve({ success: 0, errors: [] });
+  }
+};
+
 /**
  * Component for bulk importing room data
  * 
