@@ -275,7 +275,8 @@ const CourseScheduling = () => {
             <div className="share-button-container">
               <ShareScheduleButton 
                 targetRef={timetableRef} 
-                onNotification={showNotification} 
+                onNotification={showNotification}
+                academicYear={yearFilter}
               />
             </div>
           </div>
