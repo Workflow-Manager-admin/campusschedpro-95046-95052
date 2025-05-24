@@ -13,8 +13,12 @@ export const TIME_SLOTS = [
 const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
   const { schedule: contextSchedule, removeCourseFromSlot } = useSchedule();
   
-  // Use provided schedule or fall back to context
+  // Ensure we have a valid schedule object
   const schedule = propSchedule || contextSchedule || {};
+
+  // Simple debug to track number of courses in schedule
+  const courseCount = Object.values(schedule).reduce((sum, courses) => 
+    sum + (Array.isArray(courses) ? courses.length : 0), 0);
 
   return (
     <div className="timetable-container">
@@ -25,13 +29,17 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
             <div key={day} className="day-column">{day}</div>
           ))}
         </div>
+        {courseCount === 0 && (
+          <div className="no-courses-message">
+            No scheduled courses found. Try adding courses to the schedule.
+          </div>
+        )}
         <div className="timetable-body">
           {TIME_SLOTS.map(time => (
             <div key={time} className="time-row">
               <div className="time-label">{time}</div>
               {DAYS.map(day => {
                 const slotId = `${day}-${time}`;
-                // Ensure we have a valid array for courses in this slot
                 const coursesInSlot = Array.isArray(schedule[slotId]) ? schedule[slotId] : [];
                 
                 return (
