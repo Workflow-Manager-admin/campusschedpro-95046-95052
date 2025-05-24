@@ -149,9 +149,12 @@ const FacultyManagement = () => {
     try {
       await deleteFaculty(facultyId);
       
-      // Update local state instead of reloading all faculty data
-      setFaculty(prevFaculty => prevFaculty.filter(f => f.id !== facultyId));
+      // Clear selection first
       setSelectedFaculty(null);
+      
+      // Reload faculty data
+      await loadFacultyData();
+      
       showNotification('Faculty member deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting faculty:', error);
