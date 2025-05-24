@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import ReduxDragDropContext from './ReduxDragDropContext';
+import CourseBulkImport from './CourseBulkImport';
 import ReduxDroppable from './ReduxDroppable';
 import { 
   Alert, 
@@ -305,7 +306,12 @@ const CourseScheduling = () => {
               <div className="courses-panel">
                 <div className="panel-header">
                   <h3>Available Courses</h3>
-                  <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
+                  <div className="course-header-actions">
+                    <button className="btn" onClick={handleOpenAddDialog}>Add Course</button>
+                    <CourseBulkImport onComplete={() => {
+                      showNotification('Course import completed. Refreshing data...', 'success');
+                    }} />
+                  </div>
                 </div>
                 
                 <div className="course-filters">
