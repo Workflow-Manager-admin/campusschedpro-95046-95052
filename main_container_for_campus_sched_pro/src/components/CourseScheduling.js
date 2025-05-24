@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import Timetable from './Timetable';
 import Course from './Course';
+import CourseDetails from './CourseDetails';
 import ShareScheduleButton from './ShareScheduleButton';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
 import { useSchedule } from '../context/ScheduleContext';
