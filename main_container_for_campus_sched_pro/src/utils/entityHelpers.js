@@ -350,10 +350,10 @@ async function getOrCreateBuilding(name) {
     if (existing) return existing.id;
     
     // Create new building
-    const { data: created, error } = await supabase
+    const { data, error } = await supabase
       .from('buildings')
       .insert({ name })
-      .select('id')
+      .select()
       .single();
     
     if (error) {
@@ -361,7 +361,7 @@ async function getOrCreateBuilding(name) {
       return null;
     }
     
-    return created ? created.id : null;
+    return data ? data.id : null;
   } catch (error) {
     console.error('Error in getOrCreateBuilding:', error);
     return null;
@@ -387,10 +387,10 @@ async function getOrCreateEquipment(name) {
     if (existing) return existing.id;
     
     // Create new equipment
-    const { data: created, error } = await supabase
+    const { data, error } = await supabase
       .from('equipment_types')
       .insert({ name })
-      .select('id')
+      .select()
       .single();
     
     if (error) {
@@ -398,7 +398,7 @@ async function getOrCreateEquipment(name) {
       return null;
     }
     
-    return created ? created.id : null;
+    return data ? data.id : null;
   } catch (error) {
     console.error('Error in getOrCreateEquipment:', error);
     return null;
