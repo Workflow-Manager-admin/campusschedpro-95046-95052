@@ -26,16 +26,22 @@ export const enhancedSaveRoom = async (room) => {
     }
     
     // If room has an id, update, otherwise insert
+    const roomData = {
+      name: room.name,
+      type: room.type,
+      capacity: room.capacity || 0,
+      floor: room.floor || '1',
+      building_id: buildingId
+    };
+    
+    // Only include ID if it's defined (for updates)
+    if (room.id) {
+      roomData.id = room.id;
+    }
+    
     const { data, error } = await supabase
       .from('rooms')
-      .upsert({
-        id: room.id,  // Will be null for new rooms
-        name: room.name,
-        type: room.type,
-        capacity: room.capacity || 0,
-        floor: room.floor || '1',
-        building_id: buildingId
-      })
+      .upsert(roomData)
       .select('id')
       .single();
     
