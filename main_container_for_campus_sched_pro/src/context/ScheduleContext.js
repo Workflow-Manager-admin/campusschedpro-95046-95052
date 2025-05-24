@@ -151,13 +151,13 @@ export const ScheduleProvider = ({ children }) => {
           // Populate allocations with courses from the schedule
           Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
             if (!Array.isArray(coursesInSlot)) {
-              console.warn(`Invalid courses in slot ${slotId}:`, coursesInSlot);
+              // Skip invalid slots silently
               return;
             }
             
             coursesInSlot.forEach(course => {
               if (!course || !course.id) {
-                console.warn('Invalid course in schedule:', course);
+                // Skip invalid courses silently
                 return;
               }
               
