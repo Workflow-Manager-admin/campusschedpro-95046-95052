@@ -110,6 +110,10 @@ const FacultyManagement = () => {
         status: 'Available'
       };
       
+      // First close the dialog to prevent unnecessary rerenders
+      setShowAddDialog(false);
+      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
+      
       // Use the safer faculty creation function
       showNotification('Adding new faculty member...', 'info');
       
@@ -136,8 +140,6 @@ const FacultyManagement = () => {
         await loadFacultyData();
       }
       
-      setShowAddDialog(false);
-      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
       showNotification('Faculty member added successfully', 'success');
     } catch (error) {
       console.error('Error adding faculty:', error);
