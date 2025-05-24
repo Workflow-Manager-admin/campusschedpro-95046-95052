@@ -463,6 +463,19 @@ const CourseScheduling = () => {
               </Button>
             </DialogActions>
           </Dialog>
+          
+          {selectedCourse && (
+            <CourseDetails
+              course={selectedCourse}
+              open={showEditDialog}
+              onSave={handleUpdateCourse}
+              onDelete={() => handleDeleteCourse(selectedCourse)}
+              onClose={() => {
+                setShowEditDialog(false);
+                setSelectedCourse(null);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
