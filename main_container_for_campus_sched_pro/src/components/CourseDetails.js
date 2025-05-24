@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
   DialogActions,
-  TextField,
   Button,
+  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   FormControlLabel,
-  Checkbox,
-  Grid
+  Checkbox
 } from '@mui/material';
 
 const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
@@ -21,12 +20,6 @@ const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'
 // PUBLIC_INTERFACE
 /**
  * CourseDetails component for viewing and editing course information
- * @param {Object} props - Component props
- * @param {Object} props.course - Course object to display or edit
- * @param {Function} props.onSave - Callback when course is saved
- * @param {Function} props.onDelete - Callback when course is deleted
- * @param {Function} props.onClose - Callback to close the details view
- * @param {boolean} props.open - Whether the dialog is open
  */
 const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -103,14 +96,14 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{course.name} ({course.code})</span>
               <div>
-                <Button onClick={handleEditToggle} color="primary">
+                <Button onClick={handleEditToggle}>
                   Edit
                 </Button>
                 <Button onClick={handleDelete} color="error">
                   {confirmDelete ? 'Confirm' : 'Delete'}
                 </Button>
                 {confirmDelete && (
-                  <Button onClick={handleCancelDelete} color="primary">
+                  <Button onClick={handleCancelDelete}>
                     Cancel
                   </Button>
                 )}
@@ -118,31 +111,17 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
             </div>
           </DialogTitle>
           <DialogContent>
-            <Grid container spacing={2} style={{ marginTop: '8px' }}>
-              <Grid item xs={12}>
-                <strong>Department:</strong> {course.department}
-              </Grid>
-              <Grid item xs={6}>
-                <strong>Credits:</strong> {course.credits}
-              </Grid>
-              <Grid item xs={6}>
-                <strong>Academic Year:</strong> {course.academicYear}
-              </Grid>
-              <Grid item xs={12}>
-                <strong>Instructor:</strong> {course.instructor}
-              </Grid>
-              <Grid item xs={6}>
-                <strong>Expected Enrollment:</strong> {course.expectedEnrollment}
-              </Grid>
-              <Grid item xs={6}>
-                <strong>Requires Lab:</strong> {course.requiresLab ? 'Yes' : 'No'}
-              </Grid>
+            <div style={{ marginTop: '16px' }}>
+              <p><strong>Department:</strong> {course.department}</p>
+              <p><strong>Credits:</strong> {course.credits}</p>
+              <p><strong>Academic Year:</strong> {course.academicYear}</p>
+              <p><strong>Instructor:</strong> {course.instructor}</p>
+              <p><strong>Expected Enrollment:</strong> {course.expectedEnrollment}</p>
+              <p><strong>Requires Lab:</strong> {course.requiresLab ? 'Yes' : 'No'}</p>
               {course.requiredEquipment && course.requiredEquipment.length > 0 && (
-                <Grid item xs={12}>
-                  <strong>Required Equipment:</strong> {course.requiredEquipment.join(', ')}
-                </Grid>
+                <p><strong>Required Equipment:</strong> {course.requiredEquipment.join(', ')}</p>
               )}
-            </Grid>
+            </div>
           </DialogContent>
         </>
       ) : (
@@ -157,7 +136,6 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
                 onChange={handleInputChange}
                 fullWidth
                 margin="dense"
-                required
               />
               
               <TextField
@@ -167,7 +145,6 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
                 onChange={handleInputChange}
                 fullWidth
                 margin="dense"
-                required
               />
               
               <TextField
@@ -177,30 +154,27 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
                 onChange={handleInputChange}
                 fullWidth
                 margin="dense"
-                required
               />
               
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <TextField
-                  label="Credits"
-                  name="credits"
-                  value={editedCourse.credits}
-                  onChange={handleNumberInputChange}
-                  type="number"
-                  fullWidth
-                  margin="dense"
-                />
-                
-                <TextField
-                  label="Expected Enrollment"
-                  name="expectedEnrollment"
-                  value={editedCourse.expectedEnrollment}
-                  onChange={handleNumberInputChange}
-                  type="number"
-                  fullWidth
-                  margin="dense"
-                />
-              </div>
+              <TextField
+                label="Credits"
+                name="credits"
+                value={editedCourse.credits}
+                onChange={handleNumberInputChange}
+                type="number"
+                fullWidth
+                margin="dense"
+              />
+              
+              <TextField
+                label="Expected Enrollment"
+                name="expectedEnrollment"
+                value={editedCourse.expectedEnrollment}
+                onChange={handleNumberInputChange}
+                type="number"
+                fullWidth
+                margin="dense"
+              />
               
               <FormControl fullWidth margin="dense">
                 <InputLabel id="department-label">Department</InputLabel>
@@ -246,7 +220,9 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
             <Button 
               onClick={handleSave}
               variant="contained"
@@ -260,7 +236,7 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
       )}
       {!isEditing && (
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={onClose}>
             Close
           </Button>
         </DialogActions>
