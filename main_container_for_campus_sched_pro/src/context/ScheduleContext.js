@@ -458,8 +458,8 @@ export const ScheduleProvider = ({ children }) => {
       
       // Save course to Supabase
       const courseId = await saveCourse({
-        ...newCourse,
-        id: null // Ensure ID is null to create a new course
+        ...newCourse
+        // Removed explicit null ID setting to allow database default
       });
       
       if (!courseId) {
@@ -485,8 +485,8 @@ export const ScheduleProvider = ({ children }) => {
       
       // Save room to Supabase
       const roomId = await saveRoom({
-        ...newRoom,
-        id: null // Ensure ID is null to create a new room
+        ...newRoom
+        // Removed explicit null ID setting to allow database default
       });
       
       if (!roomId) {
