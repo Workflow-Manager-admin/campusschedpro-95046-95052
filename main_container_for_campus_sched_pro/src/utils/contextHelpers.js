@@ -19,8 +19,8 @@ export const safeAddRoom = async (newRoom) => {
     
     // Use enhanced save function
     const result = await enhancedSaveRoom({
-      ...newRoom,
-      id: null // Ensure ID is null to create new room
+      ...newRoom
+      // Removed explicit null ID setting to allow database default
     });
     
     return {

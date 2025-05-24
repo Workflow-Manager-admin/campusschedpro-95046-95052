@@ -83,7 +83,6 @@ const FacultyManagement = () => {
       const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim()).filter(e => e);
       
       const newFacultyMember = {
-        id: null,
         name: newFaculty.name,
         department: newFaculty.department,
         email: newFaculty.email,
