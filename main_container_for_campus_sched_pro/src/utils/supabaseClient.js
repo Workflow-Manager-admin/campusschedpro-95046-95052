@@ -559,13 +559,13 @@ const getBuildingId = async (buildingName) => {
   if (existing) return existing.id;
   
   // Create new building
-  const { data: created } = await supabase
+  const { data } = await supabase
     .from('buildings')
     .insert({ name: buildingName })
-    .select('id')
+    .select()
     .single();
     
-  return created?.id || null;
+  return data?.id || null;
 };
 
 // Get equipment ID, create if it doesn't exist
@@ -582,13 +582,13 @@ const getEquipmentId = async (equipmentName) => {
   if (existing) return existing.id;
   
   // Create new equipment
-  const { data: created } = await supabase
+  const { data } = await supabase
     .from('equipment_types')
     .insert({ name: equipmentName })
-    .select('id')
+    .select()
     .single();
     
-  return created?.id || null;
+  return data?.id || null;
 };
 
 // Get academic year ID, create if it doesn't exist
@@ -605,13 +605,13 @@ const getAcademicYearId = async (yearName) => {
   if (existing) return existing.id;
   
   // Create new academic year
-  const { data: created } = await supabase
+  const { data } = await supabase
     .from('academic_years')
     .insert({ name: yearName })
-    .select('id')
+    .select()
     .single();
     
-  return created?.id || null;
+  return data?.id || null;
 };
 
 // Parse time slot ID to get day and time
