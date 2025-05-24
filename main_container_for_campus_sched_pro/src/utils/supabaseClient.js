@@ -429,36 +429,57 @@ export const deleteRoom = async (roomId) => {
 
 // Fetch complete schedule
 export const getSchedule = async () => {
-  const { data, error } = await supabase
-    .from('course_schedule_view')
-    .select('*');
+  try {
+    // First get all courses - we need the academic year information
+    const allCourses = await getAllCourses();
     
-  if (error) {
-    console.error('Error fetching schedule:', error);
-    return {};
-  }
-  
-  // Transform data to match application structure
-  const schedule = {};
-  
-  data.forEach(item => {
-    const slotId = `${item.day}-${item.time}`;
-    
-    if (!schedule[slotId]) {
-      schedule[slotId] = [];
+    // Build a map for quick lookups
+    const coursesById = allCourses.reduce((acc, course) => {
+      acc[course.id] = course;
+      return acc;
+    }, {});
+
+    // Get schedule data
+    const { data, error } = await supabase
+      .from('course_schedule_view')
+      .select('*');
+      
+    if (error) {
+      console.error('Error fetching schedule:', error);
+      return {};
     }
     
-    schedule[slotId].push({
-      id: item.course_id,
-      name: item.course_name,
-      code: item.course_code,
-      credits: item.course_credits,
-      instructor: item.faculty_name || '',
-      room: item.room_name || ''
+    // Transform data to match application structure
+    const schedule = {};
+    
+    data.forEach(item => {
+      const slotId = `${item.day}-${item.time}`;
+      
+      if (!schedule[slotId]) {
+        schedule[slotId] = [];
+      }
+      
+      // Lookup additional course data from our map
+      const courseDetails = coursesById[item.course_id] || {};
+      
+      schedule[slotId].push({
+        id: item.course_id,
+        name: item.course_name,
+        code: item.course_code,
+        credits: item.course_credits,
+        instructor: item.faculty_name || '',
+        room: item.room_name || '',
+        // Include academic year and department for filtering
+        academicYear: courseDetails.academicYear || '',
+        department: courseDetails.department || ''
+      });
     });
-  });
-  
-  return schedule;
+    
+    return schedule;
+  } catch (error) {
+    console.error('Error in getSchedule:', error);
+    return {};
+  }
 };
 
 // Schedule a course in a time slot
