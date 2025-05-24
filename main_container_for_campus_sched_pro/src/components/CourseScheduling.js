@@ -265,6 +265,9 @@ const CourseScheduling = () => {
         
         // Filter courses in this slot by academic year
         const filteredCoursesInSlot = coursesInSlot.filter(course => {
+          // Skip invalid courses
+          if (!course || !course.id) return false;
+          
           // Check if course has academicYear directly
           if (course.academicYear) {
             return course.academicYear === yearFilter;
@@ -282,6 +285,9 @@ const CourseScheduling = () => {
       });
       
       setFilteredSchedule(filtered);
+      
+      console.log(`Filtered schedule created for ${yearFilter}:`, 
+        `${Object.keys(filtered).length} slots with courses`);
     }
   }, [yearFilter, schedule, courses]);
 
