@@ -124,7 +124,8 @@ export const saveFaculty = async (faculty) => {
     
     await supabase
       .from('faculty_expertise')
-      .insert(expertiseRecords);
+      .insert(expertiseRecords)
+      .select();
   }
   
   return data.id;
@@ -284,7 +285,8 @@ export const saveCourse = async (course) => {
     if (equipmentRecords.length > 0) {
       await supabase
         .from('course_equipment')
-        .insert(equipmentRecords);
+        .insert(equipmentRecords)
+        .select();
     }
   }
   
@@ -400,7 +402,8 @@ export const saveRoom = async (room) => {
     if (equipmentRecords.length > 0) {
       await supabase
         .from('room_equipment')
-        .insert(equipmentRecords);
+        .insert(equipmentRecords)
+        .select();
     }
   }
   
