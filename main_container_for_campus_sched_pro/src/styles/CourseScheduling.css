@@ -81,6 +81,18 @@
   cursor: grab;
   transition: all 0.2s ease;
   border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.course-actions {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  padding: 2px;
 }
 
 .course-card:hover {
