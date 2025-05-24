@@ -313,10 +313,10 @@ async function getOrCreateDepartment(name) {
     if (existing) return existing.id;
     
     // Create new department
-    const { data: created, error } = await supabase
+    const { data, error } = await supabase
       .from('departments')
       .insert({ name })
-      .select('id')
+      .select()
       .single();
     
     if (error) {
