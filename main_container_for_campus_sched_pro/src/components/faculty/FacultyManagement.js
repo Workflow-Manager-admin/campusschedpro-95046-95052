@@ -9,6 +9,7 @@ import { getAllFaculty, getFacultyAssignments, deleteFaculty } from '../../utils
 import { safeSaveFaculty } from '../../utils/contextHelpers';
 import FacultyCard from './FacultyCard';
 import FacultyDetails from './FacultyDetails';
+import FacultyBulkImport from './FacultyBulkImport';
 
 const FacultyManagement = () => {
   const { showNotification } = useSchedule();
@@ -162,6 +163,11 @@ const FacultyManagement = () => {
     }
   };
 
+  const handleBulkImportComplete = () => {
+    showNotification('Faculty import completed. Refreshing data...', 'success');
+    loadFacultyData();
+  };
+
   if (loading) {
     return (
       <div className="faculty-management">
@@ -178,9 +184,12 @@ const FacultyManagement = () => {
       <div className="faculty-content-container">
         <div className="faculty-header">
           <h2>Faculty Management</h2>
-          <button className="btn" onClick={() => setShowAddDialog(true)}>
-            + Add Faculty
-          </button>
+          <div className="faculty-actions">
+            <button className="btn" onClick={() => setShowAddDialog(true)}>
+              + Add Faculty
+            </button>
+            <FacultyBulkImport onComplete={handleBulkImportComplete} />
+          </div>
         </div>
 
         <div className="faculty-container">
