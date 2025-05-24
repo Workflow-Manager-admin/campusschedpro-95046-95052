@@ -16,7 +16,31 @@ const Course = memo(({ course, index, onEdit, onDelete }) => {
           {...provided.dragHandleProps}
           className={`course-card ${snapshot.isDragging ? 'dragging' : ''}`}
           elevation={snapshot.isDragging ? 3 : 1}
+          onMouseEnter={() => setShowControls(true)}
+          onMouseLeave={() => setShowControls(false)}
         >
+          {showControls && !snapshot.isDragging && (
+            <div className="course-actions">
+              <IconButton 
+                size="small" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onEdit) onEdit(course);
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+              <IconButton 
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onDelete) onDelete(course);
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </div>
+          )}
           <h3>{course.name}</h3>
           <div className="course-info">
             <span className="course-code">{course.code}</span>
