@@ -14,7 +14,7 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
   const { schedule: contextSchedule, removeCourseFromSlot } = useSchedule();
   
   // Use provided schedule or fall back to context
-  const schedule = propSchedule || contextSchedule;
+  const schedule = propSchedule || contextSchedule || {};
 
   return (
     <div className="timetable-container">
@@ -31,7 +31,9 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
               <div className="time-label">{time}</div>
               {DAYS.map(day => {
                 const slotId = `${day}-${time}`;
-                const coursesInSlot = schedule && schedule[slotId] ? schedule[slotId] : [];
+                // Ensure we have a valid array for courses in this slot
+                const coursesInSlot = Array.isArray(schedule[slotId]) ? schedule[slotId] : [];
+                
                 return (
                   <TimeSlot
                     key={slotId}
