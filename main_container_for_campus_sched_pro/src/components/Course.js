@@ -80,7 +80,9 @@ Course.propTypes = {
     academicYear: PropTypes.string,
     department: PropTypes.string
   }).isRequired,
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequired,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func
 };
 
 export default Course;
