@@ -95,6 +95,29 @@
   padding: 2px;
 }
 
+.course-actions .edit-btn,
+.course-actions .delete-btn {
+  font-size: 11px;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  background: var(--primary-green);
+  color: white;
+}
+
+.course-actions .delete-btn {
+  background: #d32f2f;
+}
+
+.course-actions .edit-btn:hover {
+  background: var(--primary-dark);
+}
+
+.course-actions .delete-btn:hover {
+  background: #b71c1c;
+}
+
 .course-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
