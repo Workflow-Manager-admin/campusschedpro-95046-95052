@@ -85,15 +85,21 @@ export const getFacultyAssignments = async (facultyId) => {
 // Create or update faculty
 export const saveFaculty = async (faculty) => {
   // If faculty has an id, update, otherwise insert
+  const facultyData = {
+    name: faculty.name,
+    email: faculty.email,
+    department_id: await getDepartmentId(faculty.department),
+    status: faculty.status || 'Available'
+  };
+  
+  // Only include ID if it's defined (for updates)
+  if (faculty.id) {
+    facultyData.id = faculty.id;
+  }
+  
   const { data, error } = await supabase
     .from('faculty')
-    .upsert({
-      id: faculty.id, // Will be null for new faculty
-      name: faculty.name,
-      email: faculty.email,
-      department_id: await getDepartmentId(faculty.department),
-      status: faculty.status || 'Available'
-    })
+    .upsert(facultyData)
     .select('id')
     .single();
     
@@ -223,18 +229,24 @@ export const saveCourse = async (course) => {
   const academicYearId = await getAcademicYearId(course.academicYear);
   
   // If course has an id, update, otherwise insert
+  const courseData = {
+    name: course.name,
+    code: course.code,
+    credits: course.credits,
+    expected_enrollment: course.expectedEnrollment,
+    requires_lab: course.requiresLab,
+    department_id: departmentId,
+    academic_year_id: academicYearId
+  };
+  
+  // Only include ID if it's defined (for updates)
+  if (course.id) {
+    courseData.id = course.id;
+  }
+  
   const { data, error } = await supabase
     .from('courses')
-    .upsert({
-      id: course.id, // Will be null for new courses
-      name: course.name,
-      code: course.code,
-      credits: course.credits,
-      expected_enrollment: course.expectedEnrollment,
-      requires_lab: course.requiresLab,
-      department_id: departmentId,
-      academic_year_id: academicYearId
-    })
+    .upsert(courseData)
     .select('id')
     .single();
     
