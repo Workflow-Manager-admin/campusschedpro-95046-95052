@@ -430,16 +430,16 @@ export const deleteRoom = async (roomId) => {
 // Fetch complete schedule
 export const getSchedule = async () => {
   try {
-    // First get all courses - we need the academic year information
-    const allCourses = await getAllCourses();
+    // Get all courses first to have a complete reference
+    const coursesData = await getAllCourses();
     
-    // Build a map for quick lookups
-    const coursesById = allCourses.reduce((acc, course) => {
-      acc[course.id] = course;
-      return acc;
-    }, {});
-
-    // Get schedule data
+    // Create a map for quick lookup by ID
+    const courseMap = {};
+    coursesData.forEach(course => {
+      courseMap[course.id] = course;
+    });
+    
+    // Get schedule data from view
     const { data, error } = await supabase
       .from('course_schedule_view')
       .select('*');
@@ -459,8 +459,9 @@ export const getSchedule = async () => {
         schedule[slotId] = [];
       }
       
-      // Lookup additional course data from our map
-      const courseDetails = coursesById[item.course_id] || {};
+      // Get academic year and department from course map
+      const academicYear = courseMap[item.course_id]?.academicYear || '';
+      const department = courseMap[item.course_id]?.department || '';
       
       schedule[slotId].push({
         id: item.course_id,
@@ -469,15 +470,13 @@ export const getSchedule = async () => {
         credits: item.course_credits,
         instructor: item.faculty_name || '',
         room: item.room_name || '',
-        // Include academic year and department for filtering
-        academicYear: courseDetails.academicYear || '',
-        department: courseDetails.department || ''
+        academicYear, 
+        department
       });
     });
     
     return schedule;
   } catch (error) {
-    console.error('Error in getSchedule:', error);
     return {};
   }
 };
