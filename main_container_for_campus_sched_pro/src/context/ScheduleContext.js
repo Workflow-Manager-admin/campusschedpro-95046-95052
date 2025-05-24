@@ -88,9 +88,10 @@ export const ScheduleProvider = ({ children }) => {
     });
     
     try {
-      // Load courses
+      // Load courses first since schedule depends on course data
+      let coursesData = [];
       try {
-        const coursesData = await getAllCourses();
+        coursesData = await getAllCourses();
         setCourses(coursesData);
       } catch (courseError) {
         console.error('Error loading courses:', courseError);
@@ -98,7 +99,8 @@ export const ScheduleProvider = ({ children }) => {
           ...prev,
           courses: courseError.message || 'Failed to load courses'
         }));
-        // Don't throw, continue loading other data
+        // Use empty array but don't throw
+        coursesData = [];
       }
       
       // Load rooms
@@ -123,9 +125,24 @@ export const ScheduleProvider = ({ children }) => {
         // Don't throw, continue loading other data
       }
       
-      // Load schedule
+      // Load schedule after courses to ensure we have all course data
       try {
+        // getSchedule will use the courses data to enrich the schedule entries
         const scheduleData = await getSchedule();
+        
+        // Verify we have valid schedule data
+        if (!scheduleData || typeof scheduleData !== 'object') {
+          throw new Error('Invalid schedule data format');
+        }
+        
+        // Log the schedule for debugging
+        console.log(`Loaded ${Object.keys(scheduleData).length} schedule time slots`);
+        
+        // Count total courses in schedule
+        const totalCourses = Object.values(scheduleData).reduce((sum, courses) => 
+          sum + (Array.isArray(courses) ? courses.length : 0), 0);
+        console.log(`Total courses in schedule: ${totalCourses}`);
+        
         setSchedule(scheduleData);
         
         // Only update allocations if we have room data and schedule data
@@ -139,7 +156,17 @@ export const ScheduleProvider = ({ children }) => {
           
           // Populate allocations with courses from the schedule
           Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
+            if (!Array.isArray(coursesInSlot)) {
+              console.warn(`Invalid courses in slot ${slotId}:`, coursesInSlot);
+              return;
+            }
+            
             coursesInSlot.forEach(course => {
+              if (!course || !course.id) {
+                console.warn('Invalid course in schedule:', course);
+                return;
+              }
+              
               if (course.room) {
                 const roomAllocation = newAllocations.find(a => a.roomName === course.room);
                 
