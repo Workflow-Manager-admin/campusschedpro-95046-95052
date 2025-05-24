@@ -16,21 +16,26 @@ import {
  * Component for capturing and downloading a schedule as an image
  * PUBLIC_INTERFACE
  */
-const ShareScheduleButton = ({ targetRef, onNotification }) => {
+const ShareScheduleButton = ({ targetRef, onNotification, academicYear }) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [capturedPreviewUrl, setCapturedPreviewUrl] = useState('');
 
   /**
    * Generates a meaningful filename for the downloaded schedule
-   * Format: campus-schedule-YYYY-MM-DD.png
+   * Format: campus-schedule-[academic-year]-YYYY-MM-DD.png
    */
   const generateFilename = () => {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `campus-schedule-${year}-${month}-${day}.png`;
+    
+    const academicYearPart = academicYear && academicYear !== 'All Years'
+      ? `-${academicYear.replace(/\s+/g, '-').toLowerCase()}`
+      : '';
+      
+    return `campus-schedule${academicYearPart}-${year}-${month}-${day}.png`;
   };
 
   /**
@@ -180,7 +185,8 @@ const ShareScheduleButton = ({ targetRef, onNotification }) => {
 
 ShareScheduleButton.propTypes = {
   targetRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  onNotification: PropTypes.func
+  onNotification: PropTypes.func,
+  academicYear: PropTypes.string
 };
 
 export default ShareScheduleButton;
