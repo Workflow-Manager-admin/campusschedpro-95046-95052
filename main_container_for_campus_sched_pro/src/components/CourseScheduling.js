@@ -42,7 +42,8 @@ const CourseScheduling = () => {
     addCourse,
     updateCourse,
     deleteCourseById,
-    isLoading
+    isLoading,
+    refreshData
   } = useSchedule();
   
   const timetableRef = useRef(null);
