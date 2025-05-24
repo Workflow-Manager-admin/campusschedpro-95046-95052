@@ -424,10 +424,10 @@ async function getOrCreateAcademicYear(name) {
     if (existing) return existing.id;
     
     // Create new academic year
-    const { data: created, error } = await supabase
+    const { data, error } = await supabase
       .from('academic_years')
       .insert({ name })
-      .select('id')
+      .select()
       .single();
     
     if (error) {
@@ -435,7 +435,7 @@ async function getOrCreateAcademicYear(name) {
       return null;
     }
     
-    return created ? created.id : null;
+    return data ? data.id : null;
   } catch (error) {
     console.error('Error in getOrCreateAcademicYear:', error);
     return null;

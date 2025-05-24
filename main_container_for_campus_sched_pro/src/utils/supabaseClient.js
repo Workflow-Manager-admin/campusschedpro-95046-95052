@@ -536,13 +536,13 @@ const getDepartmentId = async (departmentName) => {
   if (existing) return existing.id;
   
   // Create new department
-  const { data: created } = await supabase
+  const { data } = await supabase
     .from('departments')
     .insert({ name: departmentName })
-    .select('id')
+    .select()
     .single();
     
-  return created?.id || null;
+  return data?.id || null;
 };
 
 // Get building ID, create if it doesn't exist
