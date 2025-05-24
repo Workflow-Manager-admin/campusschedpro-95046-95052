@@ -79,7 +79,8 @@ export const enhancedSaveRoom = async (room) => {
             .insert({
               room_id: data.id,
               equipment_id: equipmentId
-            });
+            })
+            .select();
         }
       }
     }
@@ -177,7 +178,8 @@ export const enhancedSaveCourse = async (course) => {
             .insert({
               course_id: data.id,
               equipment_id: equipmentId
-            });
+            })
+            .select();
         }
       }
     }
