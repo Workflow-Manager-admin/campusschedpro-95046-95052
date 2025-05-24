@@ -225,9 +225,35 @@ const CourseScheduling = () => {
     }
   };
 
+  // Filter courses based on selected academic year
   const filteredCourses = yearFilter === 'All Years' 
     ? courses 
     : courses.filter(course => course.academicYear && course.academicYear === yearFilter);
+    
+  // Filter schedule based on academic year
+  useEffect(() => {
+    if (yearFilter === 'All Years') {
+      setFilteredSchedule(null); // Use the full schedule
+    } else {
+      // Create a filtered copy of the schedule that only includes courses from the selected year
+      const filtered = {};
+      
+      // Iterate through all time slots in the schedule
+      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        // Filter courses in this slot by academic year
+        const filteredCoursesInSlot = coursesInSlot.filter(
+          course => course.academicYear === yearFilter
+        );
+        
+        // Only include the slot if it has courses after filtering
+        if (filteredCoursesInSlot.length > 0) {
+          filtered[slotId] = filteredCoursesInSlot;
+        }
+      });
+      
+      setFilteredSchedule(filtered);
+    }
+  }, [yearFilter, schedule]);
 
   if (isLoading) {
     return (
@@ -327,8 +353,15 @@ const CourseScheduling = () => {
               </div>
               
               <div className="timetable-panel">
+                <div className="timetable-header-controls">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    {yearFilter === 'All Years' 
+                      ? 'Full Schedule' 
+                      : `Schedule for ${yearFilter}`}
+                  </Typography>
+                </div>
                 <Timetable
-                  schedule={schedule}
+                  schedule={filteredSchedule || schedule}
                   onCourseMove={setSchedule}
                   timetableRef={timetableRef}
                 />
