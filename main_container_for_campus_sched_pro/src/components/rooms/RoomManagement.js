@@ -282,13 +282,32 @@ const RoomManagement = () => {
                 >
                   ✎
                 </button>
-                <button 
-                  className="btn btn-icon btn-danger" 
-                  onClick={handleDeleteRoom}
-                  title="Delete Room"
-                >
-                  🗑
-                </button>
+                {!showDeleteConfirm ? (
+                  <button 
+                    className="btn btn-icon btn-danger" 
+                    onClick={handleDeleteRoom}
+                    title="Delete Room"
+                  >
+                    🗑
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      className="btn btn-icon btn-danger" 
+                      onClick={handleDeleteRoom}
+                      title="Confirm Delete"
+                    >
+                      ✓
+                    </button>
+                    <button 
+                      className="btn btn-icon" 
+                      onClick={handleCancelDelete}
+                      title="Cancel Delete"
+                    >
+                      ✕
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
