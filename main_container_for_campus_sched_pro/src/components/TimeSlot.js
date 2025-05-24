@@ -20,7 +20,16 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     if (removeCourseFromSlot) {
       // Pass the array index to ensure we remove only this specific course instance
       // even if multiple instances of the same course exist in this slot
-      removeCourseFromSlot(slotId, course, index);
+      console.log(`Removing course ${course.code} at index ${index} from slot ${slotId}`);
+      removeCourseFromSlot(slotId, course, index)
+        .then(success => {
+          if (!success) {
+            console.error(`Failed to remove course ${course.code} from slot ${slotId}`);
+          }
+        })
+        .catch(err => {
+          console.error(`Error removing course: ${err.message}`);
+        });
     }
   };
 

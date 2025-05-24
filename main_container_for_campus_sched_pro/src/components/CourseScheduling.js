@@ -238,25 +238,39 @@ const CourseScheduling = () => {
     } else {
       // Create a filtered copy of the schedule that only includes courses from the selected year
       const filtered = {};
+      let totalFilteredCourses = 0;
       
       // Iterate through all time slots in the schedule
       Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
         if (!coursesInSlot || !Array.isArray(coursesInSlot)) return;
         
         // Filter courses in this slot by academic year
-        const filteredCoursesInSlot = coursesInSlot.filter(
-          course => course && course.academicYear === yearFilter
-        );
+        // Note: academicYear might not be available directly in schedule courses
+        // We need to look it up from the courses array
+        const filteredCoursesInSlot = coursesInSlot.filter(course => {
+          if (!course || !course.id) return false;
+          
+          // If course has academicYear property, use it directly
+          if (course.academicYear) {
+            return course.academicYear === yearFilter;
+          }
+          
+          // Otherwise, look it up from the full courses array
+          const fullCourse = courses.find(c => c.id === course.id);
+          return fullCourse && fullCourse.academicYear === yearFilter;
+        });
         
         // Only include the slot if it has courses after filtering
         if (filteredCoursesInSlot.length > 0) {
           filtered[slotId] = filteredCoursesInSlot;
+          totalFilteredCourses += filteredCoursesInSlot.length;
         }
       });
       
+      console.log(`Filtered schedule for ${yearFilter}: ${totalFilteredCourses} courses in ${Object.keys(filtered).length} slots`);
       setFilteredSchedule(filtered);
     }
-  }, [yearFilter, schedule]);
+  }, [yearFilter, schedule, courses]);
 
   if (isLoading) {
     return (
