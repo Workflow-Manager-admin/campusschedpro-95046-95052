@@ -90,8 +90,8 @@ export const safeAddCourse = async (newCourse) => {
     
     // Use enhanced save function
     const result = await enhancedSaveCourse({
-      ...newCourse,
-      id: null // Ensure ID is null to create new course
+      ...newCourse
+      // Removed explicit null ID setting to allow database default
     });
     
     return {
