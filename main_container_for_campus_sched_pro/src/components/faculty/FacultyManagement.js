@@ -98,8 +98,23 @@ const FacultyManagement = () => {
       if (!result.success) {
         throw new Error(result.message || 'Failed to create faculty');
       }
-      
-      await loadFacultyData();
+
+      // Instead of reloading all faculty data, just add the new one to the state
+      if (result.id) {
+        const newFacultyWithId = {
+          ...newFacultyMember,
+          id: result.id,
+          assignments: [],
+          load: 0,
+          maxLoad: 12, // Default max load
+          status: 'Available'
+        };
+        
+        setFaculty(prevFaculty => [...prevFaculty, newFacultyWithId]);
+      } else {
+        // Fall back to full reload if we don't have the ID
+        await loadFacultyData();
+      }
       
       setShowAddDialog(false);
       setNewFaculty({ name: '', department: '', email: '', expertise: '' });
@@ -121,8 +136,19 @@ const FacultyManagement = () => {
         throw new Error(result.message || 'Failed to update faculty');
       }
       
-      await loadFacultyData();
-      setSelectedFaculty(updatedFaculty);
+      // Update the faculty in the local state instead of reloading all data
+      setFaculty(prevFaculty => 
+        prevFaculty.map(f => f.id === updatedFaculty.id ? {
+          ...updatedFaculty,
+          ...getFacultyStatus(updatedFaculty, updatedFaculty.assignments || [])
+        } : f)
+      );
+      
+      setSelectedFaculty({
+        ...updatedFaculty,
+        ...getFacultyStatus(updatedFaculty, updatedFaculty.assignments || [])
+      });
+      
       showNotification('Faculty member updated successfully', 'success');
     } catch (error) {
       console.error('Error updating faculty:', error);
