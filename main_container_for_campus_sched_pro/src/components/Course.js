@@ -20,24 +20,24 @@ const Course = memo(({ course, index, onEdit, onDelete }) => {
         >
           {showControls && !snapshot.isDragging && (
             <div className="course-actions">
-              <IconButton 
-                size="small" 
+              <button 
+                className="edit-btn"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onEdit) onEdit(course);
                 }}
               >
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton 
-                size="small"
+                Edit
+              </button>
+              <button 
+                className="delete-btn"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onDelete) onDelete(course);
                 }}
               >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+                Delete
+              </button>
             </div>
           )}
           <h3>{course.name}</h3>
