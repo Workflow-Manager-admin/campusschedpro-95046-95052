@@ -26,6 +26,7 @@ const FacultyManagement = () => {
     expertise: ''
   });
   
+  // Define loadFacultyData without dependencies to prevent infinite loops
   const loadFacultyData = useCallback(async () => {
     setLoading(true);
     try {
@@ -49,11 +50,13 @@ const FacultyManagement = () => {
       setFaculty(facultyWithAssignments);
     } catch (error) {
       console.error('Error loading faculty data:', error);
+      // Using showNotification directly here is fine as long as the function isn't in dependencies
       showNotification('Failed to load faculty data from the database', 'error');
     } finally {
       setLoading(false);
     }
-  }, []); // Remove showNotification from dependencies to prevent rerender loop
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array prevents rerender loops
   
   useEffect(() => {
     // Load faculty data once when component mounts
