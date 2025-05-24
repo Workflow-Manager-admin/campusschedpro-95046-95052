@@ -271,7 +271,8 @@ export const enhancedSaveFaculty = async (faculty) => {
       if (expertiseRecords.length > 0) {
         const { error: expertiseError } = await supabase
           .from('faculty_expertise')
-          .insert(expertiseRecords);
+          .insert(expertiseRecords)
+          .select();
         
         if (expertiseError) {
           console.error('Error adding faculty expertise:', expertiseError);
