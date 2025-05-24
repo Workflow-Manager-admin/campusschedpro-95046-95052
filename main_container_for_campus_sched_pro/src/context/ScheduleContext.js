@@ -91,7 +91,16 @@ export const ScheduleProvider = ({ children }) => {
       // Load courses first since schedule depends on course data
       let coursesData = [];
       try {
+        // Fetch ALL courses without any filtering
         coursesData = await getAllCourses();
+        
+        if (!coursesData || !Array.isArray(coursesData)) {
+          console.warn('Invalid courses data received:', coursesData);
+          coursesData = [];
+        }
+        
+        // Ensure we have valid course data 
+        console.log(`Loaded ${coursesData.length} courses from database`);
         setCourses(coursesData);
       } catch (courseError) {
         console.error('Error loading courses:', courseError);
