@@ -247,11 +247,16 @@ export const saveCourse = async (course) => {
   const { data, error } = await supabase
     .from('courses')
     .upsert(courseData)
-    .select('id')
+    .select()
     .single();
     
   if (error) {
     console.error('Error saving course:', error);
+    return null;
+  }
+  
+  if (!data || !data.id) {
+    console.error('Course was saved but no ID was returned');
     return null;
   }
   
@@ -358,11 +363,16 @@ export const saveRoom = async (room) => {
   const { data, error } = await supabase
     .from('rooms')
     .upsert(roomData)
-    .select('id')
+    .select()
     .single();
     
   if (error) {
     console.error('Error saving room:', error);
+    return null;
+  }
+  
+  if (!data || !data.id) {
+    console.error('Room was saved but no ID was returned');
     return null;
   }
   
