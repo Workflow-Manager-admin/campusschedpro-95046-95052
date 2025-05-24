@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-// Removed unused imports
 import { useSchedule } from '../../context/ScheduleContext';
+import RoomBulkImport from './RoomBulkImport';
 
 const ROOM_TYPES = ['Lecture Hall', 'Computer Lab', 'Seminar Room', 'Classroom', 'Conference Room'];
 const EQUIPMENT_OPTIONS = ['Projector', 'Whiteboard', 'Smart Board', 'Computers', 'Audio System', 'Video Conference', 'Document Camera'];
 const BUILDINGS = ['Science Building', 'Engineering Building', 'Humanities Building', 'Business Building', 'Library'];
 
 const RoomManagement = () => {
-  // Use room data from context instead of local state
   const { 
     rooms, 
-    // Removed unused variable isLoading
     showNotification: contextShowNotification,
     addRoom,
     updateRoom,
-    deleteRoomById
+    deleteRoomById,
+    loadData
   } = useSchedule();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,11 +22,8 @@ const RoomManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editedRoom, setEditedRoom] = useState(null);
-  // Local component state for UI management only
-  // Using useState but removing notification state as it's not used
   useState({});
 
-  // Room form state for adding new rooms
   const [newRoom, setNewRoom] = useState({
     name: '',
     type: ROOM_TYPES[0],
@@ -97,14 +93,12 @@ const RoomManagement = () => {
   };
 
   const handleSaveEdit = async () => {
-    // Validate edited room
     if (!editedRoom.name || !editedRoom.type || !editedRoom.building) {
       contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
     try {
-      // Use the updateRoom function from context which handles Supabase integration
       await updateRoom(editedRoom);
       setSelectedRoom(editedRoom);
       setIsEditing(false);
@@ -125,7 +119,6 @@ const RoomManagement = () => {
     }
 
     try {
-      // Use the deleteRoomById function from context which handles Supabase integration
       const success = await deleteRoomById(selectedRoom.id);
       if (success) {
         setSelectedRoom(null);
@@ -142,14 +135,12 @@ const RoomManagement = () => {
   };
 
   const handleAddRoom = async () => {
-    // Validate new room
     if (!newRoom.name || !newRoom.type || !newRoom.building) {
       contextShowNotification('Please fill in all required fields', 'error');
       return;
     }
 
     try {
-      // Use the addRoom function from context which handles Supabase integration
       const roomId = await addRoom(newRoom);
       
       if (!roomId) {
@@ -158,7 +149,6 @@ const RoomManagement = () => {
       
       setShowAddModal(false);
       
-      // Reset new room form
       setNewRoom({
         name: '',
         type: ROOM_TYPES[0],
@@ -175,18 +165,24 @@ const RoomManagement = () => {
     }
   };
 
-  // Removed unused handleCloseNotification function
+  const handleBulkImportComplete = () => {
+    contextShowNotification('Room import completed. Refreshing data...', 'success');
+    loadData();
+  };
 
   return (
     <div className="room-management">
       <div className="room-header">
         <h2>Room Management</h2>
-        <button 
-          className="btn"
-          onClick={() => setShowAddModal(true)}
-        >
-          + Add Room
-        </button>
+        <div className="header-actions">
+          <button 
+            className="btn"
+            onClick={() => setShowAddModal(true)}
+          >
+            + Add Room
+          </button>
+          <RoomBulkImport onComplete={handleBulkImportComplete} />
+        </div>
       </div>
 
       <div className="room-container">
@@ -426,7 +422,6 @@ const RoomManagement = () => {
         )}
       </div>
 
-      {/* Add Room Modal */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -519,8 +514,6 @@ const RoomManagement = () => {
           </div>
         </div>
       )}
-
-      {/* Snackbar notifications are handled by the context */}
     </div>
   );
 };
