@@ -31,7 +31,7 @@ const ShareScheduleButton = ({ targetRef, onNotification, academicYear }) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     
-    const academicYearPart = academicYear && academicYear !== 'All Years'
+    const academicYearPart = academicYear && academicYear !== 'All Years' && typeof academicYear === 'string'
       ? `-${academicYear.replace(/\s+/g, '-').toLowerCase()}`
       : '';
       
