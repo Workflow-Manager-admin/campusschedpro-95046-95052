@@ -55,9 +55,29 @@ const FacultyManagement = () => {
     }
   }, []); // Remove showNotification from dependencies to prevent rerender loop
   
-  useEffect(() => {
-    loadFacultyData();
+  // Debounce faculty loading to prevent cascading updates
+  const loadingTimeoutRef = useRef(null);
+  
+  const debouncedLoadFacultyData = useCallback(() => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+    }
+    
+    loadingTimeoutRef.current = setTimeout(() => {
+      loadFacultyData();
+      loadingTimeoutRef.current = null;
+    }, 300); // 300ms debounce
   }, [loadFacultyData]);
+
+  useEffect(() => {
+    debouncedLoadFacultyData();
+    
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [debouncedLoadFacultyData]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
