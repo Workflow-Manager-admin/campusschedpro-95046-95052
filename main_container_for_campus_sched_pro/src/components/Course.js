@@ -1,9 +1,8 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
-import { Paper, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Paper } from '@mui/material';
+=======
 
 const Course = memo(({ course, index, onEdit, onDelete }) => {
   const [showControls, setShowControls] = useState(false);
