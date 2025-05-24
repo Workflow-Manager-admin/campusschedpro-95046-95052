@@ -1,9 +1,12 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
-import { Paper } from '@mui/material';
+import { Paper, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const Course = memo(({ course, index }) => {
+const Course = memo(({ course, index, onEdit, onDelete }) => {
+  const [showControls, setShowControls] = useState(false);
   return (
     <Draggable draggableId={course.id} index={index}>
       {(provided, snapshot) => (
