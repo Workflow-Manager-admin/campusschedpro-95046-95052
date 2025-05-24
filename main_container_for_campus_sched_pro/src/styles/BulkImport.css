@@ -1,0 +1,110 @@
+/* Styles for bulk import components */
+
+.faculty-actions, 
+.header-actions, 
+.course-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Add margin to bulk import buttons when next to other buttons */
+.MuiButton-root {
+  margin-left: 8px;
+}
+
+/* Styling for the bulk import modal */
+.bulk-import-container h4 {
+  margin-bottom: 16px;
+  color: var(--primary-green);
+}
+
+.bulk-import-step {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--background-grey);
+}
+
+.bulk-import-step h5 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.file-select-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-file {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.import-progress {
+  margin: 16px 0;
+}
+
+.import-result {
+  margin-top: 16px;
+}
+
+.import-errors-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.import-error-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.import-error-item:last-child {
+  border-bottom: none;
+}
+
+.import-error-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.import-error-message {
+  font-size: 0.9em;
+  color: #d32f2f;
+  margin-top: 4px;
+}
+
+/* Make sure dialog content has appropriate styles */
+.MuiDialogContent-root {
+  padding: 16px 24px !important;
+}
+
+/* Style for LinearProgress */
+.MuiLinearProgress-root {
+  height: 8px !important;
+  border-radius: 4px !important;
+}
+
+.MuiLinearProgress-barColorPrimary {
+  background-color: var(--primary-green) !important;
+}
+
+/* Style buttons in dialogs */
+.MuiButton-containedPrimary {
+  background-color: var(--primary-green) !important;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+/* Style icons in buttons */
+.MuiSvgIcon-root {
+  font-size: 1.2rem !important;
+}
