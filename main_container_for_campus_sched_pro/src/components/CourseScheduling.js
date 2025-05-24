@@ -38,6 +38,8 @@ const CourseScheduling = () => {
     showNotification,
     handleCloseNotification,
     addCourse,
+    updateCourse,
+    deleteCourseById,
     isLoading
   } = useSchedule();
   
