@@ -3,6 +3,7 @@ import { CircularProgress } from '@mui/material';
 import ReduxDragDropContext from './ReduxDragDropContext';
 import CourseBulkImport from '../components/common/CourseBulkImport';
 import ReduxDroppable from './ReduxDroppable';
+import ScheduleDebug from './ScheduleDebug';
 import { 
   Alert, 
   Snackbar, 
