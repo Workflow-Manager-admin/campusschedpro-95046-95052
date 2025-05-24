@@ -59,6 +59,9 @@ const CourseScheduling = () => {
     department: 'IT',
   });
   const [yearFilter, setYearFilter] = useState('All Years');
+  
+  // State to store the filtered schedule when academic year filter is applied
+  const [filteredSchedule, setFilteredSchedule] = useState(null);
 
   const handleDragEnd = useCallback((result) => {
     const { source, destination, draggableId } = result;
