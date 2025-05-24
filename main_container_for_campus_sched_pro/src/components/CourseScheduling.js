@@ -240,9 +240,11 @@ const CourseScheduling = () => {
       
       // Iterate through all time slots in the schedule
       Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        if (!coursesInSlot || !Array.isArray(coursesInSlot)) return;
+        
         // Filter courses in this slot by academic year
         const filteredCoursesInSlot = coursesInSlot.filter(
-          course => course.academicYear === yearFilter
+          course => course && course.academicYear === yearFilter
         );
         
         // Only include the slot if it has courses after filtering

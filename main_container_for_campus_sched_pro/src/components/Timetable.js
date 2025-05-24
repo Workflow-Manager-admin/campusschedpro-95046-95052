@@ -31,12 +31,13 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
               <div className="time-label">{time}</div>
               {DAYS.map(day => {
                 const slotId = `${day}-${time}`;
+                const coursesInSlot = schedule && schedule[slotId] ? schedule[slotId] : [];
                 return (
                   <TimeSlot
                     key={slotId}
                     day={day}
                     time={time}
-                    courses={schedule[slotId] || []}
+                    courses={coursesInSlot}
                     removeCourseFromSlot={removeCourseFromSlot}
                   />
                 );
