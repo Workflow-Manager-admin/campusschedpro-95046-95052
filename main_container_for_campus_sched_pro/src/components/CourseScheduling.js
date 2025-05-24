@@ -190,6 +190,37 @@ const CourseScheduling = () => {
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
     }
   };
+  
+  const handleEditCourse = (course) => {
+    setSelectedCourse(course);
+    setShowEditDialog(true);
+  };
+  
+  const handleUpdateCourse = async (updatedCourse) => {
+    try {
+      await updateCourse(updatedCourse);
+      setShowEditDialog(false);
+      setSelectedCourse(null);
+      showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
+    } catch (error) {
+      console.error('Error updating course:', error);
+      showNotification(`Failed to update course: ${error.message || 'Unknown error'}`, 'error');
+    }
+  };
+  
+  const handleDeleteCourse = async (course) => {
+    try {
+      const success = await deleteCourseById(course.id);
+      if (success) {
+        setShowEditDialog(false);
+        setSelectedCourse(null);
+        showNotification(`Course ${course.code} deleted successfully`, 'success');
+      }
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      showNotification(`Failed to delete course: ${error.message || 'Unknown error'}`, 'error');
+    }
+  };
 
   const filteredCourses = yearFilter === 'All Years' 
     ? courses 
@@ -282,6 +313,8 @@ const CourseScheduling = () => {
                           key={course.id} 
                           course={course} 
                           index={index}
+                          onEdit={() => handleEditCourse(course)}
+                          onDelete={() => handleDeleteCourse(course)}
                         />
                       ))}
                       {provided.placeholder}
