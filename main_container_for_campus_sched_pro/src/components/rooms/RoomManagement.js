@@ -114,19 +114,31 @@ const RoomManagement = () => {
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
   const handleDeleteRoom = async () => {
     if (!selectedRoom) return;
+    
+    if (!showDeleteConfirm) {
+      setShowDeleteConfirm(true);
+      return;
+    }
 
     try {
       // Use the deleteRoomById function from context which handles Supabase integration
       const success = await deleteRoomById(selectedRoom.id);
       if (success) {
         setSelectedRoom(null);
+        setShowDeleteConfirm(false);
       }
     } catch (error) {
       console.error('Error deleting room:', error);
       contextShowNotification('Failed to delete room from the database', 'error');
     }
+  };
+  
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
   };
 
   const handleAddRoom = async () => {
