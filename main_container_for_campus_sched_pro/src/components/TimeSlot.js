@@ -18,23 +18,13 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     event.stopPropagation();
     
     if (removeCourseFromSlot) {
-      // Pass the array index to ensure we remove only this specific course instance
-      // even if multiple instances of the same course exist in this slot
-      removeCourseFromSlot(slotId, course, index)
-        .then(success => {
-          if (!success) {
-            // Use conditional console for better production compatibility
-            if (process.env.NODE_ENV !== 'production') {
-              console.error(`Failed to remove course ${course.code} from slot ${slotId}`);
-            }
-          }
-        })
-        .catch(err => {
-          // Use conditional console for better production compatibility
-          if (process.env.NODE_ENV !== 'production') {
-            console.error(`Error removing course: ${err.message}`);
-          }
-        });
+      try {
+        // Pass the array index to ensure we remove only this specific course instance
+        // even if multiple instances of the same course exist in this slot
+        removeCourseFromSlot(slotId, course, index);
+      } catch (error) {
+        // Silent fail in production
+      }
     }
   };
 
