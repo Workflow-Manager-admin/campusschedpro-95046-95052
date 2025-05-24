@@ -45,6 +45,8 @@ const CourseScheduling = () => {
   
   const timetableRef = useRef(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [newCourse, setNewCourse] = useState({
     name: '',
     code: '',
