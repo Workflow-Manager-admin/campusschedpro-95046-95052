@@ -42,7 +42,7 @@ export const enhancedSaveRoom = async (room) => {
     const { data, error } = await supabase
       .from('rooms')
       .upsert(roomData)
-      .select('id')
+      .select()
       .single();
     
     if (error) {
@@ -140,7 +140,7 @@ export const enhancedSaveCourse = async (course) => {
     const { data, error } = await supabase
       .from('courses')
       .upsert(courseData)
-      .select('id')
+      .select()
       .single();
     
     if (error) {
@@ -232,7 +232,7 @@ export const enhancedSaveFaculty = async (faculty) => {
     const { data, error } = await supabase
       .from('faculty')
       .upsert(facultyData)
-      .select('id')
+      .select()
       .single();
     
     if (error) {
