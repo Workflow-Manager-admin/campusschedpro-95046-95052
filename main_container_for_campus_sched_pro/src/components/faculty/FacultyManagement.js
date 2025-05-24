@@ -131,18 +131,12 @@ const FacultyManagement = () => {
         throw new Error(result.message || 'Failed to update faculty');
       }
       
-      // Update the faculty in the local state instead of reloading all data
-      setFaculty(prevFaculty => 
-        prevFaculty.map(f => f.id === updatedFaculty.id ? {
-          ...updatedFaculty,
-          ...getFacultyStatus(updatedFaculty, updatedFaculty.assignments || [])
-        } : f)
-      );
+      // Reload faculty data to ensure consistency
+      await loadFacultyData();
       
-      setSelectedFaculty({
-        ...updatedFaculty,
-        ...getFacultyStatus(updatedFaculty, updatedFaculty.assignments || [])
-      });
+      // Update selected faculty with the latest data
+      const updatedList = faculty.find(f => f.id === updatedFaculty.id);
+      setSelectedFaculty(updatedList || null);
       
       showNotification('Faculty member updated successfully', 'success');
     } catch (error) {
