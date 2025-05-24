@@ -401,6 +401,14 @@ const CourseScheduling = () => {
                   onCourseMove={setSchedule}
                   timetableRef={timetableRef}
                 />
+                
+                {/* Add debug panel in development - can be commented out for production */}
+                <ScheduleDebug 
+                  schedule={schedule}
+                  filteredSchedule={filteredSchedule}
+                  courses={courses}
+                  yearFilter={yearFilter}
+                />
               </div>
             </div>
           </ReduxDragDropContext>
