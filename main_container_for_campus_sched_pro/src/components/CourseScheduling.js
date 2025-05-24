@@ -331,6 +331,19 @@ const CourseScheduling = () => {
             >
               Save Schedule
             </button>
+            <button 
+              className="btn"
+              onClick={() => {
+                showNotification('Refreshing data from database...', 'info');
+                refreshData().then(() => {
+                  showNotification('Data refreshed successfully!', 'success');
+                });
+              }}
+              style={{ marginLeft: '10px' }}
+              title="Reload all data from the database"
+            >
+              🔄 Refresh Data
+            </button>
           </div>
         </div>
         
