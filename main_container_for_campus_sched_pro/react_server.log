@@ -2,9 +2,9 @@
 > react-kavia@0.1.0 start
 > react-scripts start
 
-(node:1126) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:663) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:1126) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:663) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Failed to compile.
@@ -80,15 +80,25 @@ SyntaxError: /home/kavia/workspace/code-generation/campusschedpro-95046-95052/ma
     at step (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:261:32)
     at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:273:13
     at async.call.result.err.err (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:223:11)
-    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:189:28
-    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
-    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:113:33
-    at step (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:287:14)
-    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:273:13
-    at async.call.result.err.err (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/gensync/index.js:223:11)
+
+ERROR in ./src/components/common/CourseBulkImport.js 8:0-48
+Module not found: Error: Can't resolve './BulkImportModal' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/components/common'
+
+ERROR in ./src/components/common/CourseBulkImport.js 9:0-88
+Module not found: Error: Can't resolve '../../utils/excelUtils' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/components/common'
+
+ERROR in ./src/components/faculty/FacultyManagement.js 13:0-52
+Module not found: Error: Can't resolve './FacultyBulkImport' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/components/faculty'
+
+ERROR in ./src/components/rooms/RoomBulkImport.js 8:0-56
+Module not found: Error: Can't resolve '../common/BulkImportModal' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/components/rooms'
+
+ERROR in ./src/components/rooms/RoomBulkImport.js 9:0-84
+Module not found: Error: Can't resolve '../../utils/excelUtils' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/components/rooms'
 
 ERROR in [eslint] 
 src/components/Course.js
   Line 5:  Parsing error: Unexpected token (5:0)
 
-webpack compiled with 2 errors and 1 warning
+webpack compiled with 7 errors and 1 warning
+Compiling...
