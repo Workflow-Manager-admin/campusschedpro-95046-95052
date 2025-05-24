@@ -53,7 +53,7 @@ const FacultyManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [showNotification]);
+  }, []); // Remove showNotification from dependencies to prevent rerender loop
   
   useEffect(() => {
     loadFacultyData();
