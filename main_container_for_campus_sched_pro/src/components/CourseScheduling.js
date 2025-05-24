@@ -229,7 +229,26 @@ const CourseScheduling = () => {
   // Filter courses based on selected academic year
   const filteredCourses = yearFilter === 'All Years' 
     ? courses 
-    : courses.filter(course => course.academicYear && course.academicYear === yearFilter);
+    : courses.filter(course => {
+        // Ensure we're filtering correctly, accounting for possible data inconsistencies
+        if (!course) return false;
+        
+        // Handle potential null or undefined academicYear
+        const courseYear = course.academicYear || 'Unknown';
+        return courseYear === yearFilter;
+      });
+      
+  // For debugging when there are issues with course display
+  useEffect(() => {
+    console.log(`Filtered ${filteredCourses.length} courses from ${courses.length} total courses`);
+    console.log(`Filter applied: ${yearFilter}`);
+    
+    if (courses.length > 0 && filteredCourses.length === 0 && yearFilter !== 'All Years') {
+      // This would help diagnose issues with academic year data
+      console.warn('No courses match the current filter. Academic years present:', 
+        [...new Set(courses.map(c => c.academicYear || 'Unknown'))]);
+    }
+  }, [filteredCourses, courses, yearFilter]);
     
   // Filter schedule based on academic year
   useEffect(() => {
