@@ -12,6 +12,7 @@ import './styles/CourseScheduling.css';
 import './styles/FacultyManagement.css';
 import './styles/RoomStyles.css';
 import './styles/ConflictResolution.css';
+import './styles/BulkImport.css';
 
 // Component that wraps the application and provides loading state
 const AppContent = () => {
