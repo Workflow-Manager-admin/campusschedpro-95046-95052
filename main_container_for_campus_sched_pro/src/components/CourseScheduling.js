@@ -267,7 +267,7 @@ const CourseScheduling = () => {
         }
       });
       
-      console.log(`Filtered schedule for ${yearFilter}: ${totalFilteredCourses} courses in ${Object.keys(filtered).length} slots`);
+      // Remove console log for production build
       setFilteredSchedule(filtered);
     }
   }, [yearFilter, schedule, courses]);
