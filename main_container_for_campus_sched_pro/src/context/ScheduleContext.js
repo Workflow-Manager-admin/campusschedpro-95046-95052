@@ -223,7 +223,9 @@ export const ScheduleProvider = ({ children }) => {
         getSchedule().then(data => setSchedule(data));
       })
       .subscribe();
-    
+
+    // Don't set up faculty subscription - we handle faculty updates locally in components
+
     // Clean up subscriptions
     return () => {
       supabase.removeChannel(coursesSubscription);
