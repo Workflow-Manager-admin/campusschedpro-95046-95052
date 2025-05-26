@@ -77,7 +77,7 @@ const EnhancedFunctionsWrapper = ({ children }) => {
       showNotification(`Room ${updatedRoom.name} updated successfully`, 'success');
       return result.id;
     } catch (error) {
-      console.error('Error in enhancedUpdateRoom:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to update room: ${error.message}`, 'error');
       return null;
     }
