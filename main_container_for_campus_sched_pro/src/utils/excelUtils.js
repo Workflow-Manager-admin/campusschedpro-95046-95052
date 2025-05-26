@@ -554,3 +554,153 @@ const readExcelFile = (file) => {
     reader.readAsArrayBuffer(file);
   });
 };
+
+// Helper functions for related entities
+
+/**
+ * Get or create a department
+ * @param {string} name - Department name
+ * @returns {Promise<string|null>} Department ID or null if failed
+ */
+async function getOrCreateDepartment(name) {
+  if (!name) return null;
+  
+  try {
+    // Check if department exists
+    const { data: existing } = await supabase
+      .from('departments')
+      .select('id')
+      .eq('name', name)
+      .maybeSingle();
+    
+    if (existing) return existing.id;
+    
+    // Create new department
+    const { data, error } = await supabase
+      .from('departments')
+      .insert({ name })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating department:', error);
+      return null;
+    }
+    
+    return data ? data.id : null;
+  } catch (error) {
+    console.error('Error in getOrCreateDepartment:', error);
+    return null;
+  }
+}
+
+/**
+ * Get or create a building
+ * @param {string} name - Building name
+ * @returns {Promise<string|null>} Building ID or null if failed
+ */
+async function getOrCreateBuilding(name) {
+  if (!name) return null;
+  
+  try {
+    // Check if building exists
+    const { data: existing } = await supabase
+      .from('buildings')
+      .select('id')
+      .eq('name', name)
+      .maybeSingle();
+    
+    if (existing) return existing.id;
+    
+    // Create new building
+    const { data, error } = await supabase
+      .from('buildings')
+      .insert({ name })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating building:', error);
+      return null;
+    }
+    
+    return data ? data.id : null;
+  } catch (error) {
+    console.error('Error in getOrCreateBuilding:', error);
+    return null;
+  }
+}
+
+/**
+ * Get or create equipment
+ * @param {string} name - Equipment name
+ * @returns {Promise<string|null>} Equipment ID or null if failed
+ */
+async function getOrCreateEquipment(name) {
+  if (!name) return null;
+  
+  try {
+    // Check if equipment exists
+    const { data: existing } = await supabase
+      .from('equipment_types')
+      .select('id')
+      .eq('name', name)
+      .maybeSingle();
+    
+    if (existing) return existing.id;
+    
+    // Create new equipment
+    const { data, error } = await supabase
+      .from('equipment_types')
+      .insert({ name })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating equipment:', error);
+      return null;
+    }
+    
+    return data ? data.id : null;
+  } catch (error) {
+    console.error('Error in getOrCreateEquipment:', error);
+    return null;
+  }
+}
+
+/**
+ * Get or create an academic year
+ * @param {string} name - Academic year name
+ * @returns {Promise<string|null>} Academic year ID or null if failed
+ */
+async function getOrCreateAcademicYear(name) {
+  if (!name) return null;
+  
+  try {
+    // Check if academic year exists
+    const { data: existing } = await supabase
+      .from('academic_years')
+      .select('id')
+      .eq('name', name)
+      .maybeSingle();
+    
+    if (existing) return existing.id;
+    
+    // Create new academic year
+    const { data, error } = await supabase
+      .from('academic_years')
+      .insert({ name })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating academic year:', error);
+      return null;
+    }
+    
+    return data ? data.id : null;
+  } catch (error) {
+    console.error('Error in getOrCreateAcademicYear:', error);
+    return null;
+  }
+}
