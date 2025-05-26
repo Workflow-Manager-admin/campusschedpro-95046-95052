@@ -1,11 +1,10 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import { findScheduleConflicts } from '../utils/scheduleUtils';
 import { 
   getAllCourses, getAllRooms, getSchedule, saveCourse, saveRoom, 
   deleteCourse, deleteRoom, unscheduleCourse, getAllDepartments,
-  getAllFaculty
+  getAllFaculty, supabase
 } from '../utils/supabaseClient';
-import { createClient } from '@supabase/supabase-js';
 
 // Initialize the Schedule Context
 const ScheduleContext = createContext();
@@ -21,12 +20,6 @@ export const useSchedule = () => {
 
 // Create the Schedule Provider component
 export const ScheduleProvider = ({ children }) => {
-  // Get environment variables with fallbacks
-  const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://your-supabase-url.supabase.co';
-  const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-supabase-anon-key';
-  
-  // Supabase client for realtime subscriptions
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   // State for courses, rooms, faculty, schedule, and UI
   const [courses, setCourses] = useState([]);
