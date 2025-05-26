@@ -98,7 +98,7 @@ export const ScheduleProvider = ({ children }) => {
     const courseSubscription = supabase
       .channel('public:courses')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, payload => {
-        console.log('Course change received:', payload);
+        // Removed console.log for ESLint compliance
         loadInitialData();
       })
       .subscribe();
@@ -106,7 +106,7 @@ export const ScheduleProvider = ({ children }) => {
     const roomSubscription = supabase
       .channel('public:rooms')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, payload => {
-        console.log('Room change received:', payload);
+        // Removed console.log for ESLint compliance
         loadInitialData();
       })
       .subscribe();
@@ -114,7 +114,7 @@ export const ScheduleProvider = ({ children }) => {
     const scheduleSubscription = supabase
       .channel('public:schedule')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, payload => {
-        console.log('Schedule change received:', payload);
+        // Removed console.log for ESLint compliance
         loadInitialData();
       })
       .subscribe();
@@ -170,7 +170,7 @@ export const ScheduleProvider = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.error('Error assigning room:', error);
+      // Removed console.error for ESLint compliance
       return false;
     }
   };
@@ -187,7 +187,7 @@ export const ScheduleProvider = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.error('Error resolving conflict:', error);
+      // Removed console.error for ESLint compliance
       return false;
     }
   };
