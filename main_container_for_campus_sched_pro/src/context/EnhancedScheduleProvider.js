@@ -120,20 +120,41 @@ const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, set
   const removeCourseFromSlotEnhanced = async (slotId, course, index) => {
     if (!slotId) {
       const error = new Error('Slot ID is required');
-      throw error;
+      setErrorInfo(prev => ({
+        lastError: error.message,
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      showNotification && showNotification(`Error: ${error.message}`, 'error');
+      return Promise.resolve(false);
     }
     
     if (!course) {
       const error = new Error('Course to remove is required');
-      throw error;
+      setErrorInfo(prev => ({
+        lastError: error.message,
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      showNotification && showNotification(`Error: ${error.message}`, 'error');
+      return Promise.resolve(false);
     }
     
-    // Extract day and time from the slot ID
-    const [day, time] = slotId.split('-');
-    
-    return safeExecute(async () => {
+    try {
+      // Extract day and time from the slot ID
+      const [day, time] = slotId.split('-');
+      if (!day || !time) {
+        throw new Error(`Invalid slot ID format: ${slotId}`);
+      }
+      
       // Get the current schedule for safety checks
-      const { schedule } = baseContext;
+      const { schedule, showNotification } = baseContext;
+      
+      // Handle case where schedule is undefined
+      if (!schedule) {
+        showNotification && showNotification('Schedule is not available', 'error');
+        return Promise.resolve(false);
+      }
       
       // Safely navigate to the specific courses array - with defensive checks
       const slotExists = schedule && 
@@ -141,7 +162,14 @@ const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, set
         schedule[day][time];
         
       if (!slotExists) {
-        throw new Error(`Slot ${slotId} not found in schedule`);
+        // Instead of throwing error, provide feedback and return gracefully
+        setErrorInfo(prev => ({
+          lastError: `Slot ${slotId} not found in schedule`,
+          lastErrorTime: new Date().toISOString(),
+          errorCount: prev.errorCount + 1
+        }));
+        showNotification && showNotification(`Error removing course: Slot ${slotId} not found in schedule`, 'warning');
+        return Promise.resolve(false);
       }
       
       // Ensure we're working with an array before using array methods
@@ -155,7 +183,16 @@ const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, set
         // Fallback to removing by course ID
         return baseContext.removeCourseFromSlot(course.id, day, time);
       }
-    }, 'schedule');
+    } catch (error) {
+      // Log error and provide user feedback
+      console.error(`Error removing course from slot ${slotId}:`, error);
+      setErrorInfo(prev => ({
+        lastError: error.message || 'Unknown error removing course',
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      return Promise.resolve(false);
+    }
   };
 
   // Provide both the base context and our enhanced functions
