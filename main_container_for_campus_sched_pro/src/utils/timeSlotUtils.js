@@ -70,7 +70,7 @@ export const safeGetTimeSlotId = async (day, time) => {
     // If not found, create it
     return await ensureTimeSlotExists(day, time);
   } catch (error) {
-    console.error('Error in safeGetTimeSlotId:', error);
+    // Removed console.error for ESLint compliance
     return null;
   }
 };
