@@ -294,11 +294,15 @@ const RoomAllocation = () => {
             </div>
 
             <div className="allocation-container">
-              {filteredAllocations.map(allocation => (
+              {Array.isArray(filteredAllocations) && filteredAllocations.map(allocation => {
+                // Skip rendering if allocation is null or missing required properties
+                if (!allocation || !allocation.roomId) return null;
+                
+                return (
                 <div key={allocation.roomId} className="allocation-card">
                   <div className="allocation-header">
-                    <h3 className="allocation-title">{allocation.roomName}</h3>
-                    <span>{allocation.building}</span>
+                    <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
+                    <span>{allocation.building || 'Unknown Building'}</span>
                   </div>
 
                   <table className="schedule-table">
@@ -311,7 +315,12 @@ const RoomAllocation = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {allocation.courses.map(course => (
+                      {Array.isArray(allocation.courses) && allocation.courses.map(course => {
+                        // Skip rendering if course is null
+                        if (!course) return null;
+                        
+                        return (
+=======
                         <tr key={course.id}>
                           <td>{course.code} - {course.name}</td>
                           <td>{course.instructor}</td>
