@@ -3,7 +3,7 @@ import { findScheduleConflicts } from '../utils/scheduleUtils';
 import { 
   getAllCourses, getAllRooms, getSchedule, saveCourse, saveRoom, 
   deleteCourse, deleteRoom, unscheduleCourse, getAllDepartments,
-  getAllFaculty, scheduleCourse
+  getAllFaculty
 } from '../utils/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
 
@@ -222,8 +222,13 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
 
-      // Schedule the course in the database
-      const success = await scheduleCourse(courseId, course.instructorId, roomId, `${day}-${timeSlot}`);
+      // Update the course in the database with the room assignment
+      const success = await saveCourse({
+        ...course,
+        room: room.name,
+        roomId: room.id,
+        building: room.building
+      });
       
       if (!success) {
         showNotification('Failed to update room assignment in database', 'error');
