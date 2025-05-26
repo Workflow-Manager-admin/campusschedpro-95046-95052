@@ -168,20 +168,30 @@ const CourseScheduling = () => {
       }
       // If moving between slots, we're effectively rescheduling
       else {
-        // First, remove from original slot
-        removeCourseFromSlot(course.id, sourceDay, sourceTime)
+        // First unschedule from the original slot
+        unscheduleCourse(course.id, sourceDay, sourceTime)
           .then(unscheduleResult => {
             if (!unscheduleResult) {
-              showNotification('Error unscheduling course. Please try again.', 'error');
+              showNotification('Error unscheduling course from previous slot.', 'error');
               refreshData();
-              return;
+              return null;
             }
             
-            // Then add to new slot
-            return removeCourseFromSlot(course.id, destDay, destTime);
+            // Then get timeSlotId for the destination
+            return getTimeSlotId(destDay, destTime);
+          })
+          .then(timeSlotId => {
+            if (!timeSlotId) {
+              showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
+              refreshData();
+              return null;
+            }
+            
+            // Schedule in the new slot
+            return scheduleCourse(course.id, facultyId, roomId, timeSlotId);
           })
           .then(scheduleResult => {
-            if (scheduleResult === false) { // explicitly check for false since undefined is ok
+            if (scheduleResult === false) { // explicitly check for false
               showNotification('Error rescheduling course. Please try again.', 'error');
               refreshData();
             }
