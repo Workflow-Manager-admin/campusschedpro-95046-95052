@@ -301,6 +301,16 @@ const RoomAllocation = () => {
                           <td>{course.instructor || 'Unassigned'}</td>
                           <td><strong>{course.room || ''}</strong></td>
                           <td>{course.building || ''}</td>
+                          <td>
+                            <Button 
+                              variant="outlined" 
+                              color="secondary"
+                              size="small"
+                              onClick={() => openUnassignDialog(course)}
+                            >
+                              Unassign
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                   </tbody>
