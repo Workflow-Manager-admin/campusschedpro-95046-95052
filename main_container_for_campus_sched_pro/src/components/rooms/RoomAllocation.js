@@ -52,6 +52,8 @@ const RoomAllocation = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('room'); // 'room' or 'course' view mode
+  const [courseSearchQuery, setCourseSearchQuery] = useState('');
 
   // Get unique buildings from rooms data - memoized
   const buildings = useMemo(() => {
