@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 // Safely import xlsx and uuid packages
 let XLSX;
 try {
@@ -16,7 +18,6 @@ try {
     read: () => ({ SheetNames: ['Sheet1'], Sheets: { Sheet1: {} } })
   };
 }
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Creates an Excel workbook with given data and columns
