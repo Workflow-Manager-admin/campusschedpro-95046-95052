@@ -60,6 +60,10 @@ const RoomAllocation = () => {
   
   // Filter allocations by building - memoized
   const filteredAllocations = useMemo(() => {
+    // Defensive check to ensure allocations is an array before filtering
+    if (!Array.isArray(allocations)) {
+      return [];
+    }
     return allocations.filter(allocation => 
       buildingFilter === 'all' || allocation.building === buildingFilter
     );
