@@ -142,23 +142,62 @@ export const importCoursesFromExcel = async (file) => {
       }
     });
     
-    // Save imported courses to the database using the enhanced entity helper
-    const { enhancedSaveCourse } = require('./entityHelpers');
-    
     let successCount = 0;
     const saveErrors = [];
     
     // Process each course
     for (const course of importedCourses) {
       try {
-        const result = await enhancedSaveCourse(course);
+        // Get department and academic year IDs
+        const departmentId = await getOrCreateDepartment(course.department);
+        const academicYearId = await getOrCreateAcademicYear(course.academicYear);
         
-        if (result.success) {
+        // Create course record
+        const { data, error } = await supabase
+          .from('courses')
+          .upsert({
+            id: course.id,
+            name: course.name,
+            code: course.code,
+            credits: course.credits || 0,
+            expected_enrollment: course.expectedEnrollment || 0,
+            requires_lab: course.requiresLab || false,
+            department_id: departmentId,
+            academic_year_id: academicYearId
+          })
+          .select()
+          .single();
+          
+        if (error) {
+          throw new Error(`Database error: ${error.message}`);
+        }
+        
+        if (data && data.id) {
+          // Handle required equipment if provided
+          if (course.requiredEquipment && course.requiredEquipment.length > 0) {
+            // First remove existing equipment
+            await supabase
+              .from('course_equipment')
+              .delete()
+              .eq('course_id', data.id);
+            
+            // Add new equipment
+            for (const item of course.requiredEquipment) {
+              const equipmentId = await getOrCreateEquipment(item);
+              if (equipmentId) {
+                await supabase
+                  .from('course_equipment')
+                  .insert({
+                    course_id: data.id,
+                    equipment_id: equipmentId
+                  });
+              }
+            }
+          }
+          
           successCount++;
         } else {
-          saveErrors.push({
-            message: `Could not save course ${course.code || 'unknown'}: ${result.message}`
-          });
+          throw new Error('Failed to insert course - no ID returned');
         }
       } catch (error) {
         saveErrors.push({
