@@ -429,18 +429,26 @@ const CourseScheduling = () => {
               className="btn"
               onClick={() => {
                 showNotification('Refreshing data from database...', 'info');
-                const result = refreshData();
-                
-                if (result && typeof result.then === 'function') {
-                  // Handle as Promise if it is one
-                  result.then(() => {
-                    showNotification('Data refreshed successfully!', 'success');
-                  }).catch(err => {
-                    showNotification(`Error refreshing data: ${err.message}`, 'error');
-                  });
+                if (refreshData) {
+                  try {
+                    const result = refreshData();
+                    
+                    if (result && typeof result.then === 'function') {
+                      // Handle as Promise if it is one
+                      result.then(() => {
+                        showNotification('Data refreshed successfully!', 'success');
+                      }).catch(err => {
+                        showNotification(`Error refreshing data: ${err.message}`, 'error');
+                      });
+                    } else {
+                      // Handle non-Promise result
+                      showNotification('Data refresh initiated', 'success');
+                    }
+                  } catch (error) {
+                    showNotification(`Error refreshing data: ${error.message || 'Unknown error'}`, 'error');
+                  }
                 } else {
-                  // Handle non-Promise result
-                  showNotification('Data refresh initiated', 'success');
+                  showNotification('Refresh data function is not available', 'error');
                 }
               }}
               style={{ marginLeft: '10px' }}
