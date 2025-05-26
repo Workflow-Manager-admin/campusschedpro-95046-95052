@@ -88,7 +88,9 @@ const BulkImportModal = ({
 
       // Call the onComplete callback with the result
       if (onComplete) {
-        onComplete(importResult);
+        setTimeout(() => {
+          onComplete(importResult);
+        }, 100);
       }
     } catch (err) {
       console.error('Error importing data:', err);
