@@ -1,158 +1,177 @@
-import React, { useCallback, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { ScheduleProvider, useSchedule } from './ScheduleContext';
-import PropTypes from 'prop-types';
-import {
-  safeAddRoom,
-  safeUpdateRoom,
-  safeAddCourse,
-  safeUpdateCourse,
-  safeSaveFaculty
-} from '../utils/contextHelpers';
+
+// Create enhanced context for additional functionality
+const EnhancedScheduleContext = createContext();
 
 /**
- * Enhanced Context provider that wraps the standard ScheduleProvider
- * and adds improved error handling and entity creation functions
+ * Hook to use the enhanced schedule context
+ * @returns {Object} Enhanced schedule context
+ */
+export const useEnhancedSchedule = () => {
+  const context = useContext(EnhancedScheduleContext);
+  if (!context) {
+    throw new Error('useEnhancedSchedule must be used within an EnhancedScheduleProvider');
+  }
+  return context;
+};
+
+/**
+ * Enhanced Schedule Provider component
+ * Wraps the base ScheduleProvider and adds enhanced functions with error handling
  */
 export const EnhancedScheduleProvider = ({ children }) => {
+  // State to track error info
+  const [errorInfo, setErrorInfo] = useState({
+    lastError: null,
+    lastErrorTime: null,
+    errorCount: 0
+  });
+
+  /**
+   * Helper function to safely execute operations with error handling
+   */
+  const safeExecute = async (operation, entityType = 'entity') => {
+    try {
+      const result = await operation();
+      return result;
+    } catch (error) {
+      // Log the error and update error state
+      console.error(`Error occurred with ${entityType}:`, error);
+      
+      setErrorInfo(prev => ({
+        lastError: error.message || 'Unknown error',
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      
+      // Re-throw for component-level error handling
+      throw error;
+    }
+  };
+
+  /**
+   * Render the enhanced provider with its wrapped context
+   */
   return (
     <ScheduleProvider>
-      <EnhancedFunctionsWrapper>
+      <EnhancedScheduleProviderContent 
+        safeExecute={safeExecute}
+        errorInfo={errorInfo}
+        setErrorInfo={setErrorInfo}
+      >
         {children}
-      </EnhancedFunctionsWrapper>
+      </EnhancedScheduleProviderContent>
     </ScheduleProvider>
   );
 };
 
-EnhancedScheduleProvider.propTypes = {
-  children: PropTypes.node.isRequired
-};
-
 /**
- * Wrapper component that enhances the ScheduleContext with improved functions
+ * Inner component that consumes the base ScheduleContext and provides enhanced functions
  */
-const EnhancedFunctionsWrapper = ({ children }) => {
-  // Get the standard context
-  const standardContext = useSchedule();
-  const { showNotification } = standardContext;
+const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, setErrorInfo }) => {
+  // Get the base context
+  const baseContext = useSchedule();
   
-  // Override the addRoom function with our safer version
-  const enhancedAddRoom = useCallback(async (newRoom) => {
-    try {
-      showNotification('Adding new room...', 'info');
+  // Additional helper functions with enhanced error handling
+  
+  /**
+   * Enhanced function to add a new room with validation
+   */
+  const addRoomEnhanced = (roomData) => {
+    // Validate required room fields
+    if (!roomData.name || !roomData.capacity) {
+      const error = new Error('Room name and capacity are required');
+      setErrorInfo(prev => ({
+        lastError: error.message,
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      throw error;
+    }
+    
+    // Use the safe executor
+    return safeExecute(() => baseContext.addRoom(roomData), 'room');
+  };
+  
+  /**
+   * Enhanced function to add a course with validation
+   */
+  const addCourseEnhanced = (courseData) => {
+    // Validate required course fields
+    if (!courseData.name || !courseData.code) {
+      const error = new Error('Course name and code are required');
+      setErrorInfo(prev => ({
+        lastError: error.message,
+        lastErrorTime: new Date().toISOString(),
+        errorCount: prev.errorCount + 1
+      }));
+      throw error;
+    }
+    
+    // Use the safe executor
+    return safeExecute(() => baseContext.addCourse(courseData), 'course');
+  };
+  
+  /**
+   * Enhanced function to remove a course from a slot with better error handling
+   * and defensive programming against non-array coursesInSlot
+   */
+  const removeCourseFromSlotEnhanced = async (slotId, course, index) => {
+    if (!slotId) {
+      const error = new Error('Slot ID is required');
+      throw error;
+    }
+    
+    if (!course) {
+      const error = new Error('Course to remove is required');
+      throw error;
+    }
+    
+    // Extract day and time from the slot ID
+    const [day, time] = slotId.split('-');
+    
+    return safeExecute(async () => {
+      // Get the current schedule for safety checks
+      const { schedule } = baseContext;
       
-      const result = await safeAddRoom(newRoom);
-      
-      if (!result.success) {
-        showNotification(`Failed to add room: ${result.message}`, 'error');
-        return null;
+      // Safely navigate to the specific courses array - with defensive checks
+      const slotExists = schedule && 
+        schedule[day] && 
+        schedule[day][time];
+        
+      if (!slotExists) {
+        throw new Error(`Slot ${slotId} not found in schedule`);
       }
       
-      // Force refresh the data
-      await standardContext.refreshData();
-      
-      showNotification(`Room ${newRoom.name} added successfully`, 'success');
-      return result.id;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      showNotification(`Failed to add room: ${error.message}`, 'error');
-      return null;
-    }
-  }, [showNotification, standardContext.refreshData]);
-  
-  // Override the updateRoom function with our safer version
-  const enhancedUpdateRoom = useCallback(async (updatedRoom) => {
-    try {
-      showNotification('Updating room...', 'info');
-      
-      const result = await safeUpdateRoom(updatedRoom);
-      
-      if (!result.success) {
-        showNotification(`Failed to update room: ${result.message}`, 'error');
-        return null;
+      // Ensure we're working with an array before using array methods
+      const coursesInSlot = Array.isArray(schedule[day][time]) ? 
+        schedule[day][time] : [];
+        
+      if (typeof index === 'number' && index >= 0 && index < coursesInSlot.length) {
+        // If index is provided, remove by index for better precision
+        return baseContext.removeCourseFromSlot(coursesInSlot[index].id, day, time);
+      } else {
+        // Fallback to removing by course ID
+        return baseContext.removeCourseFromSlot(course.id, day, time);
       }
-      
-      // Force refresh the data
-      await standardContext.refreshData();
-      
-      showNotification(`Room ${updatedRoom.name} updated successfully`, 'success');
-      return result.id;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      showNotification(`Failed to update room: ${error.message}`, 'error');
-      return null;
-    }
-  }, [showNotification, standardContext.refreshData]);
-  
-  // Override the addCourse function with our safer version
-  const enhancedAddCourse = useCallback(async (newCourse) => {
-    try {
-      showNotification('Adding new course...', 'info');
-      
-      const result = await safeAddCourse(newCourse);
-      
-      if (!result.success) {
-        showNotification(`Failed to add course: ${result.message}`, 'error');
-        return null;
-      }
-      
-      // Force refresh the data
-      await standardContext.refreshData();
-      
-      showNotification(`Course ${newCourse.code} added successfully`, 'success');
-      return result.id;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      showNotification(`Failed to add course: ${error.message}`, 'error');
-      return null;
-    }
-  }, [showNotification, standardContext.refreshData]);
-  
-  // Override the updateCourse function with our safer version
-  const enhancedUpdateCourse = useCallback(async (updatedCourse) => {
-    try {
-      showNotification('Updating course...', 'info');
-      
-      const result = await safeUpdateCourse(updatedCourse);
-      
-      if (!result.success) {
-        showNotification(`Failed to update course: ${result.message}`, 'error');
-        return null;
-      }
-      
-      // Force refresh the data
-      await standardContext.refreshData();
-      
-      showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
-      return result.id;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      showNotification(`Failed to update course: ${error.message}`, 'error');
-      return null;
-    }
-  }, [showNotification, standardContext.refreshData]);
-  
-  // Create our enhanced context by overriding specific functions
-  const enhancedContext = {
-    ...standardContext,
-    addRoom: enhancedAddRoom,
-    updateRoom: enhancedUpdateRoom,
-    addCourse: enhancedAddCourse,
-    updateCourse: enhancedUpdateCourse
+    }, 'schedule');
   };
 
-  // Use React.Children to clone the children with our enhanced context
-  return React.Children.map(children, child => {
-    return React.cloneElement(child, { context: enhancedContext });
-  });
+  // Provide both the base context and our enhanced functions
+  const enhancedContext = {
+    ...baseContext,
+    addRoomEnhanced,
+    addCourseEnhanced,
+    removeCourseFromSlotEnhanced,
+    errorInfo
+  };
+
+  return (
+    <EnhancedScheduleContext.Provider value={enhancedContext}>
+      {children}
+    </EnhancedScheduleContext.Provider>
+  );
 };
 
-EnhancedFunctionsWrapper.propTypes = {
-  children: PropTypes.node.isRequired
-};
-
-/**
- * Create a hook for using the enhanced schedule context
- */
-export const useEnhancedSchedule = () => {
-  return useSchedule();
-};
+export default EnhancedScheduleProvider;
