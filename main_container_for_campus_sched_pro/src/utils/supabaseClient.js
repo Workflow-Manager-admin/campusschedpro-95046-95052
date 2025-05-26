@@ -210,7 +210,10 @@ export const getCourseAssignments = async (courseIds) => {
     if (!assignments[item.course_id]) {
       assignments[item.course_id] = {
         instructor: item.faculty?.name || '',
+        instructorId: item.faculty?.id || null,
         room: item.rooms?.name || '',
+        roomId: item.rooms?.id || null,
+        building: item.rooms?.building?.name || '',
         schedule: []
       };
     }
