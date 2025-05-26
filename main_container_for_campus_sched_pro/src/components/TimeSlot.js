@@ -7,10 +7,15 @@ import { useEnhancedSchedule } from '../context/EnhancedScheduleContext';
 
 const TimeSlot = ({ day, time, courses = [], removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
+  // Get enhanced functions for safer operations
+  const { removeCourseFromSlotEnhanced, showNotification } = useEnhancedSchedule();
+  
+  // Ensure courses is always an array for safety
+  const safeCourses = Array.isArray(courses) ? courses : [];
   
   const getSlotColor = () => {
-    if (!courses.length) return 'var(--background-light)';
-    if (courses.length > 1) return 'rgba(255, 87, 34, 0.1)'; // Conflict color
+    if (!safeCourses.length) return 'var(--background-light)';
+    if (safeCourses.length > 1) return 'rgba(255, 87, 34, 0.1)'; // Conflict color
     return 'rgba(46, 125, 50, 0.1)'; // Occupied color
   };
 
@@ -18,14 +23,29 @@ const TimeSlot = ({ day, time, courses = [], removeCourseFromSlot }) => {
     // Stop propagation to prevent drag event conflicts
     event.stopPropagation();
     
-    if (removeCourseFromSlot) {
-      try {
-        // Pass the array index to ensure we remove only this specific course instance
-        // even if multiple instances of the same course exist in this slot
+    // First try the enhanced function if available, then fall back to props
+    try {
+      if (removeCourseFromSlotEnhanced) {
+        // Use the safer enhanced function
+        removeCourseFromSlotEnhanced(slotId, course, index)
+          .catch(error => {
+            console.error("Error removing course:", error);
+            showNotification && showNotification(
+              `Error removing course: ${error.message}`, 
+              'error'
+            );
+          });
+      } else if (removeCourseFromSlot) {
+        // Fall back to the passed-in function
         removeCourseFromSlot(slotId, course, index);
-      } catch (error) {
-        // Silent fail in production
       }
+    } catch (error) {
+      console.error("Error in handleRemoveCourse:", error);
+      // Silent fail in production, but show notification if possible
+      showNotification && showNotification(
+        "Failed to remove course. Please try again.", 
+        'error'
+      );
     }
   };
 
@@ -37,7 +57,7 @@ const TimeSlot = ({ day, time, courses = [], removeCourseFromSlot }) => {
     >
       {(provided, snapshot) => (
         <>
-          {courses.map((course, index) => (
+          {safeCourses.map((course, index) => (
             <Tooltip
               key={`${course.id}-${index}`}
               title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
