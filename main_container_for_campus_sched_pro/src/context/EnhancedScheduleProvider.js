@@ -101,7 +101,7 @@ const EnhancedFunctionsWrapper = ({ children }) => {
       showNotification(`Course ${newCourse.code} added successfully`, 'success');
       return result.id;
     } catch (error) {
-      console.error('Error in enhancedAddCourse:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to add course: ${error.message}`, 'error');
       return null;
     }
@@ -125,7 +125,7 @@ const EnhancedFunctionsWrapper = ({ children }) => {
       showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
       return result.id;
     } catch (error) {
-      console.error('Error in enhancedUpdateCourse:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to update course: ${error.message}`, 'error');
       return null;
     }
