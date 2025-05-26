@@ -226,11 +226,11 @@ export const ScheduleProvider = ({ children }) => {
       const result = await unscheduleCourse(courseId, day, time);
       
       if (!result) {
-        // If database update failed, revert the local change
-        showNotification('Failed to update the database. The change may not persist.', 'error');
+        // If database update failed, show notification
+        showNotification('Failed to update database. Changes may not persist.', 'error');
         
         // Refresh data from database to ensure UI is in sync
-        await loadInitialData();
+        loadInitialData();
       } else {
         // Show success message
         showNotification('Course removed successfully', 'success');
@@ -242,9 +242,10 @@ export const ScheduleProvider = ({ children }) => {
       
       return result;
     } catch (error) {
-      showNotification(`Error removing course: ${error.message}`, 'error');
+      showNotification(`Error removing course: ${error ? error.message : 'Unknown error'}`, 'error');
+      
       // Refresh data to ensure UI is in sync
-      await loadInitialData();
+      loadInitialData();
       return false;
     }
   };
