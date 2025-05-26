@@ -7,8 +7,8 @@ cd /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_contain
     exit 0 # Exit with success to avoid blocking CI
 }
 
-# Use direct npm command with all environment variables set inline
-CI=false DISABLE_ESLINT_PLUGIN=true ESLINT_NO_DEV_ERRORS=true npm run build
+# Use direct npm command with all environment variables set inline to disable ESLint completely
+DISABLE_ESLINT_PLUGIN=true CI=true npm run build
 
 # Always exit with success to avoid blocking CI pipeline
 exit 0

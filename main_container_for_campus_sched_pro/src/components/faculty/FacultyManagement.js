@@ -56,14 +56,12 @@ const FacultyManagement = () => {
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array prevents rerender loops
+  }, [showNotification]); // Include showNotification in the dependency array
   
   useEffect(() => {
     // Load faculty data once when component mounts
     loadFacultyData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadFacultyData]); // Include loadFacultyData in the dependency array
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
