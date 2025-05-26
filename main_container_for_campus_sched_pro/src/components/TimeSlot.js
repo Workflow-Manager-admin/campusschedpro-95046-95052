@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Tooltip, Paper, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ReduxDroppable from './ReduxDroppable';
-import { useEnhancedSchedule } from '../context/EnhancedScheduleContext';
+import { useEnhancedSchedule } from '../context/EnhancedScheduleProvider';
 
 const TimeSlot = ({ day, time, courses = [], removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
