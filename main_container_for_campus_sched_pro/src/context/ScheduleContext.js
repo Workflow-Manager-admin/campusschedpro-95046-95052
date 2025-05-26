@@ -71,6 +71,15 @@ export const ScheduleProvider = ({ children }) => {
       }
       setRooms(roomsData);
       
+      // Load departments
+      const departmentsData = await getAllDepartments();
+      if (!departmentsData) {
+        console.warn('Issue loading departments, using empty array');
+        setDepartments([]);
+      } else {
+        setDepartments(departmentsData);
+      }
+      
       // Load schedule
       const scheduleData = await getSchedule();
       if (!scheduleData) {
@@ -644,6 +653,7 @@ export const ScheduleProvider = ({ children }) => {
     setCourses,
     rooms: Array.isArray(rooms) ? rooms : [],
     setRooms,
+    departments: Array.isArray(departments) ? departments : [],
     schedule,
     setSchedule,
     conflicts: Array.isArray(conflicts) ? conflicts : [],
