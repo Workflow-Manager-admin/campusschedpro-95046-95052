@@ -206,7 +206,7 @@ const CourseScheduling = () => {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
       refreshData();
     }
-  }, [schedule, courses, setSchedule, showNotification, refreshData, removeCourseFromSlot]);
+  }, [schedule, courses, setSchedule, showNotification, refreshData]);
 
   const handleSaveSchedule = useCallback(() => {
     const conflicts = findScheduleConflicts(schedule);
