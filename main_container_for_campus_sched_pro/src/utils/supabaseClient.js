@@ -193,8 +193,8 @@ export const getCourseAssignments = async (courseIds) => {
     .from('schedule')
     .select(`
       course_id,
-      faculty:faculty_id (name),
-      rooms:room_id (name),
+      faculty:faculty_id (id, name),
+      rooms:room_id (id, name, building:building_id(name)),
       time_slots:time_slot_id (day, time)
     `)
     .in('course_id', courseIds);
@@ -237,7 +237,9 @@ export const saveCourse = async (course) => {
     expected_enrollment: course.expectedEnrollment,
     requires_lab: course.requiresLab,
     department_id: departmentId,
-    academic_year_id: academicYearId
+    academic_year_id: academicYearId,
+    room_id: course.roomId || null,
+    building_id: course.building ? await getBuildingId(course.building) : null
   };
   
   // Only include ID if it's defined (for updates)

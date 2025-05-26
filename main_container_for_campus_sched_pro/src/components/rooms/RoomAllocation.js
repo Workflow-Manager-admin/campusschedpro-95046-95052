@@ -128,7 +128,11 @@ const RoomAllocation = () => {
         ...selectedCourse,
         room: room.name,
         roomId: room.id,
-        building: room.building
+        building: room.building,
+        buildingId: room.buildingId,
+        capacity: room.capacity,
+        type: room.type,
+        floor: room.floor
       };
       
       const success = await updateCourse(updatedCourse);
