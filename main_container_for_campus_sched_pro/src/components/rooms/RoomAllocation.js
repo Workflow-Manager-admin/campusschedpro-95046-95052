@@ -28,15 +28,16 @@ const RoomAllocation = () => {
   const [unassignDialogOpen, setUnassignDialogOpen] = useState(false);
   const [courseToUnassign, setCourseToUnassign] = useState(null);
   
-  // Get data from context
+  // Get data from context with safe defaults
+  const context = useSchedule();
   const { 
     allocations = [], 
     courses = [], 
     rooms = [],
-    updateAllocations,
-    updateCourse,
-    showNotification
-  } = useSchedule() || {};
+    updateAllocations = () => {},
+    updateCourse = async () => false,
+    showNotification = () => {}
+  } = context || {};
   
   // Initialize data on mount
   useEffect(() => {
@@ -75,12 +76,17 @@ const RoomAllocation = () => {
   }, [rooms, allocations]);
   
   // Filter unassigned courses by search query
-  const unassignedCourses = courses.filter(course => !course.room);
-  const filteredCourses = unassignedCourses.filter(course => 
-    !searchQuery || 
-    (course.name && course.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
-    (course.code && course.code.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const unassignedCourses = Array.isArray(courses) 
+    ? courses.filter(course => course && !course.room)
+    : [];
+  const filteredCourses = unassignedCourses.filter(course => {
+    if (!course) return false;
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    const name = (course.name || '').toLowerCase();
+    const code = (course.code || '').toLowerCase();
+    return name.includes(query) || code.includes(query);
+  });
   
   // Room assignment handlers
   const openAssignDialog = (course) => {
@@ -103,16 +109,33 @@ const RoomAllocation = () => {
   };
   
   const assignCourseToRoom = async () => {
-    if (!selectedCourse || !selectedRoomId) {
+    if (!selectedCourse) {
+      setAssignmentError('No course selected');
+      return;
+    }
+    
+    if (!selectedRoomId) {
       setAssignmentError('Please select a room');
       return;
     }
     
     try {
+      // Validate rooms array
+      if (!Array.isArray(rooms)) {
+        setAssignmentError('Room data is not available');
+        return;
+      }
+      
       // Find the selected room
-      const room = rooms.find(r => r.id === selectedRoomId);
+      const room = rooms.find(r => r && r.id === selectedRoomId);
       if (!room) {
         setAssignmentError('Room not found');
+        return;
+      }
+      
+      // Validate room object
+      if (!room.name || !room.id) {
+        setAssignmentError('Invalid room data');
         return;
       }
       
