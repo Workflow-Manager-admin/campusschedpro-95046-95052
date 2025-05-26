@@ -149,7 +149,7 @@ const CourseScheduling = () => {
           .then(timeSlotId => {
             if (!timeSlotId) {
               showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
-              refreshData();
+              if (refreshData) refreshData();
               return;
             }
             
@@ -159,12 +159,12 @@ const CourseScheduling = () => {
           .then(result => {
             if (result === false) { // explicitly check for false
               showNotification('Error scheduling course. Please try again.', 'error');
-              refreshData();
+              if (refreshData) refreshData();
             }
           })
           .catch(error => {
             showNotification(`Error scheduling course: ${error.message}`, 'error');
-            refreshData();
+            if (refreshData) refreshData();
           });
       }
       // If moving between slots, we're effectively rescheduling
