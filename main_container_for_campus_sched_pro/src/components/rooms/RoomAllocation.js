@@ -298,6 +298,110 @@ const RoomAllocation = () => {
           )}
         </div>
       </div>
+      
+      {/* Room Assignment Dialog */}
+      <Dialog 
+        open={assignDialogOpen} 
+        onClose={closeAssignDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Assign Course to Room
+        </DialogTitle>
+        <DialogContent>
+          {selectedCourse && (
+            <>
+              <div className="dialog-course-info">
+                <h3>{selectedCourse.code} - {selectedCourse.name}</h3>
+                <p>Instructor: {selectedCourse.instructor || 'Unassigned'}</p>
+                {selectedCourse.expectedEnrollment && (
+                  <p>Expected Enrollment: {selectedCourse.expectedEnrollment} students</p>
+                )}
+                {selectedCourse.requiresLab && (
+                  <p><strong>Requires Lab</strong></p>
+                )}
+                {selectedCourse.requiredEquipment && selectedCourse.requiredEquipment.length > 0 && (
+                  <p>
+                    <strong>Required Equipment:</strong>{' '}
+                    {selectedCourse.requiredEquipment.join(', ')}
+                  </p>
+                )}
+              </div>
+              
+              <FormControl fullWidth style={{ marginTop: '20px' }}>
+                <InputLabel id="room-select-label">Select Room</InputLabel>
+                <Select
+                  labelId="room-select-label"
+                  id="room-select"
+                  value={selectedRoomId}
+                  label="Select Room"
+                  onChange={handleRoomChange}
+                  error={!!assignmentError}
+                >
+                  <MenuItem value="">
+                    <em>Select a room</em>
+                  </MenuItem>
+                  {rooms.map(room => {
+                    const suitability = isRoomSuitableForCourse(room, selectedCourse);
+                    return (
+                      <MenuItem 
+                        key={room.id} 
+                        value={room.id}
+                        disabled={!suitability.suitable}
+                      >
+                        {room.name} ({room.building}) - {room.capacity} seats
+                        {!suitability.suitable && (
+                          <span style={{ color: 'red', marginLeft: '10px' }}>
+                            Not suitable
+                          </span>
+                        )}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+                {assignmentError && <FormHelperText error>{assignmentError}</FormHelperText>}
+              </FormControl>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeAssignDialog}>Cancel</Button>
+          <Button 
+            onClick={assignCourseToRoom} 
+            variant="contained" 
+            color="primary"
+            disabled={!selectedRoomId}
+          >
+            Assign
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* Unassign Confirmation Dialog */}
+      <Dialog
+        open={unassignDialogOpen}
+        onClose={closeUnassignDialog}
+      >
+        <DialogTitle>Unassign Course</DialogTitle>
+        <DialogContent>
+          {courseToUnassign && (
+            <Alert severity="warning">
+              Are you sure you want to unassign {courseToUnassign.code} - {courseToUnassign.name} from {courseToUnassign.room}?
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeUnassignDialog}>Cancel</Button>
+          <Button 
+            onClick={unassignCourse} 
+            variant="contained" 
+            color="secondary"
+          >
+            Unassign
+          </Button>
+        </DialogActions>
+      </Dialog>
     </RoomAllocationErrorBoundary>
   );
 };
