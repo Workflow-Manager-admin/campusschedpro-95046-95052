@@ -63,7 +63,7 @@ export const safeUpdateRoom = async (updatedRoom) => {
       message: result.message
     };
   } catch (error) {
-    console.error('Error in safeUpdateRoom:', error);
+    // Removed console.error for ESLint compliance
     return {
       success: false,
       id: null,
@@ -100,7 +100,7 @@ export const safeAddCourse = async (newCourse) => {
       message: result.message
     };
   } catch (error) {
-    console.error('Error in safeAddCourse:', error);
+    // Removed console.error for ESLint compliance
     return {
       success: false,
       id: null,
