@@ -81,7 +81,7 @@ export const ScheduleProvider = ({ children }) => {
       }
       
     } catch (error) {
-      console.error('Error loading data:', error);
+      // Removed console.error for ESLint compliance
       setErrors({
         general: `Error loading data: ${error.message}`
       });
