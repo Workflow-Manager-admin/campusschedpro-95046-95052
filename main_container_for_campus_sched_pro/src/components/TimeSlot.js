@@ -32,14 +32,10 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
       // Call the removeCourseFromSlot with correct parameters
       // It expects courseId, day, time as per the ScheduleContext implementation
       if (course && course.id) {
-        const result = removeCourseFromSlot(course.id, day, time);
-        
-        // Handle if result is a Promise
-        if (result && typeof result.then === 'function') {
-          result.catch(error => {
+        removeCourseFromSlot(course.id, day, time)
+          .catch(error => {
             console.error("Error removing course:", error);
           });
-        }
       } else {
         console.error("Cannot remove course: Invalid course object or missing ID");
       }
