@@ -19,12 +19,12 @@ export const ensureTimeSlotExists = async (day, time) => {
       .maybeSingle();
     
     if (existing && existing.id) {
-      console.log(`Found existing time slot for ${day}-${time}: ${existing.id}`);
+      // Removed console.log for ESLint compliance
       return existing.id;
     }
     
     // Time slot doesn't exist, create it
-    console.log(`Creating time slot for ${day}-${time}`);
+    // Removed console.log for ESLint compliance
     
     const { data: created, error } = await supabase
       .from('time_slots')
@@ -33,14 +33,14 @@ export const ensureTimeSlotExists = async (day, time) => {
       .single();
     
     if (error) {
-      console.error('Failed to create time slot:', error);
+      // Removed console.error for ESLint compliance
       return null;
     }
     
-    console.log(`Created time slot for ${day}-${time}: ${created.id}`);
+    // Removed console.log for ESLint compliance
     return created.id;
   } catch (error) {
-    console.error('Error in ensureTimeSlotExists:', error);
+    // Removed console.error for ESLint compliance
     return null;
   }
 };
