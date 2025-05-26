@@ -170,42 +170,69 @@ export const ScheduleProvider = ({ children }) => {
     try {
       // Loop through the schedule and count room allocations only if it's a valid object
       if (dataToProcess && typeof dataToProcess === 'object') {
-        Object.keys(dataToProcess).forEach(day => {
-          // Skip if day data is not an object
-          if (!dataToProcess[day] || typeof dataToProcess[day] !== 'object') return;
-          
-          Object.keys(dataToProcess[day]).forEach(timeSlot => {
-            // Skip if timeSlot does not contain valid data
-            if (!dataToProcess[day][timeSlot]) return;
+        // Ensure we're working with the correct schedule format
+        Object.entries(dataToProcess).forEach(([slotId, coursesInSlot]) => {
+          // Skip if not a valid slot or courses array
+          if (!slotId || !Array.isArray(coursesInSlot)) return;
+
+          const [day, timeSlot] = slotId.split('-');
+          if (!day || !timeSlot) return;
+
+          // Process each course in the slot
+          coursesInSlot.forEach(course => {
+            if (!course || typeof course !== 'object') return;
             
-            const coursesInSlot = dataToProcess[day][timeSlot];
-            
-            // Ensure coursesInSlot is an array before using forEach
-            (Array.isArray(coursesInSlot) ? coursesInSlot : []).forEach(course => {
-              if (course && course.roomId) {
-                if (!allocations[course.roomId]) {
-                  allocations[course.roomId] = {
-                    count: 0,
-                    courses: []
-                  };
+            const roomId = course.roomId;
+            if (!roomId) return;
+
+            // Initialize room allocation if needed
+            if (!allocations[roomId]) {
+              const room = rooms.find(r => r.id === roomId);
+              if (!room) return;
+
+              allocations[roomId] = {
+                count: 0,
+                courses: [],
+                room: {
+                  id: room.id,
+                  name: room.name,
+                  building: room.building,
+                  capacity: room.capacity
                 }
-                
-                allocations[course.roomId].count++;
-                allocations[course.roomId].courses.push({
-                  course: course,
-                  day: day,
-                  timeSlot: timeSlot
-                });
-              }
+              };
+            }
+
+            // Add course to allocation
+            allocations[roomId].count++;
+            allocations[roomId].courses.push({
+              course: {
+                id: course.id,
+                code: course.code,
+                name: course.name,
+                instructor: course.instructor
+              },
+              day,
+              timeSlot,
+              schedule: [`${day} ${timeSlot}`]
             });
           });
         });
       }
+
+      // Sort courses within each allocation by day and time
+      Object.values(allocations).forEach(allocation => {
+        allocation.courses.sort((a, b) => {
+          const dayCompare = a.day.localeCompare(b.day);
+          if (dayCompare !== 0) return dayCompare;
+          return a.timeSlot.localeCompare(b.timeSlot);
+        });
+      });
       
       // Update state with allocations (even if empty)
       setRoomAllocations(allocations);
     } catch (error) {
-      // Silently handle errors to prevent UI crashes
+      // Log error for debugging but don't crash
+      console.warn('Error updating allocations:', error);
       setRoomAllocations({}); // Reset to empty object on error
     }
   };
