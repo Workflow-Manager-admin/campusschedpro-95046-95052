@@ -237,11 +237,11 @@ export const importRoomsFromExcel = async (file) => {
         const room = {
           id: uuidv4(),
           name: row[0],
+          type: 'Classroom', // Default type
           building: row[1] || '',
           capacity: parseInt(row[2], 10) || 0,
-          hasProjector: row[3]?.toLowerCase() === 'yes',
-          hasComputers: row[4]?.toLowerCase() === 'yes',
-          availableEquipment: row[5] ? row[5].split(',').map(item => item.trim()) : []
+          floor: '1', // Default floor
+          equipment: row[5] ? row[5].split(',').map(item => item.trim()) : []
         };
         
         // Validate required fields
