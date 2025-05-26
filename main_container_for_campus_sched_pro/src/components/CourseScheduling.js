@@ -209,7 +209,7 @@ const CourseScheduling = () => {
       setSelectedCourse(null);
       showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
     } catch (error) {
-      console.error('Error updating course:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to update course: ${error.message || 'Unknown error'}`, 'error');
     }
   };
@@ -223,7 +223,7 @@ const CourseScheduling = () => {
         showNotification(`Course ${course.code} deleted successfully`, 'success');
       }
     } catch (error) {
-      console.error('Error deleting course:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to delete course: ${error.message || 'Unknown error'}`, 'error');
     }
   };

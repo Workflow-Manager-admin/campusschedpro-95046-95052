@@ -4,16 +4,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import BulkImportModal from './BulkImportModal';
 import { generateCourseTemplate, importCoursesFromExcel } from '../../utils/excelUtils';
 
-// Fallback functions in case imports fail
-const safeBulkImport = {
-  generateCourseTemplate: generateCourseTemplate || function() {
-    console.warn('Template generation function not available');
-  },
-  importCoursesFromExcel: importCoursesFromExcel || function() {
-    console.warn('Import function not available');
-    return Promise.resolve({ success: 0, errors: [] });
-  }
-};
+// Removed unused safeBulkImport variable
 
 /**
  * Component for bulk importing course data
