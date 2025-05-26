@@ -187,10 +187,20 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
                   onChange={handleInputChange}
                   label="Department"
                 >
-                  <MenuItem value="IT">IT</MenuItem>
-                  <MenuItem value="Computer Science">Computer Science</MenuItem>
-                  <MenuItem value="Engineering">Engineering</MenuItem>
-                  <MenuItem value="Mathematics">Mathematics</MenuItem>
+                  {departments.length > 0 ? (
+                    departments.map(dept => (
+                      <MenuItem key={dept.id} value={dept.name}>
+                        {dept.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <>
+                      <MenuItem value="IT">IT</MenuItem>
+                      <MenuItem value="Computer Science">Computer Science</MenuItem>
+                      <MenuItem value="Engineering">Engineering</MenuItem>
+                      <MenuItem value="Mathematics">Mathematics</MenuItem>
+                    </>
+                  )}
                 </Select>
               </FormControl>
               
