@@ -445,23 +445,58 @@ export const importFacultyFromExcel = async (file) => {
       }
     });
     
-    // Save imported faculty to the database using the enhanced entity helper
-    const { enhancedSaveFaculty } = require('./entityHelpers');
-    
     let successCount = 0;
     const saveErrors = [];
     
     // Process each faculty member
     for (const faculty of importedFaculty) {
       try {
-        const result = await enhancedSaveFaculty(faculty);
+        // Get department ID if specified
+        const departmentId = faculty.department ? 
+          await getOrCreateDepartment(faculty.department) : null;
         
-        if (result.success) {
+        // Create faculty record
+        const { data, error } = await supabase
+          .from('faculty')
+          .upsert({
+            id: faculty.id,
+            name: faculty.name,
+            email: faculty.email || '',
+            department_id: departmentId,
+            status: faculty.status || 'Available'
+          })
+          .select()
+          .single();
+          
+        if (error) {
+          throw new Error(`Database error: ${error.message}`);
+        }
+        
+        if (data && data.id) {
+          // Handle expertise if provided
+          if (faculty.expertise && faculty.expertise.length > 0) {
+            // First remove existing expertise
+            await supabase
+              .from('faculty_expertise')
+              .delete()
+              .eq('faculty_id', data.id);
+            
+            // Add new expertise
+            const expertiseRecords = faculty.expertise.map(exp => ({
+              faculty_id: data.id,
+              expertise: exp
+            }));
+            
+            if (expertiseRecords.length > 0) {
+              await supabase
+                .from('faculty_expertise')
+                .insert(expertiseRecords);
+            }
+          }
+          
           successCount++;
         } else {
-          saveErrors.push({
-            message: `Could not save faculty ${faculty.name || 'unknown'}: ${result.message}`
-          });
+          throw new Error('Failed to insert faculty - no ID returned');
         }
       } catch (error) {
         saveErrors.push({
