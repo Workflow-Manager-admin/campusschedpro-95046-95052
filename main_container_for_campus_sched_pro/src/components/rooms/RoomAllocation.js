@@ -320,7 +320,7 @@ const RoomAllocation = () => {
                         if (!course) return null;
                         
                         return (
-=======
+
                         <tr key={course.id || `course-${Math.random()}`}>
                           <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
                           <td>{course.instructor || 'Unassigned'}</td>
