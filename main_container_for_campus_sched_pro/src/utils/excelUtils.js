@@ -141,13 +141,37 @@ export const importCoursesFromExcel = async (file) => {
       }
     });
     
-    // TODO: In a real app, would save courses to database here
-    // For now, just simulate success
-    console.log('Imported courses:', importedCourses);
+    // Save imported courses to the database using the enhanced entity helper
+    const { enhancedSaveCourse } = await import('../utils/entityHelpers');
+    
+    let successCount = 0;
+    const saveErrors = [];
+    
+    // Process each course
+    for (const course of importedCourses) {
+      try {
+        const result = await enhancedSaveCourse(course);
+        
+        if (result.success) {
+          successCount++;
+        } else {
+          saveErrors.push({
+            message: `Could not save course ${course.code || 'unknown'}: ${result.message}`
+          });
+        }
+      } catch (error) {
+        saveErrors.push({
+          message: `Error saving course ${course.code || 'unknown'}: ${error.message || 'Unknown error'}`
+        });
+      }
+    }
+    
+    // Combine parsing errors with saving errors
+    const allErrors = [...errors, ...saveErrors];
     
     return {
-      success: importedCourses.length,
-      errors
+      success: successCount,
+      errors: allErrors
     };
   } catch (error) {
     console.error('Error importing courses:', error);
