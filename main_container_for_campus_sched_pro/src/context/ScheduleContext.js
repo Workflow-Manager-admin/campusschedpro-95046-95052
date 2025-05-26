@@ -390,7 +390,7 @@ export const ScheduleProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      console.error('Error in addRoom:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         room: `Error saving room: ${error.message}`
