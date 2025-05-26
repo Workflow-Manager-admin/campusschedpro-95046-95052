@@ -144,12 +144,20 @@ export const ScheduleProvider = ({ children }) => {
         loadInitialData();
       })
       .subscribe();
+      
+    const facultySubscription = supabase
+      .channel('public:faculty')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, payload => {
+        loadInitialData();
+      })
+      .subscribe();
     
     // Clean up subscriptions
     return () => {
       supabase.removeChannel(courseSubscription);
       supabase.removeChannel(roomSubscription);
       supabase.removeChannel(scheduleSubscription);
+      supabase.removeChannel(facultySubscription);
     };
   }, [loadInitialData]);
 
@@ -665,6 +673,8 @@ export const ScheduleProvider = ({ children }) => {
     rooms: Array.isArray(rooms) ? rooms : [],
     setRooms,
     departments: Array.isArray(departments) ? departments : [],
+    faculty: Array.isArray(faculty) ? faculty : [],
+    setFaculty,
     schedule,
     setSchedule,
     conflicts: Array.isArray(conflicts) ? conflicts : [],
