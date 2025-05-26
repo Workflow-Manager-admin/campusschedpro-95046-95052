@@ -75,6 +75,10 @@ const CourseScheduling = () => {
 
     const course = courses.find(c => c.id === draggableId);
     if (!course) return;
+    
+    // Extract faculty and room IDs if available
+    const facultyId = course.instructor ? course.facultyId : null;
+    const roomId = course.room ? course.roomId : null;
 
     try {
       // Common validation for both source types
