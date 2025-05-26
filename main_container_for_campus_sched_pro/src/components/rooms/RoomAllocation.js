@@ -324,7 +324,7 @@ const RoomAllocation = () => {
                             <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
                             <td>{course.instructor || 'Unassigned'}</td>
                             <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
-                          <td>
+                            <td>
                             <button 
                               className="btn-icon"
                               title="Unassign Room"
