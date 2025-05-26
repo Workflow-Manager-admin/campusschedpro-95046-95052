@@ -462,7 +462,27 @@ const CourseScheduling = () => {
         {showBugFixTest && (
           <React.Suspense fallback={<div>Loading test component...</div>}>
             {React.createElement(React.lazy(() => import('../tests/TestCoursesInSlotFix')))}
-            {React.createElement(React.lazy(() => import('../tests/TestFunctionFixes')))}
+            {/* Try to load TestFunctionFixes, but include inline fallback */}
+            <React.Suspense fallback={
+              <div style={{ padding: '20px', border: '1px solid #ccc', margin: '20px' }}>
+                <h3>Inline Function Test</h3>
+                <div>
+                  {typeof refreshData === 'function' ? (
+                    <div style={{ color: 'green' }}>✓ refreshData is properly available</div>
+                  ) : (
+                    <div style={{ color: 'red' }}>✗ refreshData is NOT available</div>
+                  )}
+                  
+                  {typeof setSchedule === 'function' ? (
+                    <div style={{ color: 'green' }}>✓ setSchedule is properly available</div>
+                  ) : (
+                    <div style={{ color: 'red' }}>✗ setSchedule is NOT available</div>
+                  )}
+                </div>
+              </div>
+            }>
+              {React.createElement(React.lazy(() => import('../tests/TestFunctionFixes')))}
+            </React.Suspense>
           </React.Suspense>
         )}
         
