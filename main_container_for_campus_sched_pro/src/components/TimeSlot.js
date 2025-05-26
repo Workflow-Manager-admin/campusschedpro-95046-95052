@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Tooltip, Paper, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ReduxDroppable from './ReduxDroppable';
+import { useEnhancedSchedule } from '../context/EnhancedScheduleContext';
 
-const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
+const TimeSlot = ({ day, time, courses = [], removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
   
   const getSlotColor = () => {
