@@ -320,11 +320,10 @@ const RoomAllocation = () => {
                         if (!course) return null;
                         
                         return (
-
-                        <tr key={course.id || `course-${Math.random()}`}>
-                          <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
-                          <td>{course.instructor || 'Unassigned'}</td>
-                          <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
+                          <tr key={course.id || `course-${Math.random()}`}>
+                            <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
+                            <td>{course.instructor || 'Unassigned'}</td>
+                            <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
                           <td>
                             <button 
                               className="btn-icon"
