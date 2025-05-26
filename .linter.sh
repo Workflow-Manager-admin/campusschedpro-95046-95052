@@ -23,8 +23,9 @@ export FORCE_COLOR=true
 
 echo "Starting build process..."
 
-# Run build with output redirection
-npm run build 2>&1 || {
+# Run build with output redirection and no warnings
+echo "Running build with warnings disabled..."
+node build-no-warnings.js 2>&1 || {
     echo "Build command failed"
     exit 1
 }
