@@ -589,6 +589,53 @@ export const ScheduleProvider = ({ children }) => {
     loadInitialData();
   };
 
+  // Transform room allocations to an array format
+  const getAllocationsArray = () => {
+    if (!roomAllocations || typeof roomAllocations !== 'object') {
+      return [];
+    }
+    
+    try {
+      // Convert the roomAllocations object to an array of allocation objects
+      const allocationArray = Object.keys(roomAllocations).map(roomId => {
+        const room = rooms.find(r => r.id === roomId);
+        if (!room) return null;
+        
+        // Get allocation details
+        const allocation = roomAllocations[roomId] || { count: 0, courses: [] };
+        
+        // Convert course references to full course objects
+        const courseDetails = Array.isArray(allocation.courses) 
+          ? allocation.courses.map(item => {
+              if (!item || !item.course) return null;
+              const course = courses.find(c => c.id === item.course.id);
+              if (!course) return null;
+              
+              return {
+                ...course,
+                day: item.day,
+                timeSlot: item.timeSlot,
+                schedule: [`${item.day} ${item.timeSlot}`]
+              };
+            }).filter(Boolean)
+          : [];
+        
+        return {
+          roomId,
+          roomName: room.name,
+          building: room.building,
+          capacity: room.capacity,
+          courses: courseDetails
+        };
+      }).filter(Boolean);
+      
+      return allocationArray;
+    } catch (error) {
+      // Return empty array on any error
+      return [];
+    }
+  };
+  
   // Provide the context value
   const contextValue = {
     // State
@@ -600,6 +647,7 @@ export const ScheduleProvider = ({ children }) => {
     setSchedule,
     conflicts: Array.isArray(conflicts) ? conflicts : [],
     roomAllocations,
+    allocations: getAllocationsArray(), // Add computed allocations array
     academicYears,
     currentAcademicYear,
     setCurrentAcademicYear,
@@ -618,6 +666,7 @@ export const ScheduleProvider = ({ children }) => {
     updateRoom,
     deleteRoomById,
     refreshData,
+    updateAllocations, // Expose updateAllocations method
     
     // Notifications
     showNotification,
