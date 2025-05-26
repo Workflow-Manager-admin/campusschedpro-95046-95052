@@ -2,8 +2,9 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { findScheduleConflicts } from '../utils/scheduleUtils';
 import { 
   getAllCourses, getAllRooms, getSchedule, saveCourse, saveRoom, 
-  deleteCourse, deleteRoom, scheduleCourse, unscheduleCourse,
-  parseTimeSlotId, getTimeSlotId
+  deleteCourse, deleteRoom, unscheduleCourse
+  // Removing unused imports to fix ESLint errors:
+  // scheduleCourse, parseTimeSlotId, getTimeSlotId
 } from '../utils/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
 
@@ -33,7 +34,8 @@ export const ScheduleProvider = ({ children }) => {
   const [schedule, setSchedule] = useState({});
   const [conflicts, setConflicts] = useState([]);
   const [roomAllocations, setRoomAllocations] = useState({});
-  const [academicYears, setAcademicYears] = useState(['2023-2024', '2024-2025', '2025-2026']);
+  // Using a simple array instead of state since it's not being updated
+  const [academicYears] = useState(['2023-2024', '2024-2025', '2025-2026']);
   const [currentAcademicYear, setCurrentAcademicYear] = useState('2023-2024');
   
   // Loading and error states
