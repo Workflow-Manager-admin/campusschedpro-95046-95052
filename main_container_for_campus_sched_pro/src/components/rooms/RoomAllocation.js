@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSchedule } from '../../context/ScheduleContext';
 import RoomAllocationErrorBoundary from './RoomAllocationErrorBoundary';
 import { isRoomSuitableForCourse } from '../../utils/roomUtils';
@@ -44,6 +44,34 @@ const RoomAllocation = () => {
       updateAllocations();
     }
   }, [updateAllocations]);
+
+  // Create a complete allocations array that includes ALL rooms
+  const completeAllocations = useMemo(() => {
+    // Create a map of existing allocations by room ID for quick lookup
+    const allocationsMap = {};
+    if (Array.isArray(allocations)) {
+      allocations.forEach(allocation => {
+        if (allocation.roomId) {
+          allocationsMap[allocation.roomId] = allocation;
+        }
+      });
+    }
+    
+    // Create combined list that includes all rooms
+    return Array.isArray(rooms) ? rooms.map(room => {
+      // If this room is in allocations, use that data
+      if (allocationsMap[room.id]) {
+        return allocationsMap[room.id];
+      }
+      // Otherwise create a new allocation entry for this room
+      return {
+        roomId: room.id,
+        roomName: room.name,
+        building: room.building,
+        courses: [] // No assigned courses
+      };
+    }) : [];
+  }, [rooms, allocations]);
   
   // Filter unassigned courses by search query
   const unassignedCourses = courses.filter(course => !course.room);
@@ -222,8 +250,8 @@ const RoomAllocation = () => {
                 {/* Building filter completely removed - showing all rooms */}
                 
                 <div className="allocation-container">
-                  {Array.isArray(allocations) && allocations.length > 0 ? (
-                    allocations.map(allocation => (
+                  {Array.isArray(completeAllocations) && completeAllocations.length > 0 ? (
+                    completeAllocations.map(allocation => (
                       <div key={allocation.roomId || Math.random()} className="allocation-card">
                         <div className="allocation-header">
                           <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
@@ -271,7 +299,7 @@ const RoomAllocation = () => {
                     ))
                   ) : (
                     <div className="no-results">
-                      <p>No rooms available in the system</p>
+                      <p>No rooms defined in the system yet</p>
                     </div>
                   )}
                 </div>
