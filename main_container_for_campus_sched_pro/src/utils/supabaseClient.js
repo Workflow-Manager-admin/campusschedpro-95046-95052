@@ -474,7 +474,11 @@ export const getSchedule = async () => {
         code: item.course_code,
         credits: item.course_credits,
         instructor: item.faculty_name || '',
+        instructorId: item.faculty_id || null,
         room: item.room_name || '',
+        roomId: item.room_id || null,
+        building: item.building_name || '',
+        buildingId: item.building_id || null,
         academicYear, 
         department
       });
