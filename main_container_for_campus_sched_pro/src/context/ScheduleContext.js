@@ -136,8 +136,9 @@ export const ScheduleProvider = ({ children }) => {
       Object.keys(scheduleData[day] || {}).forEach(timeSlot => {
         const coursesInSlot = scheduleData[day][timeSlot] || [];
         
-        coursesInSlot.forEach(course => {
-          if (course.roomId) {
+        // Ensure coursesInSlot is an array before using forEach
+        (Array.isArray(coursesInSlot) ? coursesInSlot : []).forEach(course => {
+          if (course && course.roomId) {
             if (!allocations[course.roomId]) {
               allocations[course.roomId] = {
                 count: 0,
