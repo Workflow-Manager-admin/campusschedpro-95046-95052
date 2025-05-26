@@ -168,7 +168,7 @@ export const safeSaveFaculty = async (faculty) => {
       message: result.message
     };
   } catch (error) {
-    console.error('Error in safeSaveFaculty:', error);
+    // Removed console.error for ESLint compliance
     return {
       success: false,
       id: null,
