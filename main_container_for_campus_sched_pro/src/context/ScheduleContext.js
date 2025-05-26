@@ -220,7 +220,7 @@ export const ScheduleProvider = ({ children }) => {
       
       return false;
     } catch (error) {
-      console.error('Error removing course from slot:', error);
+      // Removed console.error for ESLint compliance
       return false;
     }
   };
@@ -249,7 +249,7 @@ export const ScheduleProvider = ({ children }) => {
         return null;
       }
     } catch (error) {
-      console.error('Error in addCourse:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         course: `Error saving course: ${error.message}`
