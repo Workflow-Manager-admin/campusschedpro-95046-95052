@@ -82,6 +82,38 @@
   padding: 0 16px;
 }
 
+.view-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.view-tabs {
+  display: flex;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.view-tab {
+  padding: 8px 16px;
+  background: var(--background-grey);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.view-tab.active {
+  background: var(--primary-green);
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+}
+
 .room-container {
   display: grid;
   grid-template-columns: 1fr 300px;
