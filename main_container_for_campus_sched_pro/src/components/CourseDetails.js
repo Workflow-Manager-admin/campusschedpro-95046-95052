@@ -149,14 +149,31 @@ const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
                 margin="dense"
               />
               
-              <TextField
-                label="Instructor"
-                name="instructor"
-                value={editedCourse.instructor}
-                onChange={handleInputChange}
-                fullWidth
-                margin="dense"
-              />
+              <FormControl fullWidth margin="dense">
+                <InputLabel id="instructor-label">Instructor</InputLabel>
+                <Select
+                  labelId="instructor-label"
+                  name="instructor"
+                  value={editedCourse.instructor}
+                  onChange={handleInputChange}
+                  label="Instructor"
+                >
+                  {faculty.length > 0 ? (
+                    faculty.map(fac => (
+                      <MenuItem key={fac.id} value={fac.name}>
+                        {fac.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <>
+                      <MenuItem value="John Smith">John Smith</MenuItem>
+                      <MenuItem value="Jane Doe">Jane Doe</MenuItem>
+                      <MenuItem value="Robert Johnson">Robert Johnson</MenuItem>
+                      <MenuItem value="Emily Davis">Emily Davis</MenuItem>
+                    </>
+                  )}
+                </Select>
+              </FormControl>
               
               <TextField
                 label="Credits"
