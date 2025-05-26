@@ -22,11 +22,14 @@ export const useSchedule = () => {
 
 // Create the Schedule Provider component
 export const ScheduleProvider = ({ children }) => {
+  // Get environment variables with fallbacks
+  // eslint-disable-next-line no-undef
+  const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://your-supabase-url.supabase.co';
+  // eslint-disable-next-line no-undef
+  const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-supabase-anon-key';
+  
   // Supabase client for realtime subscriptions
-  const supabase = createClient(
-    (typeof process !== 'undefined' && process.env.REACT_APP_SUPABASE_URL) || 'https://your-supabase-url.supabase.co',
-    (typeof process !== 'undefined' && process.env.REACT_APP_SUPABASE_ANON_KEY) || 'your-supabase-anon-key'
-  );
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   // State for courses, rooms, schedule, and UI
   const [courses, setCourses] = useState([]);
