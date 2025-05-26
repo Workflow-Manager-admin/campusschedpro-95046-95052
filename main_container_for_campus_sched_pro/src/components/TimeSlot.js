@@ -20,15 +20,25 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     // Stop propagation to prevent drag event conflicts
     event.stopPropagation();
     
-    if (removeCourseFromSlot) {
-      try {
-        // Pass the array index to ensure we remove only this specific course instance
-        // even if multiple instances of the same course exist in this slot
-        removeCourseFromSlot(slotId, course, index);
-      } catch (error) {
-        // Silent fail in production, but log to console in development
-        console.error("Error removing course:", error);
+    if (!removeCourseFromSlot) {
+      console.warn("No removeCourseFromSlot function provided to TimeSlot component");
+      return;
+    }
+    
+    try {
+      // Pass the array index to ensure we remove only this specific course instance
+      // even if multiple instances of the same course exist in this slot
+      const result = removeCourseFromSlot(slotId, course, index);
+      
+      // Handle if result is a Promise
+      if (result && typeof result.then === 'function') {
+        result.catch(error => {
+          console.error("Error removing course:", error);
+        });
       }
+    } catch (error) {
+      // Silent fail in production, but log to console in development
+      console.error("Error removing course:", error);
     }
   };
 
