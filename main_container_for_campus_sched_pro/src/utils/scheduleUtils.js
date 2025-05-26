@@ -10,7 +10,9 @@
  * @returns {boolean} - Whether the slot is available
  */
 export const isSlotAvailable = (schedule, slotId, course) => {
-  const currentCourses = schedule[slotId] || [];
+  const slotContent = schedule[slotId] || [];
+  // Ensure we have an array of courses
+  const currentCourses = Array.isArray(slotContent) ? slotContent : [];
   
   // Check if slot is empty
   if (currentCourses.length === 0) {
@@ -19,6 +21,8 @@ export const isSlotAvailable = (schedule, slotId, course) => {
   
   // Check for course conflicts
   return !currentCourses.some(existingCourse => {
+    // Ensure existingCourse is an object
+    if (!existingCourse) return false;
     // Don't count the same course as a conflict
     if (existingCourse.id === course.id) {
       return false;
