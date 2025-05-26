@@ -53,7 +53,7 @@ const EnhancedFunctionsWrapper = ({ children }) => {
       showNotification(`Room ${newRoom.name} added successfully`, 'success');
       return result.id;
     } catch (error) {
-      console.error('Error in enhancedAddRoom:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to add room: ${error.message}`, 'error');
       return null;
     }
