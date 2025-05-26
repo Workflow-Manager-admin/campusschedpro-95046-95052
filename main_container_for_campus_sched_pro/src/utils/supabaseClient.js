@@ -531,24 +531,25 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
 export const unscheduleCourse = async (courseId, day, time) => {
   try {
     // First get the time slot ID from day and time
-    const { data: timeSlot } = await supabase
+    const { data: timeSlots } = await supabase
       .from('time_slots')
       .select('id')
       .eq('day', day)
-      .eq('time', time)
-      .maybeSingle();
+      .eq('time', time);
     
-    if (!timeSlot || !timeSlot.id) {
+    if (!timeSlots || timeSlots.length === 0) {
       console.error(`Time slot not found for ${day}-${time}`);
       return false;
     }
+    
+    const timeSlotId = timeSlots[0].id;
     
     // Now delete the schedule entry
     const { error } = await supabase
       .from('schedule')
       .delete()
       .eq('course_id', courseId)
-      .eq('time_slot_id', timeSlot.id);
+      .eq('time_slot_id', timeSlotId);
       
     if (error) {
       console.error('Error removing course from schedule:', error);
