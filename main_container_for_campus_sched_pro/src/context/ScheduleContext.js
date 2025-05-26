@@ -199,34 +199,52 @@ export const ScheduleProvider = ({ children }) => {
   };
 
   // Utility to remove a course from a schedule slot
-  const removeCourseFromSlot = async (courseId, day, timeSlot) => {
+  const removeCourseFromSlot = async (courseId, day, time) => {
     try {
-      const result = await unscheduleCourse(courseId, day, timeSlot);
-      
-      if (result) {
-        // Update schedule locally
-        setSchedule(prevSchedule => {
-          const newSchedule = { ...prevSchedule };
+      // Create the slot ID in the format that the schedule object uses
+      const slotId = `${day}-${time}`;
+
+      // First update the local state to provide immediate feedback to the user
+      setSchedule(prevSchedule => {
+        const newSchedule = { ...prevSchedule };
+        
+        if (newSchedule[slotId]) {
+          newSchedule[slotId] = newSchedule[slotId].filter(
+            course => course.id !== courseId
+          );
           
-          if (newSchedule[day] && newSchedule[day][timeSlot]) {
-            newSchedule[day][timeSlot] = newSchedule[day][timeSlot].filter(
-              course => course.id !== courseId
-            );
+          // If no courses left in this slot, we can clean up
+          if (newSchedule[slotId].length === 0) {
+            delete newSchedule[slotId];
           }
-          
-          return newSchedule;
-        });
+        }
+        
+        return newSchedule;
+      });
+      
+      // Now make the API call to update the database
+      const result = await unscheduleCourse(courseId, day, time);
+      
+      if (!result) {
+        // If database update failed, revert the local change
+        showNotification('Failed to update the database. The change may not persist.', 'error');
+        
+        // Refresh data from database to ensure UI is in sync
+        await loadInitialData();
+      } else {
+        // Show success message
+        showNotification('Course removed successfully', 'success');
         
         // Recalculate conflicts
         const updatedConflicts = findScheduleConflicts(schedule);
         setConflicts(updatedConflicts || []);
-        
-        return true;
       }
       
-      return false;
+      return result;
     } catch (error) {
-      // Removed console.error for ESLint compliance
+      showNotification(`Error removing course: ${error.message}`, 'error');
+      // Refresh data to ensure UI is in sync
+      await loadInitialData();
       return false;
     }
   };
