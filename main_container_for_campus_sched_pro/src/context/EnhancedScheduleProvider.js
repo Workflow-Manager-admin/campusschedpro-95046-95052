@@ -117,6 +117,9 @@ const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, set
    * Enhanced function to remove a course from a slot with better error handling
    * and defensive programming against non-array coursesInSlot
    */
+  // Get base context functions
+  const { showNotification } = baseContext;
+  
   const removeCourseFromSlotEnhanced = async (slotId, course, index) => {
     if (!slotId) {
       const error = new Error('Slot ID is required');
