@@ -47,29 +47,21 @@ const RoomAllocation = () => {
     }
   }, [courses, rooms, dataInitialized]);
 
-  const [buildingFilter, setBuildingFilter] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('room'); // 'room' or 'course' view mode
   const [courseSearchQuery, setCourseSearchQuery] = useState('');
-
-  // Get unique buildings from rooms data - memoized
-  const buildings = useMemo(() => {
-    return ['all', ...new Set(rooms.map(r => r.building))];
-  }, [rooms]);
   
-  // Filter allocations by building - memoized
+  // Show all allocations without filtering by building - memoized
   const filteredAllocations = useMemo(() => {
-    // Defensive check to ensure allocations is an array before filtering
+    // Defensive check to ensure allocations is an array before returning
     if (!Array.isArray(allocations)) {
       return [];
     }
-    return allocations.filter(allocation => 
-      buildingFilter === 'all' || allocation.building === buildingFilter
-    );
-  }, [allocations, buildingFilter]);
+    return allocations;
+  }, [allocations]);
 
   // All courses that don't have room assignments - memoized
   const unassignedCourses = useMemo(() => {
@@ -325,22 +317,7 @@ const RoomAllocation = () => {
               </div>
 
               <div className="allocated-rooms-panel">
-                <div className="search-filters">
-                  <div className="filter-group">
-                    <span className="filter-label">Building:</span>
-                    <select 
-                      className="filter-select"
-                      value={buildingFilter}
-                      onChange={(e) => setBuildingFilter(e.target.value)}
-                    >
-                      {buildings.map((building, index) => (
-                        <option key={index} value={building}>
-                          {building === 'all' ? 'All Buildings' : building}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                {/* Building filter removed - now showing all rooms together */}
 
                 <div className="allocation-container">
                   {Array.isArray(filteredAllocations) && filteredAllocations.map(allocation => {
@@ -407,7 +384,7 @@ const RoomAllocation = () => {
                   
                   {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
                     <div className="no-results">
-                      <p>No rooms match your filter criteria</p>
+                      <p>No rooms available in the system</p>
                     </div>
                   )}
                 </div>
