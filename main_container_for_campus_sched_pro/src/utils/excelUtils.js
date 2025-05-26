@@ -298,23 +298,59 @@ export const importRoomsFromExcel = async (file) => {
       }
     });
     
-    // Save imported rooms to the database using the enhanced entity helper
-    const { enhancedSaveRoom } = require('./entityHelpers');
-    
     let successCount = 0;
     const saveErrors = [];
     
     // Process each room
     for (const room of importedRooms) {
       try {
-        const result = await enhancedSaveRoom(room);
+        // Get building ID
+        const buildingId = await getOrCreateBuilding(room.building);
         
-        if (result.success) {
+        // Create room record
+        const { data, error } = await supabase
+          .from('rooms')
+          .upsert({
+            id: room.id,
+            name: room.name,
+            type: room.type || 'Classroom', // Default type
+            capacity: room.capacity || 0,
+            floor: room.floor || '1', // Default floor
+            building_id: buildingId
+          })
+          .select()
+          .single();
+          
+        if (error) {
+          throw new Error(`Database error: ${error.message}`);
+        }
+        
+        if (data && data.id) {
+          // Handle equipment if provided
+          if (room.equipment && room.equipment.length > 0) {
+            // First remove existing equipment
+            await supabase
+              .from('room_equipment')
+              .delete()
+              .eq('room_id', data.id);
+            
+            // Add new equipment
+            for (const item of room.equipment) {
+              const equipmentId = await getOrCreateEquipment(item);
+              if (equipmentId) {
+                await supabase
+                  .from('room_equipment')
+                  .insert({
+                    room_id: data.id,
+                    equipment_id: equipmentId
+                  });
+              }
+            }
+          }
+          
           successCount++;
         } else {
-          saveErrors.push({
-            message: `Could not save room ${room.name || 'unknown'}: ${result.message}`
-          });
+          throw new Error('Failed to insert room - no ID returned');
         }
       } catch (error) {
         saveErrors.push({
