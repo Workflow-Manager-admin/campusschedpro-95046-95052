@@ -280,8 +280,12 @@ export const ScheduleProvider = ({ children }) => {
           Object.keys(newSchedule).forEach(day => {
             Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
               if (newSchedule[day][timeSlot]) {
-                newSchedule[day][timeSlot] = newSchedule[day][timeSlot].map(course => {
-                  if (course.id === courseData.id) {
+                // Ensure we're working with an array before using map
+                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
+                  newSchedule[day][timeSlot] : [];
+                
+                newSchedule[day][timeSlot] = slotCourses.map(course => {
+                  if (course && course.id === courseData.id) {
                     return courseData;
                   }
                   return course;
