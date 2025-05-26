@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { enhancedSaveCourse, enhancedSaveRoom, enhancedSaveFaculty } from './entityHelpers';
+import { supabase } from './supabaseClient';
 
 // Safely import xlsx and uuid packages
 /* eslint-disable no-undef */
