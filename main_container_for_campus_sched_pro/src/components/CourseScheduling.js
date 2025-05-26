@@ -45,7 +45,8 @@ const CourseScheduling = () => {
     deleteCourseById,
     isLoading,
     refreshData,
-    removeCourseFromSlot
+    removeCourseFromSlot,
+    faculty
   } = useSchedule();
   
   const timetableRef = useRef(null);

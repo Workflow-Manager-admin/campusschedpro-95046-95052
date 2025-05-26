@@ -83,8 +83,8 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
                 </div>
                 <div className="course-name">{course.name}</div>
                 <div className="course-details">
-                  <span>{course.instructor}</span>
-                  <span>{course.room || 'TBA'}</span>
+                  <span><strong>Instructor:</strong> {course.instructor}</span>
+                  <span><strong>Room:</strong> {course.room || 'TBA'}</span>
                 </div>
               </Paper>
             </Tooltip>
