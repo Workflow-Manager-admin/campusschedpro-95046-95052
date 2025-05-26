@@ -35,7 +35,7 @@ const RoomAllocation = () => {
       updateAllocations();
       setDataInitialized(true);
     }
-  }, [dataInitialized]); // Remove updateAllocations from dependencies
+  }, [dataInitialized, updateAllocations]); // Added updateAllocations to dependencies
   
   // Track significant changes to update view without full API refetch
   useEffect(() => {
@@ -278,137 +278,191 @@ const RoomAllocation = () => {
         </div>
 
         <div className="room-allocation-container">
-          <div className="unassigned-courses-panel">
-            <h3>Unassigned Courses</h3>
-            
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
-            
-            <div className="unassigned-courses-list">
-              {filteredCourses.length > 0 ? (
-                filteredCourses.map(course => (
-                  <div 
-                    key={course.id} 
-                    className="unassigned-course-item"
-                    onClick={() => {
-                      handleSelectCourse(course);
-                      setShowAssignDialog(true);
-                    }}
-                  >
-                    <div>
-                      <h4>{course.code} - {course.name}</h4>
-                      <p>Instructor: {course.instructor}</p>
-                      <p>Students: {course.expectedEnrollment}</p>
-                      <p>Requirements: {course.requiresLab ? 'Lab, ' : ''}{course.requiredEquipment?.join(', ') || 'None'}</p>
-                    </div>
-                    <button className="btn btn-small">Assign</button>
-                  </div>
-                ))
-              ) : (
-                <div className="empty-list-message">
-                  {unassignedCourses.length === 0 
-                    ? "All courses have been assigned rooms" 
-                    : "No courses match your search criteria"}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="allocated-rooms-panel">
-            <div className="search-filters">
-              <div className="filter-group">
-                <span className="filter-label">Building:</span>
-                <select 
-                  className="filter-select"
-                  value={buildingFilter}
-                  onChange={(e) => setBuildingFilter(e.target.value)}
-                >
-                  {buildings.map((building, index) => (
-                    <option key={index} value={building}>
-                      {building === 'all' ? 'All Buildings' : building}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="allocation-container">
-              {Array.isArray(filteredAllocations) && filteredAllocations.map(allocation => {
-                // Skip rendering if allocation is null or missing required properties
-                if (!allocation || !allocation.roomId) return null;
+          {viewMode === 'room' ? (
+            // Room-centric view (original implementation)
+            <>
+              <div className="unassigned-courses-panel">
+                <h3>Unassigned Courses</h3>
                 
-                return (
-                <div key={allocation.roomId} className="allocation-card">
-                  <div className="allocation-header">
-                    <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
-                    <span>{allocation.building || 'Unknown Building'}</span>
-                  </div>
+                <div className="search-bar">
+                  <input
+                    type="text"
+                    placeholder="Search courses..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+                
+                <div className="unassigned-courses-list">
+                  {filteredCourses.length > 0 ? (
+                    filteredCourses.map(course => (
+                      <div 
+                        key={course.id} 
+                        className="unassigned-course-item"
+                        onClick={() => {
+                          handleSelectCourse(course);
+                          setShowAssignDialog(true);
+                        }}
+                      >
+                        <div>
+                          <h4>{course.code} - {course.name}</h4>
+                          <p>Instructor: {course.instructor}</p>
+                          <p>Students: {course.expectedEnrollment}</p>
+                          <p>Requirements: {course.requiresLab ? 'Lab, ' : ''}{course.requiredEquipment?.join(', ') || 'None'}</p>
+                        </div>
+                        <button className="btn btn-small">Assign</button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-list-message">
+                      {unassignedCourses.length === 0 
+                        ? "All courses have been assigned rooms" 
+                        : "No courses match your search criteria"}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                  <table className="schedule-table">
+              <div className="allocated-rooms-panel">
+                <div className="search-filters">
+                  <div className="filter-group">
+                    <span className="filter-label">Building:</span>
+                    <select 
+                      className="filter-select"
+                      value={buildingFilter}
+                      onChange={(e) => setBuildingFilter(e.target.value)}
+                    >
+                      {buildings.map((building, index) => (
+                        <option key={index} value={building}>
+                          {building === 'all' ? 'All Buildings' : building}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="allocation-container">
+                  {Array.isArray(filteredAllocations) && filteredAllocations.map(allocation => {
+                    // Skip rendering if allocation is null or missing required properties
+                    if (!allocation || !allocation.roomId) return null;
+                    
+                    return (
+                    <div key={allocation.roomId} className="allocation-card">
+                      <div className="allocation-header">
+                        <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
+                        <span>{allocation.building || 'Unknown Building'}</span>
+                      </div>
+
+                      <table className="schedule-table">
+                        <thead>
+                          <tr>
+                            <th>Course</th>
+                            <th>Instructor</th>
+                            <th>Schedule</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Array.isArray(allocation.courses) && allocation.courses.map(course => {
+                            // Skip rendering if course is null
+                            if (!course) return null;
+                            
+                            return (
+                              <tr key={course.id || `course-${Math.random()}`}>
+                                <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
+                                <td>{course.instructor || 'Unassigned'}</td>
+                                <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
+                                <td>
+                                <button 
+                                  className="btn-icon"
+                                  title="Unassign Room"
+                                  onClick={async (e) => {
+                                    e.stopPropagation(); // Prevent event bubbling
+                                    const success = await assignRoom(course.id, null);
+                                    if (success) {
+                                      showNotification(`Unassigned ${course.code} from room`, 'info');
+                                      // The loadInitialData in ScheduleContext will handle updating allocations
+                                    }
+                                  }}
+                                >
+                                  ⨯
+                                </button>
+                              </td>
+                            </tr>
+                            );
+                  })}
+                          {(!Array.isArray(allocation.courses) || allocation.courses.length === 0) && (
+                            <tr>
+                              <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
+                                No courses assigned
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    );
+                })}
+                  
+                  {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
+                    <div className="no-results">
+                      <p>No rooms match your filter criteria</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            // Course-centric view (new implementation)
+            <div className="course-allocation-panel">
+              <div className="search-bar" style={{ marginBottom: '20px' }}>
+                <input
+                  type="text"
+                  placeholder="Search courses or rooms..."
+                  value={courseSearchQuery}
+                  onChange={(e) => setCourseSearchQuery(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+              
+              <div className="course-allocation-table-container">
+                {getCoursesWithRooms.length > 0 ? (
+                  <table className="schedule-table courses-with-rooms-table">
                     <thead>
                       <tr>
-                        <th>Course</th>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
                         <th>Instructor</th>
+                        <th>Room Assignment</th>
+                        <th>Building</th>
                         <th>Schedule</th>
-                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {Array.isArray(allocation.courses) && allocation.courses.map(course => {
-                        // Skip rendering if course is null
-                        if (!course) return null;
-                        
-                        return (
-                          <tr key={course.id || `course-${Math.random()}`}>
-                            <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
-                            <td>{course.instructor || 'Unassigned'}</td>
-                            <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
-                            <td>
-                            <button 
-                              className="btn-icon"
-                              title="Unassign Room"
-                              onClick={async (e) => {
-                                e.stopPropagation(); // Prevent event bubbling
-                                const success = await assignRoom(course.id, null);
-                                if (success) {
-                                  showNotification(`Unassigned ${course.code} from room`, 'info');
-                                  // The loadInitialData in ScheduleContext will handle updating allocations
-                                }
-                              }}
-                            >
-                              ✕
-                            </button>
+                      {getCoursesWithRooms.map(course => (
+                        <tr key={course.id}>
+                          <td>{course.code}</td>
+                          <td>{course.name}</td>
+                          <td>{course.instructor || 'Unassigned'}</td>
+                          <td><strong>{course.roomName}</strong></td>
+                          <td>{course.building}</td>
+                          <td>
+                            {Array.isArray(course.schedule) ? course.schedule.join(', ') : 
+                              (course.timeSlot ? `${course.day} ${course.timeSlot}` : 'Not scheduled')}
                           </td>
                         </tr>
-                        );
-              })}
-                      {(!Array.isArray(allocation.courses) || allocation.courses.length === 0) && (
-                        <tr>
-                          <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
-                            No courses assigned
-                          </td>
-                        </tr>
-                      )}
+                      ))}
                     </tbody>
                   </table>
-                </div>
-                );
-            })}
-              
-              {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
-                <div className="no-results">
-                  <p>No rooms match your filter criteria</p>
-                </div>
-              )}
+                ) : (
+                  <div className="no-results">
+                    <p>No courses have been assigned rooms yet or no courses match your search</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Room Assignment Dialog */}
@@ -505,10 +559,6 @@ const RoomAllocation = () => {
   );
 };
 
-/**
- * Room allocation component for managing course room assignments
- * PUBLIC_INTERFACE
- */
 /**
  * Room allocation component for managing course room assignments
  * PUBLIC_INTERFACE
