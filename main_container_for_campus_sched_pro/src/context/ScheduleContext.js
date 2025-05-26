@@ -134,35 +134,51 @@ export const ScheduleProvider = ({ children }) => {
 
   // Calculate room allocations based on schedule
   const updateAllocations = (scheduleData) => {
+    // Handle the case of missing scheduleData (use current schedule as fallback)
+    const dataToProcess = scheduleData || schedule || {};
     const allocations = {};
     
-    // Loop through the schedule and count room allocations
-    Object.keys(scheduleData).forEach(day => {
-      Object.keys(scheduleData[day] || {}).forEach(timeSlot => {
-        const coursesInSlot = scheduleData[day][timeSlot] || [];
-        
-        // Ensure coursesInSlot is an array before using forEach
-        (Array.isArray(coursesInSlot) ? coursesInSlot : []).forEach(course => {
-          if (course && course.roomId) {
-            if (!allocations[course.roomId]) {
-              allocations[course.roomId] = {
-                count: 0,
-                courses: []
-              };
-            }
+    try {
+      // Loop through the schedule and count room allocations only if it's a valid object
+      if (dataToProcess && typeof dataToProcess === 'object') {
+        Object.keys(dataToProcess).forEach(day => {
+          // Skip if day data is not an object
+          if (!dataToProcess[day] || typeof dataToProcess[day] !== 'object') return;
+          
+          Object.keys(dataToProcess[day]).forEach(timeSlot => {
+            // Skip if timeSlot does not contain valid data
+            if (!dataToProcess[day][timeSlot]) return;
             
-            allocations[course.roomId].count++;
-            allocations[course.roomId].courses.push({
-              course: course,
-              day: day,
-              timeSlot: timeSlot
+            const coursesInSlot = dataToProcess[day][timeSlot];
+            
+            // Ensure coursesInSlot is an array before using forEach
+            (Array.isArray(coursesInSlot) ? coursesInSlot : []).forEach(course => {
+              if (course && course.roomId) {
+                if (!allocations[course.roomId]) {
+                  allocations[course.roomId] = {
+                    count: 0,
+                    courses: []
+                  };
+                }
+                
+                allocations[course.roomId].count++;
+                allocations[course.roomId].courses.push({
+                  course: course,
+                  day: day,
+                  timeSlot: timeSlot
+                });
+              }
             });
-          }
+          });
         });
-      });
-    });
-    
-    setRoomAllocations(allocations);
+      }
+      
+      // Update state with allocations (even if empty)
+      setRoomAllocations(allocations);
+    } catch (error) {
+      // Silently handle errors to prevent UI crashes
+      setRoomAllocations({}); // Reset to empty object on error
+    }
   };
 
   // Room operations
@@ -576,13 +592,13 @@ export const ScheduleProvider = ({ children }) => {
   // Provide the context value
   const contextValue = {
     // State
-    courses,
+    courses: Array.isArray(courses) ? courses : [],
     setCourses,
-    rooms,
+    rooms: Array.isArray(rooms) ? rooms : [],
     setRooms,
     schedule,
     setSchedule,
-    conflicts,
+    conflicts: Array.isArray(conflicts) ? conflicts : [],
     roomAllocations,
     academicYears,
     currentAcademicYear,
