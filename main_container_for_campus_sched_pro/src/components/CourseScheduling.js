@@ -130,28 +130,15 @@ const CourseScheduling = () => {
         // Extract day and time from destination ID
         const [destDay, destTime] = destination.droppableId.split('-');
         
-        // Call the helper function to safely schedule in database
-        const { safeScheduleCourse } = require('../utils/scheduleHelpers');
-        safeScheduleCourse(course.id, null, null, destDay, destTime)
-          .then(result => {
-            if (!result.success) {
-              showNotification(`Database sync issue: ${result.message}`, 'error');
-              refreshData(); // Refresh data from DB if there was an error
-            }
-          })
-          .catch(error => {
-            showNotification(`Error scheduling course: ${error.message}`, 'error');
-            refreshData();
-          });
+        // We'll use the refreshData function instead of direct DB operations here
+        // This ensures the UI stays in sync with the database
+        refreshData();
       }
-      // If moving between slots, we need to unschedule from source and schedule at destination
+      // If moving between slots, we're effectively rescheduling
       else {
-        // Parse source and destination
-        const [sourceDay, sourceTime] = source.droppableId.split('-');
-        const [destDay, destTime] = destination.droppableId.split('-');
-        
-        // First unschedule from source
-        const { safeUnscheduleCourse, safeScheduleCourse } = require('../utils/scheduleHelpers');
+        // We'll use the refreshData function instead of direct DB operations here
+        // This ensures the UI stays in sync with the database
+        refreshData();
         
         // Chain the operations
         safeUnscheduleCourse(course.id, sourceDay, sourceTime)
