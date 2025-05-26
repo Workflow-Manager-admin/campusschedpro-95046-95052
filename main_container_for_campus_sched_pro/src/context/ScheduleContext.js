@@ -2,7 +2,8 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { findScheduleConflicts } from '../utils/scheduleUtils';
 import { 
   getAllCourses, getAllRooms, getSchedule, saveCourse, saveRoom, 
-  deleteCourse, deleteRoom, unscheduleCourse, getAllDepartments
+  deleteCourse, deleteRoom, unscheduleCourse, getAllDepartments,
+  getAllFaculty
   // Removing unused imports to fix ESLint errors:
   // scheduleCourse, parseTimeSlotId, getTimeSlotId
 } from '../utils/supabaseClient';
@@ -31,10 +32,11 @@ export const ScheduleProvider = ({ children }) => {
   // Supabase client for realtime subscriptions
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  // State for courses, rooms, schedule, and UI
+  // State for courses, rooms, faculty, schedule, and UI
   const [courses, setCourses] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [faculty, setFaculty] = useState([]);
   const [schedule, setSchedule] = useState({});
   const [conflicts, setConflicts] = useState([]);
   const [roomAllocations, setRoomAllocations] = useState({});
@@ -78,6 +80,15 @@ export const ScheduleProvider = ({ children }) => {
         setDepartments([]);
       } else {
         setDepartments(departmentsData);
+      }
+      
+      // Load faculty
+      const facultyData = await getAllFaculty();
+      if (!facultyData) {
+        console.warn('Issue loading faculty, using empty array');
+        setFaculty([]);
+      } else {
+        setFaculty(facultyData);
       }
       
       // Load schedule
