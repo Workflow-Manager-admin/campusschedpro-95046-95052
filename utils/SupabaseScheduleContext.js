@@ -72,9 +72,12 @@ export const SupabaseScheduleProvider = ({ children }) => {
       }));
       
       // Populate allocations with courses from the schedule
-      Object.entries(scheduleData).forEach(([slotId, coursesInSlot]) => {
+      Object.entries(scheduleData).forEach(([slotId, slotContent]) => {
+        // Ensure coursesInSlot is an array before using forEach
+        const coursesInSlot = Array.isArray(slotContent) ? slotContent : [];
+        
         coursesInSlot.forEach(course => {
-          if (course.room) {
+          if (course && course.room) {
             const roomAllocation = newAllocations.find(a => a.roomName === course.room);
             
             if (roomAllocation) {
@@ -163,8 +166,11 @@ export const SupabaseScheduleProvider = ({ children }) => {
     try {
       // Get all schedule entries for this course
       const courseSlots = [];
-      Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
-        if (coursesInSlot.some(c => c.id === courseId)) {
+      Object.entries(schedule).forEach(([slotId, slotContent]) => {
+        // Ensure coursesInSlot is an array
+        const coursesInSlot = Array.isArray(slotContent) ? slotContent : [];
+        
+        if (coursesInSlot.some(c => c && c.id === courseId)) {
           courseSlots.push(slotId);
         }
       });
@@ -179,7 +185,14 @@ export const SupabaseScheduleProvider = ({ children }) => {
           continue;
         }
         
-        const courseEntry = schedule[slotId].find(c => c.id === courseId);
+        // Ensure we're dealing with an array
+        const slotCourses = Array.isArray(schedule[slotId]) ? schedule[slotId] : [];
+        const courseEntry = slotCourses.find(c => c && c.id === courseId);
+        
+        if (!courseEntry) {
+          console.error(`Course ${courseId} not found in slot ${slotId}`);
+          continue;
+        }
         
         await scheduleCourse(
           courseId, 
@@ -237,8 +250,14 @@ export const SupabaseScheduleProvider = ({ children }) => {
         return false;
       }
       
-      // Get current course info from schedule
-      const courseInfo = schedule[currentSlot].find(c => c.id === courseIdToMove);
+      // Get current course info from schedule - ensure we have an array
+      const currentSlotCourses = Array.isArray(schedule[currentSlot]) ? schedule[currentSlot] : [];
+      const courseInfo = currentSlotCourses.find(c => c && c.id === courseIdToMove);
+      
+      if (!courseInfo) {
+        showNotification(`Error: Course not found in original slot`, 'error');
+        return false;
+      }
       
       // Schedule in new slot
       await scheduleCourse(
@@ -267,13 +286,17 @@ export const SupabaseScheduleProvider = ({ children }) => {
   
   // Function to remove a course from a specific time slot
   const removeCourseFromSlot = useCallback(async (slotId, course, index) => {
+    // Get slot content with defensive check
+    const slotContent = schedule[slotId];
+    const slotCourses = Array.isArray(slotContent) ? slotContent : [];
+    
     // Check if the slot exists and has courses
-    if (!schedule[slotId] || schedule[slotId].length === 0) {
+    if (slotCourses.length === 0) {
       return false;
     }
     
     // Index must be provided to ensure we remove the specific instance
-    if (index === undefined || index < 0 || index >= schedule[slotId].length) {
+    if (index === undefined || index < 0 || index >= slotCourses.length) {
       console.warn('Invalid index provided for course removal');
       return false;
     }
@@ -287,14 +310,21 @@ export const SupabaseScheduleProvider = ({ children }) => {
         return false;
       }
       
+      // Make sure we have a valid course
+      const courseToRemove = slotCourses[index];
+      if (!courseToRemove || !courseToRemove.id) {
+        showNotification('Error: Invalid course data', 'error');
+        return false;
+      }
+      
       // Unschedule the course
-      await unscheduleCourse(course.id, timeSlotId);
+      await unscheduleCourse(courseToRemove.id, timeSlotId);
       
       // Reload data
       await loadInitialData();
       
       // Show notification
-      showNotification(`Removed ${course.code} from schedule`, 'success');
+      showNotification(`Removed ${courseToRemove.code || 'course'} from schedule`, 'success');
       
       return true;
     } catch (error) {
