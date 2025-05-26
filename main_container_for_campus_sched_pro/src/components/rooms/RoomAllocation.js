@@ -321,10 +321,10 @@ const RoomAllocation = () => {
                         
                         return (
 =======
-                        <tr key={course.id}>
-                          <td>{course.code} - {course.name}</td>
-                          <td>{course.instructor}</td>
-                          <td>{course.schedule.join(', ')}</td>
+                        <tr key={course.id || `course-${Math.random()}`}>
+                          <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
+                          <td>{course.instructor || 'Unassigned'}</td>
+                          <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
                           <td>
                             <button 
                               className="btn-icon"
@@ -343,7 +343,7 @@ const RoomAllocation = () => {
                           </td>
                         </tr>
                       ))}
-                      {allocation.courses.length === 0 && (
+                      {(!Array.isArray(allocation.courses) || allocation.courses.length === 0) && (
                         <tr>
                           <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
                             No courses assigned
@@ -355,7 +355,7 @@ const RoomAllocation = () => {
                 </div>
               ))}
               
-              {filteredAllocations.length === 0 && (
+              {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
                 <div className="no-results">
                   <p>No rooms match your filter criteria</p>
                 </div>
