@@ -301,7 +301,7 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error('Error in updateCourse:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         course: `Error updating course: ${error.message}`
@@ -355,7 +355,7 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error('Error in deleteCourseById:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         course: `Error deleting course: ${error.message}`
