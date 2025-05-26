@@ -236,6 +236,7 @@ const RoomAllocation = () => {
                               <th>Course</th>
                               <th>Instructor</th>
                               <th>Schedule</th>
+                              <th>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -245,6 +246,16 @@ const RoomAllocation = () => {
                                   <td>{course.code || ''} - {course.name || ''}</td>
                                   <td>{course.instructor || 'Unassigned'}</td>
                                   <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
+                                  <td>
+                                    <Button 
+                                      variant="outlined" 
+                                      color="secondary"
+                                      size="small"
+                                      onClick={() => openUnassignDialog(course)}
+                                    >
+                                      Unassign
+                                    </Button>
+                                  </td>
                                 </tr>
                               ))
                             ) : (
@@ -277,6 +288,7 @@ const RoomAllocation = () => {
                       <th>Instructor</th>
                       <th>Room Assignment</th>
                       <th>Building</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
