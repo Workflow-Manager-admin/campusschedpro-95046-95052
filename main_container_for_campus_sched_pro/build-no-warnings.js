@@ -7,7 +7,7 @@ process.env.CI = 'false';
 
 try {
   // Run the build command
-  execSync('react-scripts build', { stdio: 'inherit' });
+  execSync('./node_modules/.bin/react-scripts build', { stdio: 'inherit' });
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);
