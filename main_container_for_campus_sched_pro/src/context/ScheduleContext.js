@@ -154,7 +154,7 @@ export const ScheduleProvider = ({ children }) => {
     return () => {
       cleanup.then(cleanupFn => cleanupFn && cleanupFn());
     };
-  }, [loadInitialData, supabase]);
+  }, [loadInitialData]); // Removed supabase from dependencies since it's now imported
 
   // Calculate room allocations based on schedule
   const updateAllocations = useCallback((scheduleData) => {
