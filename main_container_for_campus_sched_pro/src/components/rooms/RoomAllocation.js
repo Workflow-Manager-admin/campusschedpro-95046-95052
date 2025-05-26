@@ -341,7 +341,8 @@ const RoomAllocation = () => {
                             </button>
                           </td>
                         </tr>
-                      ))}
+                        );
+              })}
                       {(!Array.isArray(allocation.courses) || allocation.courses.length === 0) && (
                         <tr>
                           <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
@@ -352,7 +353,8 @@ const RoomAllocation = () => {
                     </tbody>
                   </table>
                 </div>
-              ))}
+                );
+            })}
               
               {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
                 <div className="no-results">

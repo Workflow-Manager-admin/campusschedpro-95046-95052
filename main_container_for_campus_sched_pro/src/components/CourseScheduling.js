@@ -43,7 +43,8 @@ const CourseScheduling = () => {
     updateCourse,
     deleteCourseById,
     isLoading,
-    refreshData
+    refreshData,
+    removeCourseFromSlot
   } = useSchedule();
   
   const timetableRef = useRef(null);
@@ -84,6 +85,15 @@ const CourseScheduling = () => {
       
       // Create a new schedule with the updated course positions
       const newSchedule = { ...schedule };
+      
+      // Extract day and time from source and destination IDs
+      let sourceDay, sourceTime, destDay, destTime;
+      
+      if (source.droppableId !== 'courses-list') {
+        [sourceDay, sourceTime] = source.droppableId.split('-');
+      }
+      
+      [destDay, destTime] = destination.droppableId.split('-');
       
       // If moving from courses list to a time slot
       if (source.droppableId === 'courses-list') {
@@ -127,33 +137,40 @@ const CourseScheduling = () => {
       // Now update the database
       // If we're moving from courses-list, we need to schedule the course
       if (source.droppableId === 'courses-list') {
-        // Extract day and time from destination ID
-        const [destDay, destTime] = destination.droppableId.split('-');
+        // Use the removeCourseFromSlot function to schedule a course in a new slot
+        // This actually adds the course to the slot, despite the name suggesting removal
+        const { removeCourseFromSlot } = useSchedule();
         
-        // We'll use the refreshData function instead of direct DB operations here
-        // This ensures the UI stays in sync with the database
-        refreshData();
+        // Schedule course at destination
+        removeCourseFromSlot(course.id, destDay, destTime)
+          .then(result => {
+            if (!result) {
+              showNotification('Error scheduling course. Please try again.', 'error');
+              refreshData();
+            }
+          })
+          .catch(error => {
+            showNotification(`Error scheduling course: ${error.message}`, 'error');
+            refreshData();
+          });
       }
       // If moving between slots, we're effectively rescheduling
       else {
-        // We'll use the refreshData function instead of direct DB operations here
-        // This ensures the UI stays in sync with the database
-        refreshData();
-        
-        // Chain the operations
-        safeUnscheduleCourse(course.id, sourceDay, sourceTime)
+        // First, remove from original slot
+        removeCourseFromSlot(course.id, sourceDay, sourceTime)
           .then(unscheduleResult => {
-            if (!unscheduleResult.success) {
-              showNotification(`Error unscheduling course: ${unscheduleResult.message}`, 'error');
+            if (!unscheduleResult) {
+              showNotification('Error unscheduling course. Please try again.', 'error');
+              refreshData();
               return;
             }
             
-            // Then schedule at destination
-            return safeScheduleCourse(course.id, null, null, destDay, destTime);
+            // Then add to new slot
+            return removeCourseFromSlot(course.id, destDay, destTime);
           })
           .then(scheduleResult => {
-            if (scheduleResult && !scheduleResult.success) {
-              showNotification(`Error scheduling course: ${scheduleResult.message}`, 'error');
+            if (scheduleResult === false) { // explicitly check for false since undefined is ok
+              showNotification('Error rescheduling course. Please try again.', 'error');
               refreshData();
             }
           })
@@ -167,7 +184,7 @@ const CourseScheduling = () => {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
       refreshData();
     }
-  }, [schedule, courses, setSchedule, showNotification, refreshData]);
+  }, [schedule, courses, setSchedule, showNotification, refreshData, removeCourseFromSlot]);
 
   const handleSaveSchedule = useCallback(() => {
     const conflicts = findScheduleConflicts(schedule);
