@@ -3,9 +3,7 @@ import { findScheduleConflicts } from '../utils/scheduleUtils';
 import { 
   getAllCourses, getAllRooms, getSchedule, saveCourse, saveRoom, 
   deleteCourse, deleteRoom, unscheduleCourse, getAllDepartments,
-  getAllFaculty
-  // Removing unused imports to fix ESLint errors:
-  // scheduleCourse, parseTimeSlotId, getTimeSlotId
+  getAllFaculty, scheduleCourse
 } from '../utils/supabaseClient';
 import { createClient } from '@supabase/supabase-js';
 
@@ -24,9 +22,7 @@ export const useSchedule = () => {
 // Create the Schedule Provider component
 export const ScheduleProvider = ({ children }) => {
   // Get environment variables with fallbacks
-  // eslint-disable-next-line no-undef
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://your-supabase-url.supabase.co';
-  // eslint-disable-next-line no-undef
   const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-supabase-anon-key';
   
   // Supabase client for realtime subscriptions
@@ -40,7 +36,6 @@ export const ScheduleProvider = ({ children }) => {
   const [schedule, setSchedule] = useState({});
   const [conflicts, setConflicts] = useState([]);
   const [roomAllocations, setRoomAllocations] = useState({});
-  // Using a simple array instead of state since it's not being updated
   const [academicYears] = useState(['2023-2024', '2024-2025', '2025-2026']);
   const [currentAcademicYear, setCurrentAcademicYear] = useState('2023-2024');
   
@@ -75,39 +70,26 @@ export const ScheduleProvider = ({ children }) => {
       
       // Load departments
       const departmentsData = await getAllDepartments();
-      if (!departmentsData) {
-        console.warn('Issue loading departments, using empty array');
-        setDepartments([]);
-      } else {
-        setDepartments(departmentsData);
-      }
+      setDepartments(departmentsData || []);
       
       // Load faculty
       const facultyData = await getAllFaculty();
-      if (!facultyData) {
-        console.warn('Issue loading faculty, using empty array');
-        setFaculty([]);
-      } else {
-        setFaculty(facultyData);
-      }
+      setFaculty(facultyData || []);
       
       // Load schedule
       const scheduleData = await getSchedule();
-      if (!scheduleData) {
-        setSchedule({});
-      } else {
+      if (scheduleData) {
         setSchedule(scheduleData);
-        
         // Find conflicts
         const conflictsFound = findScheduleConflicts(scheduleData);
         setConflicts(conflictsFound || []);
-        
         // Update room allocations
         updateAllocations(scheduleData);
+      } else {
+        setSchedule({});
       }
       
     } catch (error) {
-      // Removed console.error for ESLint compliance
       setErrors({
         general: `Error loading data: ${error.message}`
       });
@@ -116,38 +98,35 @@ export const ScheduleProvider = ({ children }) => {
     }
   }, []);
 
-  // Initialize data on component mount
+  // Initialize data and subscriptions on mount
   useEffect(() => {
     loadInitialData();
     
     // Set up real-time subscriptions
     const courseSubscription = supabase
       .channel('public:courses')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, payload => {
-        // Removed console.log for ESLint compliance
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
         loadInitialData();
       })
       .subscribe();
       
     const roomSubscription = supabase
       .channel('public:rooms')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, payload => {
-        // Removed console.log for ESLint compliance
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
         loadInitialData();
       })
       .subscribe();
       
     const scheduleSubscription = supabase
       .channel('public:schedule')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, payload => {
-        // Removed console.log for ESLint compliance
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
         loadInitialData();
       })
       .subscribe();
       
     const facultySubscription = supabase
       .channel('public:faculty')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, () => {
         loadInitialData();
       })
       .subscribe();
@@ -162,162 +141,128 @@ export const ScheduleProvider = ({ children }) => {
   }, [loadInitialData]);
 
   // Calculate room allocations based on schedule
-  const updateAllocations = (scheduleData) => {
-    // Handle the case of missing scheduleData (use current schedule as fallback)
+  const updateAllocations = useCallback((scheduleData) => {
     const dataToProcess = scheduleData || schedule || {};
     const allocations = {};
     
     try {
-      // Loop through the schedule and count room allocations only if it's a valid object
-      if (dataToProcess && typeof dataToProcess === 'object') {
-        // Ensure we're working with the correct schedule format
-        Object.entries(dataToProcess).forEach(([slotId, coursesInSlot]) => {
-          // Skip if not a valid slot or courses array
-          if (!slotId || !Array.isArray(coursesInSlot)) return;
+      // Process each time slot in the schedule
+      Object.entries(dataToProcess).forEach(([slotId, coursesInSlot]) => {
+        if (!slotId || !Array.isArray(coursesInSlot)) return;
 
-          const [day, timeSlot] = slotId.split('-');
-          if (!day || !timeSlot) return;
+        const [day, timeSlot] = slotId.split('-');
+        if (!day || !timeSlot) return;
 
-          // Process each course in the slot
-          coursesInSlot.forEach(course => {
-            if (!course || typeof course !== 'object') return;
-            
-            const roomId = course.roomId;
-            if (!roomId) return;
+        // Process each course in the slot
+        coursesInSlot.forEach(course => {
+          if (!course?.roomId) return;
 
-            // Initialize room allocation if needed
-            if (!allocations[roomId]) {
-              const room = rooms.find(r => r.id === roomId);
-              if (!room) return;
+          // Initialize room allocation if needed
+          if (!allocations[course.roomId]) {
+            const room = rooms.find(r => r.id === course.roomId);
+            if (!room) return;
 
-              allocations[roomId] = {
-                count: 0,
-                courses: [],
-                room: {
-                  id: room.id,
-                  name: room.name,
-                  building: room.building,
-                  capacity: room.capacity
-                }
-              };
-            }
+            allocations[course.roomId] = {
+              count: 0,
+              courses: [],
+              room: {
+                id: room.id,
+                name: room.name,
+                building: room.building,
+                capacity: room.capacity
+              }
+            };
+          }
 
-            // Add course to allocation
-            allocations[roomId].count++;
-            allocations[roomId].courses.push({
-              course: {
-                id: course.id,
-                code: course.code,
-                name: course.name,
-                instructor: course.instructor
-              },
-              day,
-              timeSlot,
-              schedule: [`${day} ${timeSlot}`]
-            });
+          // Add course to allocation
+          allocations[course.roomId].count++;
+          allocations[course.roomId].courses.push({
+            course: {
+              id: course.id,
+              code: course.code,
+              name: course.name,
+              instructor: course.instructor
+            },
+            day,
+            timeSlot,
+            schedule: [`${day} ${timeSlot}`]
           });
         });
-      }
+      });
 
-      // Sort courses within each allocation by day and time
+      // Sort courses within each allocation
       Object.values(allocations).forEach(allocation => {
         allocation.courses.sort((a, b) => {
           const dayCompare = a.day.localeCompare(b.day);
-          if (dayCompare !== 0) return dayCompare;
-          return a.timeSlot.localeCompare(b.timeSlot);
+          return dayCompare !== 0 ? dayCompare : a.timeSlot.localeCompare(b.timeSlot);
         });
       });
       
-      // Update state with allocations (even if empty)
       setRoomAllocations(allocations);
     } catch (error) {
-      // Log error for debugging but don't crash
       console.warn('Error updating allocations:', error);
-      setRoomAllocations({}); // Reset to empty object on error
+      setRoomAllocations({});
     }
-  };
+  }, [rooms, schedule]);
 
   // Room operations
   const assignRoom = async (courseId, roomId, day, timeSlot) => {
     try {
-      // Implement room assignment logic
-      // ...
-      
-      // Update room allocations
-      updateAllocations(schedule);
-      
-      return true;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      return false;
-    }
-  };
+      // Input validation
+      if (!courseId || !roomId || !day || !timeSlot) {
+        showNotification('Missing required information for room assignment', 'error');
+        return false;
+      }
 
-  // Conflict resolution
-  const resolveConflict = async (conflict, resolution) => {
-    try {
-      // Implement conflict resolution logic
-      // ...
-      
-      // Refresh conflicts
-      const updatedConflicts = findScheduleConflicts(schedule);
-      setConflicts(updatedConflicts || []);
-      
-      return true;
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      return false;
-    }
-  };
+      const course = courses.find(c => c.id === courseId);
+      const room = rooms.find(r => r.id === roomId);
 
-  // Utility to remove a course from a schedule slot
-  const removeCourseFromSlot = async (courseId, day, time) => {
-    try {
-      // Create the slot ID in the format that the schedule object uses
-      const slotId = `${day}-${time}`;
+      if (!course || !room) {
+        showNotification('Course or room not found', 'error');
+        return false;
+      }
 
-      // First update the local state to provide immediate feedback to the user
+      // Schedule the course in the database
+      const success = await scheduleCourse(courseId, course.instructorId, roomId, `${day}-${timeSlot}`);
+      
+      if (!success) {
+        showNotification('Failed to update room assignment in database', 'error');
+        return false;
+      }
+
+      // Update the local state
+      const updatedCourse = {
+        ...course,
+        room: room.name,
+        roomId: room.id,
+        building: room.building
+      };
+
+      // Update courses array
+      setCourses(prevCourses => 
+        prevCourses.map(c => c.id === courseId ? updatedCourse : c)
+      );
+
+      // Update schedule
+      const slotId = `${day}-${timeSlot}`;
       setSchedule(prevSchedule => {
         const newSchedule = { ...prevSchedule };
-        
-        if (newSchedule[slotId]) {
-          newSchedule[slotId] = newSchedule[slotId].filter(
-            course => course.id !== courseId
-          );
-          
-          // If no courses left in this slot, we can clean up
-          if (newSchedule[slotId].length === 0) {
-            delete newSchedule[slotId];
-          }
+        if (!newSchedule[slotId]) {
+          newSchedule[slotId] = [];
         }
-        
+        newSchedule[slotId] = newSchedule[slotId]
+          .filter(c => c.id !== courseId)
+          .concat(updatedCourse);
         return newSchedule;
       });
-      
-      // Now make the API call to update the database
-      const result = await unscheduleCourse(courseId, day, time);
-      
-      if (!result) {
-        // If database update failed, show notification
-        showNotification('Failed to update database. Changes may not persist.', 'error');
-        
-        // Refresh data from database to ensure UI is in sync
-        loadInitialData();
-      } else {
-        // Show success message
-        showNotification('Course removed successfully', 'success');
-        
-        // Recalculate conflicts
-        const updatedConflicts = findScheduleConflicts(schedule);
-        setConflicts(updatedConflicts || []);
-      }
-      
-      return result;
+
+      // Update allocations
+      updateAllocations();
+
+      showNotification(`Successfully assigned ${course.code} to ${room.name}`, 'success');
+      return true;
     } catch (error) {
-      showNotification(`Error removing course: ${error ? error.message : 'Unknown error'}`, 'error');
-      
-      // Refresh data to ensure UI is in sync
-      loadInitialData();
+      showNotification(`Error assigning room: ${error.message || 'Unknown error'}`, 'error');
       return false;
     }
   };
@@ -329,28 +274,15 @@ export const ScheduleProvider = ({ children }) => {
       const courseId = await saveCourse(courseData);
       
       if (courseId) {
-        // Add course to local state right away
-        const newCourse = {
-          id: courseId,
-          ...courseData
-        };
-        
+        const newCourse = { id: courseId, ...courseData };
         setCourses(prevCourses => [...prevCourses, newCourse]);
-        
         return courseId;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          course: 'Failed to save course'
-        }));
-        return null;
       }
+      
+      setErrors(prev => ({ ...prev, course: 'Failed to save course' }));
+      return null;
     } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        course: `Error saving course: ${error.message}`
-      }));
+      setErrors(prev => ({ ...prev, course: `Error saving course: ${error.message}` }));
       return null;
     } finally {
       setIsLoading(false);
@@ -363,50 +295,31 @@ export const ScheduleProvider = ({ children }) => {
       const success = await saveCourse(courseData);
       
       if (success) {
-        // Update the course in local state
-        setCourses(prevCourses => prevCourses.map(course => 
-          course.id === courseData.id ? courseData : course
-        ));
+        // Update course in local state
+        setCourses(prevCourses => 
+          prevCourses.map(course => course.id === courseData.id ? courseData : course)
+        );
         
-        // Also update any instances of this course in the schedule
+        // Update schedule if needed
         setSchedule(prevSchedule => {
-          const newSchedule = {...prevSchedule};
-          
-          // Update course in all schedule slots
-          Object.keys(newSchedule).forEach(day => {
-            Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
-              if (newSchedule[day][timeSlot]) {
-                // Ensure we're working with an array before using map
-                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
-                  newSchedule[day][timeSlot] : [];
-                
-                newSchedule[day][timeSlot] = slotCourses.map(course => {
-                  if (course && course.id === courseData.id) {
-                    return courseData;
-                  }
-                  return course;
-                });
-              }
-            });
+          const newSchedule = { ...prevSchedule };
+          Object.entries(newSchedule).forEach(([slotId, courses]) => {
+            if (Array.isArray(courses)) {
+              newSchedule[slotId] = courses.map(course => 
+                course.id === courseData.id ? courseData : course
+              );
+            }
           });
-          
           return newSchedule;
         });
         
         return true;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          course: 'Failed to update course'
-        }));
-        return false;
       }
+      
+      setErrors(prev => ({ ...prev, course: 'Failed to update course' }));
+      return false;
     } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        course: `Error updating course: ${error.message}`
-      }));
+      setErrors(prev => ({ ...prev, course: `Error updating course: ${error.message}` }));
       return false;
     } finally {
       setIsLoading(false);
@@ -419,205 +332,37 @@ export const ScheduleProvider = ({ children }) => {
       const success = await deleteCourse(courseId);
       
       if (success) {
-        // Immediately update the state to remove the deleted course
-        setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
+        // Update local state
+        setCourses(prev => prev.filter(course => course.id !== courseId));
         
-        // Remove this course from any schedule slots
-        setSchedule(prevSchedule => {
-          const newSchedule = {...prevSchedule};
-          
-          // Iterate through all days and time slots
-          Object.keys(newSchedule).forEach(day => {
-            Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
-              if (newSchedule[day][timeSlot]) {
-                // Ensure we're working with an array before using filter
-                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
-                  newSchedule[day][timeSlot] : [];
-                
-                newSchedule[day][timeSlot] = slotCourses.filter(
-                  course => course && course.id !== courseId
-                );
+        // Remove from schedule
+        setSchedule(prev => {
+          const newSchedule = { ...prev };
+          Object.entries(newSchedule).forEach(([slotId, courses]) => {
+            if (Array.isArray(courses)) {
+              newSchedule[slotId] = courses.filter(course => course.id !== courseId);
+              if (newSchedule[slotId].length === 0) {
+                delete newSchedule[slotId];
               }
-            });
+            }
           });
-          
           return newSchedule;
         });
         
-        // Update conflicts that might involve this course
-        setConflicts(prevConflicts => 
-          prevConflicts.filter(conflict => 
+        // Update conflicts
+        setConflicts(prev => 
+          prev.filter(conflict => 
             conflict.course1.id !== courseId && conflict.course2.id !== courseId
           )
         );
         
         return true;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          course: 'Failed to delete course'
-        }));
-        return false;
       }
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        course: `Error deleting course: ${error.message}`
-      }));
+      
+      setErrors(prev => ({ ...prev, course: 'Failed to delete course' }));
       return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Room operations
-  const addRoom = async (roomData) => {
-    try {
-      setIsLoading(true);
-      const roomId = await saveRoom(roomData);
-      
-      if (roomId) {
-        // Add room to local state right away
-        const newRoom = {
-          id: roomId,
-          ...roomData
-        };
-        
-        setRooms(prevRooms => [...prevRooms, newRoom]);
-        
-        return roomId;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          room: 'Failed to save room'
-        }));
-        return null;
-      }
     } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        room: `Error saving room: ${error.message}`
-      }));
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateRoom = async (roomData) => {
-    try {
-      setIsLoading(true);
-      const success = await saveRoom(roomData);
-      
-      if (success) {
-        // Update the room in local state
-        setRooms(prevRooms => prevRooms.map(room => 
-          room.id === roomData.id ? roomData : room
-        ));
-        
-        // Also update any course assignments using this room
-        setSchedule(prevSchedule => {
-          const newSchedule = {...prevSchedule};
-          
-          // Update room references in schedule
-          Object.keys(newSchedule).forEach(day => {
-            Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
-              if (newSchedule[day][timeSlot]) {
-                // Ensure we're working with an array before using map
-                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
-                  newSchedule[day][timeSlot] : [];
-                
-                newSchedule[day][timeSlot] = slotCourses.map(course => {
-                  if (course && course.roomId === roomData.id) {
-                    return {...course, room: roomData};
-                  }
-                  return course;
-                });
-              }
-            });
-          });
-          
-          return newSchedule;
-        });
-        
-        return true;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          room: 'Failed to update room'
-        }));
-        return false;
-      }
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        room: `Error updating room: ${error.message}`
-      }));
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteRoomById = async (roomId) => {
-    try {
-      setIsLoading(true);
-      const success = await deleteRoom(roomId);
-      
-      if (success) {
-        // Immediately update the rooms state
-        setRooms(prevRooms => prevRooms.filter(room => room.id !== roomId));
-        
-        // Update room allocations
-        setRoomAllocations(prevAllocations => {
-          const newAllocations = {...prevAllocations};
-          delete newAllocations[roomId];
-          return newAllocations;
-        });
-        
-        // Update any course assignments that used this room
-        setSchedule(prevSchedule => {
-          const newSchedule = {...prevSchedule};
-          
-          // Check all scheduled courses and remove room assignments to this room
-          Object.keys(newSchedule).forEach(day => {
-            Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
-              if (newSchedule[day][timeSlot]) {
-                // Ensure we're working with an array before using map
-                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
-                  newSchedule[day][timeSlot] : [];
-                
-                newSchedule[day][timeSlot] = slotCourses.map(course => {
-                  if (course && course.roomId === roomId) {
-                    // Remove room assignment if it matches the deleted room
-                    return {...course, roomId: null, room: null};
-                  }
-                  return course;
-                });
-              }
-            });
-          });
-          
-          return newSchedule;
-        });
-        
-        return true;
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          room: 'Failed to delete room'
-        }));
-        return false;
-      }
-    } catch (error) {
-      // Removed console.error for ESLint compliance
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        room: `Error deleting room: ${error.message}`
-      }));
+      setErrors(prev => ({ ...prev, course: `Error deleting course: ${error.message}` }));
       return false;
     } finally {
       setIsLoading(false);
@@ -626,105 +371,61 @@ export const ScheduleProvider = ({ children }) => {
 
   // Notification handlers
   const showNotification = (message, severity = 'info') => {
-    setNotification({
-      open: true,
-      message,
-      severity
-    });
+    setNotification({ open: true, message, severity });
   };
 
   const handleCloseNotification = () => {
-    setNotification({
-      ...notification,
-      open: false
-    });
+    setNotification(prev => ({ ...prev, open: false }));
   };
 
-  // Data refresh
-  const refreshData = () => {
-    loadInitialData();
-  };
-
-  // Transform room allocations to an array format
-  const getAllocationsArray = () => {
+  // Transform allocations for component consumption
+  const getAllocationsArray = useCallback(() => {
     if (!roomAllocations || typeof roomAllocations !== 'object') {
       return [];
     }
     
-    try {
-      // Convert the roomAllocations object to an array of allocation objects
-      const allocationArray = Object.keys(roomAllocations).map(roomId => {
+    return Object.entries(roomAllocations)
+      .map(([roomId, allocation]) => {
         const room = rooms.find(r => r.id === roomId);
         if (!room) return null;
-        
-        // Get allocation details
-        const allocation = roomAllocations[roomId] || { count: 0, courses: [] };
-        
-        // Convert course references to full course objects
-        const courseDetails = Array.isArray(allocation.courses) 
-          ? allocation.courses.map(item => {
-              if (!item || !item.course) return null;
-              const course = courses.find(c => c.id === item.course.id);
-              if (!course) return null;
-              
-              return {
-                ...course,
-                day: item.day,
-                timeSlot: item.timeSlot,
-                schedule: [`${item.day} ${item.timeSlot}`]
-              };
-            }).filter(Boolean)
-          : [];
         
         return {
           roomId,
           roomName: room.name,
           building: room.building,
           capacity: room.capacity,
-          courses: courseDetails
+          courses: Array.isArray(allocation.courses) ? allocation.courses : []
         };
-      }).filter(Boolean);
-      
-      return allocationArray;
-    } catch (error) {
-      // Return empty array on any error
-      return [];
-    }
-  };
+      })
+      .filter(Boolean);
+  }, [roomAllocations, rooms]);
   
-  // Provide the context value
+  // Context value
   const contextValue = {
     // State
-    courses: Array.isArray(courses) ? courses : [],
-    setCourses,
-    rooms: Array.isArray(rooms) ? rooms : [],
-    setRooms,
-    departments: Array.isArray(departments) ? departments : [],
-    faculty: Array.isArray(faculty) ? faculty : [],
+    courses,
+    rooms,
+    departments,
+    faculty,
     schedule,
-    setSchedule,
-    conflicts: Array.isArray(conflicts) ? conflicts : [],
-    roomAllocations,
-    allocations: getAllocationsArray(), // Add computed allocations array
+    conflicts,
+    allocations: getAllocationsArray(),
     academicYears,
     currentAcademicYear,
-    setCurrentAcademicYear,
     isLoading,
     errors,
     notification,
     
     // Operations
+    setCourses,
+    setRooms,
+    setCurrentAcademicYear,
     assignRoom,
-    resolveConflict,
-    removeCourseFromSlot,
     addCourse,
     updateCourse,
     deleteCourseById,
-    addRoom,
-    updateRoom,
-    deleteRoomById,
-    refreshData,
-    updateAllocations, // Expose updateAllocations method
+    updateAllocations,
+    loadInitialData,
     
     // Notifications
     showNotification,
@@ -737,3 +438,5 @@ export const ScheduleProvider = ({ children }) => {
     </ScheduleContext.Provider>
   );
 };
+
+export default ScheduleProvider;
