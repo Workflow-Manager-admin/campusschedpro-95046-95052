@@ -3,8 +3,7 @@ import { Button } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import BulkImportModal from '../common/BulkImportModal';
 import { generateFacultyTemplate, importFacultyFromExcel } from '../../utils/excelUtils';
-
-// Removed unused safeBulkImport variable
+import { useSchedule } from '../../context/ScheduleContext';
 
 /**
  * Component for bulk importing faculty data
@@ -14,6 +13,7 @@ import { generateFacultyTemplate, importFacultyFromExcel } from '../../utils/exc
  */
 const FacultyBulkImport = ({ onComplete }) => {
   const [showModal, setShowModal] = useState(false);
+  const { refreshData, showNotification } = useSchedule();
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -24,11 +24,32 @@ const FacultyBulkImport = ({ onComplete }) => {
   };
 
   const handleImportComplete = (result) => {
-    // Wait a moment before triggering the onComplete callback
-    setTimeout(() => {
-      if (onComplete) {
-        onComplete(result);
+    if (result) {
+      const { success, errors } = result;
+      
+      if (success > 0) {
+        // Refresh the data to update the UI with new faculty
+        refreshData();
+        
+        // Show appropriate notification based on whether there were errors
+        if (errors && errors.length > 0) {
+          showNotification(`Imported ${success} faculty with ${errors.length} errors`, 'warning');
+        } else {
+          showNotification(`Successfully imported ${success} faculty`, 'success');
+        }
+      } else if (errors && errors.length > 0) {
+        showNotification(`Import failed: ${errors[0].message}`, 'error');
       }
+    }
+    
+    // Call the onComplete callback if provided
+    if (onComplete) {
+      onComplete(result);
+    }
+    
+    // Close the modal
+    setTimeout(() => {
+      setShowModal(false);
     }, 500);
   };
 
