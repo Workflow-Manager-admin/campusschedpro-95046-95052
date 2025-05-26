@@ -27,7 +27,7 @@ import Course from './Course';
 import CourseDetails from './CourseDetails';
 import ShareScheduleButton from './ShareScheduleButton';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
-import { scheduleCourse, unscheduleCourse } from '../utils/supabaseClient';
+import { scheduleCourse, unscheduleCourse, getTimeSlotId } from '../utils/supabaseClient';
 import { useSchedule } from '../context/ScheduleContext';
 
 const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
