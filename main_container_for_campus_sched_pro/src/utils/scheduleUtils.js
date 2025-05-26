@@ -51,10 +51,10 @@ export const findScheduleConflicts = (schedule) => {
     const validCourses = Array.isArray(courses) ? courses : [];
     if (validCourses.length > 1) {
       // Check each course pair in the slot
-      for (let i = 0; i < courses.length; i++) {
-        for (let j = i + 1; j < courses.length; j++) {
-          const course1 = courses[i];
-          const course2 = courses[j];
+      for (let i = 0; i < validCourses.length; i++) {
+        for (let j = i + 1; j < validCourses.length; j++) {
+          const course1 = validCourses[i];
+          const course2 = validCourses[j];
           
           if (course1.instructor === course2.instructor) {
             conflicts.push({
