@@ -23,7 +23,7 @@ const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'
  * CourseDetails component for viewing and editing course information
  */
 const CourseDetails = ({ course, onSave, onDelete, onClose, open }) => {
-  const { departments } = useSchedule();
+  const { departments, faculty } = useSchedule();
   const [isEditing, setIsEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editedCourse, setEditedCourse] = useState({ ...course });
