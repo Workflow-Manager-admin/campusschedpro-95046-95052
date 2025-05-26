@@ -342,9 +342,19 @@ const CourseScheduling = () => {
               className="btn"
               onClick={() => {
                 showNotification('Refreshing data from database...', 'info');
-                refreshData().then(() => {
-                  showNotification('Data refreshed successfully!', 'success');
-                });
+                const result = refreshData();
+                
+                if (result && typeof result.then === 'function') {
+                  // Handle as Promise if it is one
+                  result.then(() => {
+                    showNotification('Data refreshed successfully!', 'success');
+                  }).catch(err => {
+                    showNotification(`Error refreshing data: ${err.message}`, 'error');
+                  });
+                } else {
+                  // Handle non-Promise result
+                  showNotification('Data refresh initiated', 'success');
+                }
               }}
               style={{ marginLeft: '10px' }}
               title="Reload all data from the database"
