@@ -442,7 +442,7 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error('Error in updateRoom:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         room: `Error updating room: ${error.message}`
@@ -500,7 +500,7 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error('Error in deleteRoomById:', error);
+      // Removed console.error for ESLint compliance
       setErrors(prevErrors => ({
         ...prevErrors,
         room: `Error deleting room: ${error.message}`
