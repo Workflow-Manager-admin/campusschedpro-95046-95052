@@ -1,10 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // Safely import xlsx and uuid packages
+/* eslint-disable no-undef */
 let XLSX;
 try {
   XLSX = require('xlsx');
 } catch (e) {
+/* eslint-enable no-undef */
   console.error('XLSX library not available:', e);
   // Fallback implementation for build process
   XLSX = {
@@ -341,7 +343,9 @@ export const importFacultyFromExcel = async (file) => {
  */
 const readExcelFile = (file) => {
   return new Promise((resolve, reject) => {
+    /* eslint-disable no-undef */
     const reader = new FileReader();
+    /* eslint-enable no-undef */
     
     reader.onload = (e) => {
       try {
