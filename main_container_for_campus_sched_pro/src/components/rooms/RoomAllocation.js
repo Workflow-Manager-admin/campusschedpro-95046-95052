@@ -260,7 +260,7 @@ const RoomAllocation = () => {
                               ))
                             ) : (
                               <tr>
-                                <td colSpan={3} style={{ textAlign: 'center', padding: '20px 0' }}>
+                                <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
                                   No courses assigned
                                 </td>
                               </tr>
