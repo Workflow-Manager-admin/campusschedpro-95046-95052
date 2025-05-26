@@ -1,521 +1,75 @@
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from './supabaseClient';
-
-// Safely import xlsx and uuid packages
-/* eslint-disable no-undef */
-let XLSX;
-try {
-  XLSX = require('xlsx');
-} catch (e) {
-/* eslint-enable no-undef */
-  console.error('XLSX library not available:', e);
-  // Fallback implementation for build process
-  XLSX = {
-    utils: {
-      aoa_to_sheet: () => ({}),
-      book_new: () => ({}),
-      book_append_sheet: () => {},
-      sheet_to_json: () => ([])
-    },
-    writeFile: () => {},
-    read: () => ({ SheetNames: ['Sheet1'], Sheets: { Sheet1: {} } })
-  };
-}
+import * as XLSX from 'xlsx';
 
 /**
- * Creates an Excel workbook with given data and columns
+ * Creates and downloads an Excel template file
  * 
- * @param {Array} data - Array of data rows
- * @param {Array} columns - Array of column definitions
- * @param {string} sheetName - Name of the worksheet
- * @returns {Object} - XLSX workbook
- */
-const createWorkbook = (data, columns, sheetName) => {
-  // Create header row with column names
-  const headerRow = columns.map(col => col.header);
-  
-  // Create worksheet data including header
-  const wsData = [headerRow, ...data];
-  
-  // Create worksheet
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
-  
-  // Create workbook
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  
-  return wb;
-};
-
-/**
- * Downloads an Excel file
- * 
- * @param {Object} workbook - XLSX workbook
+ * @param {Array} headers - Array of column headers
+ * @param {Array} exampleData - Array of example data 
  * @param {string} filename - Name of the file to download
  */
-const downloadExcelFile = (workbook, filename) => {
-  XLSX.writeFile(workbook, filename);
+const createAndDownloadTemplate = (headers, exampleData, filename) => {
+  // Create worksheet with headers and example data
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...exampleData]);
+  
+  // Create workbook and append worksheet
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+  
+  // Write workbook to file and download
+  XLSX.writeFile(wb, filename);
 };
 
 /**
- * Generates and downloads a course template Excel file
+ * Generates a course template Excel file for download
  */
 export const generateCourseTemplate = () => {
-  const columns = [
-    { key: 'name', header: 'Course Name' },
-    { key: 'code', header: 'Course Code' },
-    { key: 'credits', header: 'Credits' },
-    { key: 'instructor', header: 'Default Instructor' },
-    { key: 'expectedEnrollment', header: 'Expected Enrollment' },
-    { key: 'department', header: 'Department' },
-    { key: 'requiresLab', header: 'Requires Lab (Yes/No)' },
-    { key: 'requiredEquipment', header: 'Required Equipment (comma separated)' }
+  const headers = [
+    'Course Name', 'Course Code', 'Credits', 'Instructor', 
+    'Expected Enrollment', 'Department', 'Requires Lab (Yes/No)', 
+    'Required Equipment (comma separated)'
   ];
   
-  // Example data row
-  const exampleData = [
-    [
-      'Introduction to Computer Science',
-      'CS101',
-      '3',
-      'Dr. Jane Smith',
-      '30',
-      'Computer Science',
-      'Yes',
-      'Projector, Whiteboard'
-    ]
-  ];
+  const exampleData = [[
+    'Introduction to Programming', 'CS101', '3', 'Dr. Smith',
+    '30', 'Computer Science', 'Yes', 'Computers, Projector'
+  ]];
   
-  const wb = createWorkbook(exampleData, columns, 'Courses');
-  downloadExcelFile(wb, 'course_template.xlsx');
+  createAndDownloadTemplate(headers, exampleData, 'course_template.xlsx');
 };
 
 /**
- * Imports course data from an Excel file
- * 
- * @param {File} file - Excel file to import
- * @returns {Object} - Import results with success count and errors
- */
-export const importCoursesFromExcel = async (file) => {
-  try {
-    const data = await readExcelFile(file);
-    
-    if (!data || data.length === 0) {
-      throw new Error('No data found in the Excel file');
-    }
-    
-    // Skip header row
-    const rows = data.slice(1);
-    
-    const importedCourses = [];
-    const errors = [];
-    
-    // Process each row
-    rows.forEach((row, index) => {
-      try {
-        if (!row[0]) return; // Skip empty rows
-        
-        // Extract course data from row
-        const course = {
-          id: uuidv4(),
-          name: row[0],
-          code: row[1],
-          credits: parseInt(row[2], 10) || 0,
-          instructor: row[3] || '',
-          expectedEnrollment: parseInt(row[4], 10) || 0,
-          department: row[5] || '',
-          requiresLab: row[6]?.toLowerCase() === 'yes',
-          requiredEquipment: row[7] ? row[7].split(',').map(item => item.trim()) : []
-        };
-        
-        // Validate required fields
-        if (!course.name || !course.code) {
-          throw new Error(`Row ${index + 2}: Course name and code are required`);
-        }
-        
-        importedCourses.push(course);
-      } catch (error) {
-        errors.push({
-          row: index + 2,
-          message: error.message
-        });
-      }
-    });
-    
-    let successCount = 0;
-    const saveErrors = [];
-    
-    // Process each course
-    for (const course of importedCourses) {
-      try {
-        // Get department and academic year IDs
-        const departmentId = await getOrCreateDepartment(course.department);
-        const academicYearId = await getOrCreateAcademicYear(course.academicYear);
-        
-        // Create course record
-        const { data, error } = await supabase
-          .from('courses')
-          .upsert({
-            id: course.id,
-            name: course.name,
-            code: course.code,
-            credits: course.credits || 0,
-            expected_enrollment: course.expectedEnrollment || 0,
-            requires_lab: course.requiresLab || false,
-            department_id: departmentId,
-            academic_year_id: academicYearId
-          })
-          .select()
-          .single();
-          
-        if (error) {
-          throw new Error(`Database error: ${error.message}`);
-        }
-        
-        if (data && data.id) {
-          // Handle required equipment if provided
-          if (course.requiredEquipment && course.requiredEquipment.length > 0) {
-            // First remove existing equipment
-            await supabase
-              .from('course_equipment')
-              .delete()
-              .eq('course_id', data.id);
-            
-            // Add new equipment
-            for (const item of course.requiredEquipment) {
-              const equipmentId = await getOrCreateEquipment(item);
-              if (equipmentId) {
-                await supabase
-                  .from('course_equipment')
-                  .insert({
-                    course_id: data.id,
-                    equipment_id: equipmentId
-                  });
-              }
-            }
-          }
-          
-          successCount++;
-        } else {
-          throw new Error('Failed to insert course - no ID returned');
-        }
-      } catch (error) {
-        saveErrors.push({
-          message: `Error saving course ${course.code || 'unknown'}: ${error.message || 'Unknown error'}`
-        });
-      }
-    }
-    
-    // Combine parsing errors with saving errors
-    const allErrors = [...errors, ...saveErrors];
-    
-    return {
-      success: successCount,
-      errors: allErrors
-    };
-  } catch (error) {
-    console.error('Error importing courses:', error);
-    throw new Error(`Failed to import courses: ${error.message}`);
-  }
-};
-
-/**
- * Generates and downloads a room template Excel file
- */
-export const generateRoomTemplate = () => {
-  const columns = [
-    { key: 'name', header: 'Room Name' },
-    { key: 'building', header: 'Building' },
-    { key: 'capacity', header: 'Capacity' },
-    { key: 'hasProjector', header: 'Has Projector (Yes/No)' },
-    { key: 'hasComputers', header: 'Has Computers (Yes/No)' },
-    { key: 'availableEquipment', header: 'Available Equipment (comma separated)' }
-  ];
-  
-  // Example data row
-  const exampleData = [
-    [
-      'Room 101',
-      'Engineering Building',
-      '30',
-      'Yes',
-      'Yes',
-      'Projector, Whiteboard, Smart Board'
-    ]
-  ];
-  
-  const wb = createWorkbook(exampleData, columns, 'Rooms');
-  downloadExcelFile(wb, 'room_template.xlsx');
-};
-
-/**
- * Imports room data from an Excel file
- * 
- * @param {File} file - Excel file to import
- * @returns {Object} - Import results with success count and errors
- */
-export const importRoomsFromExcel = async (file) => {
-  try {
-    const data = await readExcelFile(file);
-    
-    if (!data || data.length === 0) {
-      throw new Error('No data found in the Excel file');
-    }
-    
-    // Skip header row
-    const rows = data.slice(1);
-    
-    const importedRooms = [];
-    const errors = [];
-    
-    // Process each row
-    rows.forEach((row, index) => {
-      try {
-        if (!row[0]) return; // Skip empty rows
-        
-        // Extract room data from row
-        const room = {
-          id: uuidv4(),
-          name: row[0],
-          type: 'Classroom', // Default type
-          building: row[1] || '',
-          capacity: parseInt(row[2], 10) || 0,
-          floor: '1', // Default floor
-          equipment: row[5] ? row[5].split(',').map(item => item.trim()) : []
-        };
-        
-        // Validate required fields
-        if (!room.name) {
-          throw new Error(`Row ${index + 2}: Room name is required`);
-        }
-        
-        importedRooms.push(room);
-      } catch (error) {
-        errors.push({
-          row: index + 2,
-          message: error.message
-        });
-      }
-    });
-    
-    let successCount = 0;
-    const saveErrors = [];
-    
-    // Process each room
-    for (const room of importedRooms) {
-      try {
-        // Get building ID
-        const buildingId = await getOrCreateBuilding(room.building);
-        
-        // Create room record
-        const { data, error } = await supabase
-          .from('rooms')
-          .upsert({
-            id: room.id,
-            name: room.name,
-            type: room.type || 'Classroom', // Default type
-            capacity: room.capacity || 0,
-            floor: room.floor || '1', // Default floor
-            building_id: buildingId
-          })
-          .select()
-          .single();
-          
-        if (error) {
-          throw new Error(`Database error: ${error.message}`);
-        }
-        
-        if (data && data.id) {
-          // Handle equipment if provided
-          if (room.equipment && room.equipment.length > 0) {
-            // First remove existing equipment
-            await supabase
-              .from('room_equipment')
-              .delete()
-              .eq('room_id', data.id);
-            
-            // Add new equipment
-            for (const item of room.equipment) {
-              const equipmentId = await getOrCreateEquipment(item);
-              if (equipmentId) {
-                await supabase
-                  .from('room_equipment')
-                  .insert({
-                    room_id: data.id,
-                    equipment_id: equipmentId
-                  });
-              }
-            }
-          }
-          
-          successCount++;
-        } else {
-          throw new Error('Failed to insert room - no ID returned');
-        }
-      } catch (error) {
-        saveErrors.push({
-          message: `Error saving room ${room.name || 'unknown'}: ${error.message || 'Unknown error'}`
-        });
-      }
-    }
-    
-    // Combine parsing errors with saving errors
-    const allErrors = [...errors, ...saveErrors];
-    
-    return {
-      success: successCount,
-      errors: allErrors
-    };
-  } catch (error) {
-    console.error('Error importing rooms:', error);
-    throw new Error(`Failed to import rooms: ${error.message}`);
-  }
-};
-
-/**
- * Generates and downloads a faculty template Excel file
+ * Generates a faculty template Excel file for download
  */
 export const generateFacultyTemplate = () => {
-  const columns = [
-    { key: 'name', header: 'Faculty Name' },
-    { key: 'department', header: 'Department' },
-    { key: 'email', header: 'Email' },
-    { key: 'expertise', header: 'Expertise (comma separated)' }
+  const headers = [
+    'Faculty Name', 'Email', 'Department', 'Expertise (comma separated)'
   ];
   
-  // Example data row
-  const exampleData = [
-    [
-      'Dr. Jane Smith',
-      'Computer Science',
-      'jsmith@university.edu',
-      'Machine Learning, Data Science, AI'
-    ]
-  ];
+  const exampleData = [[
+    'Dr. Jane Smith', 'jsmith@example.edu', 'Computer Science', 
+    'Machine Learning, Data Science, AI'
+  ]];
   
-  const wb = createWorkbook(exampleData, columns, 'Faculty');
-  downloadExcelFile(wb, 'faculty_template.xlsx');
+  createAndDownloadTemplate(headers, exampleData, 'faculty_template.xlsx');
 };
 
 /**
- * Imports faculty data from an Excel file
- * 
- * @param {File} file - Excel file to import
- * @returns {Object} - Import results with success count and errors
+ * Generates a room template Excel file for download
  */
-export const importFacultyFromExcel = async (file) => {
-  try {
-    const data = await readExcelFile(file);
-    
-    if (!data || data.length === 0) {
-      throw new Error('No data found in the Excel file');
-    }
-    
-    // Skip header row
-    const rows = data.slice(1);
-    
-    const importedFaculty = [];
-    const errors = [];
-    
-    // Process each row
-    rows.forEach((row, index) => {
-      try {
-        if (!row[0]) return; // Skip empty rows
-        
-        // Extract faculty data from row
-        const faculty = {
-          id: uuidv4(),
-          name: row[0],
-          department: row[1] || '',
-          email: row[2] || '',
-          expertise: row[3] ? row[3].split(',').map(item => item.trim()) : []
-        };
-        
-        // Validate required fields
-        if (!faculty.name || !faculty.email) {
-          throw new Error(`Row ${index + 2}: Faculty name and email are required`);
-        }
-        
-        importedFaculty.push(faculty);
-      } catch (error) {
-        errors.push({
-          row: index + 2,
-          message: error.message
-        });
-      }
-    });
-    
-    let successCount = 0;
-    const saveErrors = [];
-    
-    // Process each faculty member
-    for (const faculty of importedFaculty) {
-      try {
-        // Get department ID if specified
-        const departmentId = faculty.department ? 
-          await getOrCreateDepartment(faculty.department) : null;
-        
-        // Create faculty record
-        const { data, error } = await supabase
-          .from('faculty')
-          .upsert({
-            id: faculty.id,
-            name: faculty.name,
-            email: faculty.email || '',
-            department_id: departmentId,
-            status: faculty.status || 'Available'
-          })
-          .select()
-          .single();
-          
-        if (error) {
-          throw new Error(`Database error: ${error.message}`);
-        }
-        
-        if (data && data.id) {
-          // Handle expertise if provided
-          if (faculty.expertise && faculty.expertise.length > 0) {
-            // First remove existing expertise
-            await supabase
-              .from('faculty_expertise')
-              .delete()
-              .eq('faculty_id', data.id);
-            
-            // Add new expertise
-            const expertiseRecords = faculty.expertise.map(exp => ({
-              faculty_id: data.id,
-              expertise: exp
-            }));
-            
-            if (expertiseRecords.length > 0) {
-              await supabase
-                .from('faculty_expertise')
-                .insert(expertiseRecords);
-            }
-          }
-          
-          successCount++;
-        } else {
-          throw new Error('Failed to insert faculty - no ID returned');
-        }
-      } catch (error) {
-        saveErrors.push({
-          message: `Error saving faculty ${faculty.name || 'unknown'}: ${error.message || 'Unknown error'}`
-        });
-      }
-    }
-    
-    // Combine parsing errors with saving errors
-    const allErrors = [...errors, ...saveErrors];
-    
-    return {
-      success: successCount,
-      errors: allErrors
-    };
-  } catch (error) {
-    console.error('Error importing faculty:', error);
-    throw new Error(`Failed to import faculty: ${error.message}`);
-  }
+export const generateRoomTemplate = () => {
+  const headers = [
+    'Room Name', 'Building', 'Type', 'Capacity', 'Floor',
+    'Equipment (comma separated)'
+  ];
+  
+  const exampleData = [[
+    'Room 101', 'Engineering Building', 'Classroom', '30', '1',
+    'Projector, Whiteboard, Computers'
+  ]];
+  
+  createAndDownloadTemplate(headers, exampleData, 'room_template.xlsx');
 };
 
 /**
@@ -526,9 +80,7 @@ export const importFacultyFromExcel = async (file) => {
  */
 const readExcelFile = (file) => {
   return new Promise((resolve, reject) => {
-    /* eslint-disable no-undef */
     const reader = new FileReader();
-    /* eslint-enable no-undef */
     
     reader.onload = (e) => {
       try {
@@ -555,152 +107,295 @@ const readExcelFile = (file) => {
   });
 };
 
-// Helper functions for related entities
-
 /**
- * Get or create a department
- * @param {string} name - Department name
- * @returns {Promise<string|null>} Department ID or null if failed
+ * Helper function to get or create a department
  */
-async function getOrCreateDepartment(name) {
+const getOrCreateDepartmentId = async (name) => {
   if (!name) return null;
   
-  try {
-    // Check if department exists
-    const { data: existing } = await supabase
-      .from('departments')
-      .select('id')
-      .eq('name', name)
-      .maybeSingle();
-    
-    if (existing) return existing.id;
-    
-    // Create new department
-    const { data, error } = await supabase
-      .from('departments')
-      .insert({ name })
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating department:', error);
-      return null;
-    }
-    
-    return data ? data.id : null;
-  } catch (error) {
-    console.error('Error in getOrCreateDepartment:', error);
-    return null;
-  }
-}
+  // Check if department exists
+  const { data: existing } = await supabase
+    .from('departments')
+    .select('id')
+    .eq('name', name)
+    .maybeSingle();
+  
+  if (existing) return existing.id;
+  
+  // Create new department
+  const { data } = await supabase
+    .from('departments')
+    .insert({ name })
+    .select('id')
+    .single();
+  
+  return data?.id || null;
+};
 
 /**
- * Get or create a building
- * @param {string} name - Building name
- * @returns {Promise<string|null>} Building ID or null if failed
+ * Imports course data from an Excel file
+ * 
+ * @param {File} file - Excel file to import
+ * @returns {Object} - Import results with success count and errors
  */
-async function getOrCreateBuilding(name) {
-  if (!name) return null;
-  
+export const importCoursesFromExcel = async (file) => {
   try {
-    // Check if building exists
-    const { data: existing } = await supabase
-      .from('buildings')
-      .select('id')
-      .eq('name', name)
-      .maybeSingle();
-    
-    if (existing) return existing.id;
-    
-    // Create new building
-    const { data, error } = await supabase
-      .from('buildings')
-      .insert({ name })
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating building:', error);
-      return null;
+    // Parse the Excel file
+    const data = await readExcelFile(file);
+    if (!data || data.length < 2) {
+      return { success: 0, errors: [{ message: 'No valid data found in the file' }] };
     }
     
-    return data ? data.id : null;
+    const successfulImports = [];
+    const errors = [];
+    
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      // Skip empty rows
+      if (!row[0]) continue;
+      
+      try {
+        // Extract data from row
+        const name = row[0];
+        const code = row[1];
+        const credits = parseInt(row[2], 10) || 0;
+        const instructor = row[3];
+        const expectedEnrollment = parseInt(row[4], 10) || 0;
+        const department = row[5];
+        const requiresLab = String(row[6] || '').toLowerCase() === 'yes';
+        
+        // Basic validation
+        if (!name || !code) {
+          throw new Error(`Row ${i + 1}: Course name and code are required`);
+        }
+        
+        // Get department ID
+        const departmentId = department ? await getOrCreateDepartmentId(department) : null;
+        
+        // Insert course into database
+        const { data: courseData, error: courseError } = await supabase
+          .from('courses')
+          .insert({
+            id: uuidv4(),
+            name,
+            code,
+            credits,
+            expected_enrollment: expectedEnrollment,
+            requires_lab: requiresLab,
+            department_id: departmentId
+          })
+          .select();
+        
+        if (courseError) throw new Error(`Database error: ${courseError.message}`);
+        
+        successfulImports.push(courseData[0]);
+      } catch (err) {
+        errors.push({
+          row: i + 1,
+          message: err.message
+        });
+      }
+    }
+    
+    return {
+      success: successfulImports.length,
+      errors: errors
+    };
   } catch (error) {
-    console.error('Error in getOrCreateBuilding:', error);
-    return null;
+    return {
+      success: 0,
+      errors: [{ message: `File processing error: ${error.message}` }]
+    };
   }
-}
+};
 
 /**
- * Get or create equipment
- * @param {string} name - Equipment name
- * @returns {Promise<string|null>} Equipment ID or null if failed
+ * Helper function to get or create a building
  */
-async function getOrCreateEquipment(name) {
+const getOrCreateBuildingId = async (name) => {
   if (!name) return null;
   
-  try {
-    // Check if equipment exists
-    const { data: existing } = await supabase
-      .from('equipment_types')
-      .select('id')
-      .eq('name', name)
-      .maybeSingle();
-    
-    if (existing) return existing.id;
-    
-    // Create new equipment
-    const { data, error } = await supabase
-      .from('equipment_types')
-      .insert({ name })
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating equipment:', error);
-      return null;
-    }
-    
-    return data ? data.id : null;
-  } catch (error) {
-    console.error('Error in getOrCreateEquipment:', error);
-    return null;
-  }
-}
+  // Check if building exists
+  const { data: existing } = await supabase
+    .from('buildings')
+    .select('id')
+    .eq('name', name)
+    .maybeSingle();
+  
+  if (existing) return existing.id;
+  
+  // Create new building
+  const { data } = await supabase
+    .from('buildings')
+    .insert({ name })
+    .select('id')
+    .single();
+  
+  return data?.id || null;
+};
 
 /**
- * Get or create an academic year
- * @param {string} name - Academic year name
- * @returns {Promise<string|null>} Academic year ID or null if failed
+ * Imports room data from an Excel file
+ * 
+ * @param {File} file - Excel file to import
+ * @returns {Object} - Import results with success count and errors
  */
-async function getOrCreateAcademicYear(name) {
-  if (!name) return null;
-  
+export const importRoomsFromExcel = async (file) => {
   try {
-    // Check if academic year exists
-    const { data: existing } = await supabase
-      .from('academic_years')
-      .select('id')
-      .eq('name', name)
-      .maybeSingle();
-    
-    if (existing) return existing.id;
-    
-    // Create new academic year
-    const { data, error } = await supabase
-      .from('academic_years')
-      .insert({ name })
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating academic year:', error);
-      return null;
+    // Parse the Excel file
+    const data = await readExcelFile(file);
+    if (!data || data.length < 2) {
+      return { success: 0, errors: [{ message: 'No valid data found in the file' }] };
     }
     
-    return data ? data.id : null;
+    const successfulImports = [];
+    const errors = [];
+    
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      // Skip empty rows
+      if (!row[0]) continue;
+      
+      try {
+        // Extract data from row
+        const name = row[0];
+        const building = row[1];
+        const type = row[2] || 'Classroom';
+        const capacity = parseInt(row[3], 10) || 0;
+        const floor = row[4] || '1';
+        
+        // Basic validation
+        if (!name) {
+          throw new Error(`Row ${i + 1}: Room name is required`);
+        }
+        
+        // Get building ID
+        const buildingId = building ? await getOrCreateBuildingId(building) : null;
+        
+        // Insert room into database
+        const { data: roomData, error: roomError } = await supabase
+          .from('rooms')
+          .insert({
+            id: uuidv4(),
+            name,
+            building_id: buildingId,
+            type,
+            capacity,
+            floor
+          })
+          .select();
+        
+        if (roomError) throw new Error(`Database error: ${roomError.message}`);
+        
+        successfulImports.push(roomData[0]);
+      } catch (err) {
+        errors.push({
+          row: i + 1,
+          message: err.message
+        });
+      }
+    }
+    
+    return {
+      success: successfulImports.length,
+      errors: errors
+    };
   } catch (error) {
-    console.error('Error in getOrCreateAcademicYear:', error);
-    return null;
+    return {
+      success: 0,
+      errors: [{ message: `File processing error: ${error.message}` }]
+    };
   }
-}
+};
+
+/**
+ * Imports faculty data from an Excel file
+ * 
+ * @param {File} file - Excel file to import
+ * @returns {Object} - Import results with success count and errors
+ */
+export const importFacultyFromExcel = async (file) => {
+  try {
+    // Parse the Excel file
+    const data = await readExcelFile(file);
+    if (!data || data.length < 2) {
+      return { success: 0, errors: [{ message: 'No valid data found in the file' }] };
+    }
+    
+    const successfulImports = [];
+    const errors = [];
+    
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      // Skip empty rows
+      if (!row[0]) continue;
+      
+      try {
+        // Extract data from row
+        const name = row[0];
+        const email = row[1];
+        const department = row[2];
+        const expertise = row[3] ? String(row[3]).split(',').map(e => e.trim()) : [];
+        
+        // Basic validation
+        if (!name || !email) {
+          throw new Error(`Row ${i + 1}: Faculty name and email are required`);
+        }
+        
+        // Get department ID
+        const departmentId = department ? await getOrCreateDepartmentId(department) : null;
+        
+        // Insert faculty into database
+        const { data: facultyData, error: facultyError } = await supabase
+          .from('faculty')
+          .insert({
+            id: uuidv4(),
+            name,
+            email,
+            department_id: departmentId,
+            status: 'Available'
+          })
+          .select();
+        
+        if (facultyError) throw new Error(`Database error: ${facultyError.message}`);
+        
+        // Insert expertise if any
+        if (expertise.length > 0 && facultyData && facultyData[0]) {
+          const facultyId = facultyData[0].id;
+          
+          const expertiseRecords = expertise.map(item => ({
+            faculty_id: facultyId,
+            expertise: item
+          }));
+          
+          await supabase
+            .from('faculty_expertise')
+            .insert(expertiseRecords);
+        }
+        
+        successfulImports.push(facultyData[0]);
+      } catch (err) {
+        errors.push({
+          row: i + 1,
+          message: err.message
+        });
+      }
+    }
+    
+    return {
+      success: successfulImports.length,
+      errors: errors
+    };
+  } catch (error) {
+    return {
+      success: 0,
+      errors: [{ message: `File processing error: ${error.message}` }]
+    };
+  }
+};
