@@ -251,53 +251,60 @@ const RoomAllocation = () => {
                 {/* Building filter completely removed - showing all rooms */}
                 
                 <div className="allocation-container">
-                  {Array.isArray(completeAllocations) && completeAllocations.length > 0 ? (
-                    completeAllocations.map(allocation => (
-                      <div key={allocation.roomId || Math.random()} className="allocation-card">
-                        <div className="allocation-header">
-                          <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
-                          <span>{allocation.building || 'Unknown Building'}</span>
-                        </div>
+                  {Array.isArray(rooms) && rooms.length > 0 ? (
+                    Array.isArray(completeAllocations) && completeAllocations.length > 0 ? (
+                      completeAllocations.map(allocation => (
+                        <div key={allocation.roomId || Math.random()} className="allocation-card">
+                          <div className="allocation-header">
+                            <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
+                            <span>{allocation.building || 'Unknown Building'}</span>
+                            {allocation.capacity && <span className="room-capacity">{allocation.capacity} seats</span>}
+                          </div>
 
-                        <table className="schedule-table">
-                          <thead>
-                            <tr>
-                              <th>Course</th>
-                              <th>Instructor</th>
-                              <th>Schedule</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {Array.isArray(allocation.courses) && allocation.courses.length > 0 ? (
-                              allocation.courses.map(course => (
-                                <tr key={course.id || Math.random()}>
-                                  <td>{course.code || ''} - {course.name || ''}</td>
-                                  <td>{course.instructor || 'Unassigned'}</td>
-                                  <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
-                                  <td>
-                                    <Button 
-                                      variant="outlined" 
-                                      color="secondary"
-                                      size="small"
-                                      onClick={() => openUnassignDialog(course)}
-                                    >
-                                      Unassign
-                                    </Button>
+                          <table className="schedule-table">
+                            <thead>
+                              <tr>
+                                <th>Course</th>
+                                <th>Instructor</th>
+                                <th>Schedule</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Array.isArray(allocation.courses) && allocation.courses.length > 0 ? (
+                                allocation.courses.map(course => (
+                                  <tr key={course.id || Math.random()}>
+                                    <td>{course.code || ''} - {course.name || ''}</td>
+                                    <td>{course.instructor || 'Unassigned'}</td>
+                                    <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
+                                    <td>
+                                      <Button 
+                                        variant="outlined" 
+                                        color="secondary"
+                                        size="small"
+                                        onClick={() => openUnassignDialog(course)}
+                                      >
+                                        Unassign
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
+                                    No courses assigned to this room
                                   </td>
                                 </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
-                                  No courses assigned
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="no-results">
+                        <p>Error loading room allocations</p>
                       </div>
-                    ))
+                    )
                   ) : (
                     <div className="no-results">
                       <p>No rooms defined in the system yet</p>
