@@ -1,0 +1,2 @@
+# Ignore context files with process.env usage
+src/context/ScheduleContext.js
