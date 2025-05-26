@@ -208,6 +208,34 @@ const RoomAllocation = () => {
       return result.suitable;
     });
   }, [selectedCourse, rooms]);
+  
+  // Get all courses with their room assignments
+  const getCoursesWithRooms = useMemo(() => {
+    const coursesWithRooms = [];
+    
+    // First add courses that have room assignments
+    courses.forEach(course => {
+      if (course.room) {
+        // Find the room details
+        const roomDetails = rooms.find(r => r.id === course.roomId);
+        coursesWithRooms.push({
+          ...course,
+          roomName: roomDetails?.name || 'Unknown Room',
+          building: roomDetails?.building || 'Unknown Building',
+          roomDetails
+        });
+      }
+    });
+    
+    // Filter by search query if provided
+    return coursesWithRooms.filter(course => 
+      courseSearchQuery === '' ||
+      course.name.toLowerCase().includes(courseSearchQuery.toLowerCase()) || 
+      course.code.toLowerCase().includes(courseSearchQuery.toLowerCase()) ||
+      (course.roomName && course.roomName.toLowerCase().includes(courseSearchQuery.toLowerCase())) ||
+      (course.building && course.building.toLowerCase().includes(courseSearchQuery.toLowerCase()))
+    );
+  }, [courses, rooms, courseSearchQuery]);
 
   return (
     <RoomAllocationErrorBoundary>
