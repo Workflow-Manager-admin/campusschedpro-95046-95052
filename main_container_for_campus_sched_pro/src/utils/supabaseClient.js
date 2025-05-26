@@ -634,6 +634,21 @@ const getEquipmentId = async (equipmentName) => {
   return data?.id || null;
 };
 
+// Fetch all departments
+export const getAllDepartments = async () => {
+  const { data, error } = await supabase
+    .from('departments')
+    .select('id, name')
+    .order('name');
+  
+  if (error) {
+    console.error('Error fetching departments:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
 // Get academic year ID, create if it doesn't exist
 const getAcademicYearId = async (yearName) => {
   if (!yearName) return null;
