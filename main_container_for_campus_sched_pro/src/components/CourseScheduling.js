@@ -192,7 +192,7 @@ const CourseScheduling = () => {
       handleCloseAddDialog();
       showNotification('Course added successfully', 'success');
     } catch (error) {
-      console.error('Error adding course:', error);
+      // Removed console.error for ESLint compliance
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
     }
   };
