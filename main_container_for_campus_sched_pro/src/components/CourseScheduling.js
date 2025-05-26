@@ -75,52 +75,112 @@ const CourseScheduling = () => {
     if (!course) return;
 
     try {
+      // Common validation for both source types
+      const validation = validateCourseMove(schedule, destination.droppableId, course);
+      if (!validation.valid) {
+        showNotification(validation.message, 'error');
+        return;
+      }
+      
+      // Create a new schedule with the updated course positions
+      const newSchedule = { ...schedule };
+      
+      // If moving from courses list to a time slot
       if (source.droppableId === 'courses-list') {
-        const validation = validateCourseMove(schedule, destination.droppableId, course);
-        if (!validation.valid) {
-          showNotification(validation.message, 'error');
-          return;
-        }
-
-        const newSchedule = { ...schedule };
+        // Create destination array if it doesn't exist
         if (!newSchedule[destination.droppableId]) {
           newSchedule[destination.droppableId] = [];
         }
+        
+        // Add course to destination
         newSchedule[destination.droppableId].push(course);
-
-        const conflicts = findScheduleConflicts(newSchedule);
-        if (conflicts.length > 0) {
-          showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
-        }
-
-        setSchedule(newSchedule);
-      } else {
-        const validation = validateCourseMove(schedule, destination.droppableId, course);
-        if (!validation.valid) {
-          showNotification(validation.message, 'error');
-          return;
-        }
-
-        const newSchedule = { ...schedule };
+      } 
+      // If moving between time slots
+      else {
+        // Remove from source slot
         newSchedule[source.droppableId] = newSchedule[source.droppableId]
           .filter(c => c.id !== draggableId);
         
+        // Clean up empty slots
+        if (newSchedule[source.droppableId].length === 0) {
+          delete newSchedule[source.droppableId];
+        }
+        
+        // Create destination array if it doesn't exist
         if (!newSchedule[destination.droppableId]) {
           newSchedule[destination.droppableId] = [];
         }
+        
+        // Add to destination slot
         newSchedule[destination.droppableId].push(course);
-
-        const conflicts = findScheduleConflicts(newSchedule);
-        if (conflicts.length > 0) {
-          showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
-        }
-
-        setSchedule(newSchedule);
       }
+
+      // Check for conflicts
+      const conflicts = findScheduleConflicts(newSchedule);
+      if (conflicts.length > 0) {
+        showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
+      }
+
+      // Update the UI immediately for better user experience
+      setSchedule(newSchedule);
+      
+      // Now update the database
+      // If we're moving from courses-list, we need to schedule the course
+      if (source.droppableId === 'courses-list') {
+        // Extract day and time from destination ID
+        const [destDay, destTime] = destination.droppableId.split('-');
+        
+        // Call the helper function to safely schedule in database
+        const { safeScheduleCourse } = require('../utils/scheduleHelpers');
+        safeScheduleCourse(course.id, null, null, destDay, destTime)
+          .then(result => {
+            if (!result.success) {
+              showNotification(`Database sync issue: ${result.message}`, 'error');
+              refreshData(); // Refresh data from DB if there was an error
+            }
+          })
+          .catch(error => {
+            showNotification(`Error scheduling course: ${error.message}`, 'error');
+            refreshData();
+          });
+      }
+      // If moving between slots, we need to unschedule from source and schedule at destination
+      else {
+        // Parse source and destination
+        const [sourceDay, sourceTime] = source.droppableId.split('-');
+        const [destDay, destTime] = destination.droppableId.split('-');
+        
+        // First unschedule from source
+        const { safeUnscheduleCourse, safeScheduleCourse } = require('../utils/scheduleHelpers');
+        
+        // Chain the operations
+        safeUnscheduleCourse(course.id, sourceDay, sourceTime)
+          .then(unscheduleResult => {
+            if (!unscheduleResult.success) {
+              showNotification(`Error unscheduling course: ${unscheduleResult.message}`, 'error');
+              return;
+            }
+            
+            // Then schedule at destination
+            return safeScheduleCourse(course.id, null, null, destDay, destTime);
+          })
+          .then(scheduleResult => {
+            if (scheduleResult && !scheduleResult.success) {
+              showNotification(`Error scheduling course: ${scheduleResult.message}`, 'error');
+              refreshData();
+            }
+          })
+          .catch(error => {
+            showNotification(`Error moving course: ${error.message}`, 'error');
+            refreshData();
+          });
+      }
+      
     } catch (error) {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
+      refreshData();
     }
-  }, [schedule, courses, setSchedule, showNotification]);
+  }, [schedule, courses, setSchedule, showNotification, refreshData]);
 
   const handleSaveSchedule = useCallback(() => {
     const conflicts = findScheduleConflicts(schedule);
