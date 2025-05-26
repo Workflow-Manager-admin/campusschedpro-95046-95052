@@ -242,13 +242,11 @@ const CourseScheduling = () => {
       
   // For debugging when there are issues with course display
   useEffect(() => {
-    console.log(`Filtered ${filteredCourses.length} courses from ${courses.length} total courses`);
-    console.log(`Filter applied: ${yearFilter}`);
+    // Removed console logs for ESLint compliance
     
     if (courses.length > 0 && filteredCourses.length === 0 && yearFilter !== 'All Years') {
       // This would help diagnose issues with academic year data
-      console.warn('No courses match the current filter. Academic years present:', 
-        [...new Set(courses.map(c => c.academicYear || 'Unknown'))]);
+      // Removed console.warn for ESLint compliance
     }
   }, [filteredCourses, courses, yearFilter]);
     
@@ -287,8 +285,7 @@ const CourseScheduling = () => {
       
       setFilteredSchedule(filtered);
       
-      console.log(`Filtered schedule created for ${yearFilter}:`, 
-        `${Object.keys(filtered).length} slots with courses`);
+      // Removed console.log for ESLint compliance
     }
   }, [yearFilter, schedule, courses]);
 
