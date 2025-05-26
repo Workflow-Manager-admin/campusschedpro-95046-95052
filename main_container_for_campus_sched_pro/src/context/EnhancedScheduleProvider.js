@@ -151,7 +151,7 @@ const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, set
       }
       
       // Get the current schedule for safety checks
-      const { schedule, showNotification } = baseContext;
+      const { schedule } = baseContext;
       
       // Handle case where schedule is undefined
       if (!schedule) {
