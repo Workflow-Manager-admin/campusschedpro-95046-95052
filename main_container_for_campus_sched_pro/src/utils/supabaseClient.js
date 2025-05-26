@@ -171,18 +171,27 @@ export const getAllCourses = async () => {
     return [];
   }
   
-  // Transform data to match application structure
-  return data.map(course => ({
-    id: course.id,
-    name: course.name,
-    code: course.code,
-    credits: course.credits,
-    expectedEnrollment: course.expected_enrollment,
-    requiresLab: course.requires_lab,
-    department: course.departments?.name || '',
-    academicYear: course.academic_years?.name || '',
-    requiredEquipment: course.equipment?.map(item => item.equipment?.name) || []
-  }));
+  // Transform data to match application structure with better null handling
+  return data.map(course => {
+    if (!course || !course.id) return null;
+    
+    return {
+      id: course.id,
+      name: course.name || '',
+      code: course.code || '',
+      credits: course.credits || 0,
+      expectedEnrollment: course.expected_enrollment || 0,
+      requiresLab: Boolean(course.requires_lab),
+      department: course.departments?.name || '',
+      academicYear: course.academic_years?.name || '',
+      requiredEquipment: Array.isArray(course.equipment) 
+        ? course.equipment
+            .filter(item => item && item.equipment)
+            .map(item => item.equipment.name)
+            .filter(Boolean)
+        : []
+    };
+  }).filter(Boolean);
 };
 
 // Fetch course assignments (instructor and room)
@@ -447,7 +456,20 @@ export const getSchedule = async () => {
     // Get schedule data from view
     const { data, error } = await supabase
       .from('course_schedule_view')
-      .select('*');
+      .select(`
+        course_id,
+        course_name,
+        course_code,
+        course_credits,
+        faculty_id,
+        faculty_name,
+        room_id,
+        room_name,
+        building_id,
+        building_name,
+        day,
+        time
+      `);
       
     if (error) {
       console.error('Error fetching schedule:', error);
@@ -458,6 +480,8 @@ export const getSchedule = async () => {
     const schedule = {};
     
     data.forEach(item => {
+      if (!item || !item.day || !item.time) return;
+
       const slotId = `${item.day}-${item.time}`;
       
       if (!schedule[slotId]) {
@@ -465,23 +489,27 @@ export const getSchedule = async () => {
       }
       
       // Get academic year and department from course map
-      const academicYear = courseMap[item.course_id]?.academicYear || '';
-      const department = courseMap[item.course_id]?.department || '';
+      const courseInfo = courseMap[item.course_id] || {};
+      const academicYear = courseInfo.academicYear || '';
+      const department = courseInfo.department || '';
       
-      schedule[slotId].push({
-        id: item.course_id,
-        name: item.course_name,
-        code: item.course_code,
-        credits: item.course_credits,
-        instructor: item.faculty_name || '',
-        instructorId: item.faculty_id || null,
-        room: item.room_name || '',
-        roomId: item.room_id || null,
-        building: item.building_name || '',
-        buildingId: item.building_id || null,
-        academicYear, 
-        department
-      });
+      // Only add valid courses to the schedule
+      if (item.course_id && item.course_name) {
+        schedule[slotId].push({
+          id: item.course_id,
+          name: item.course_name || '',
+          code: item.course_code || '',
+          credits: item.course_credits || 0,
+          instructor: item.faculty_name || '',
+          instructorId: item.faculty_id || null,
+          room: item.room_name || '',
+          roomId: item.room_id || null,
+          building: item.building_name || '',
+          buildingId: item.building_id || null,
+          academicYear,
+          department
+        });
+      }
     });
     
     return schedule;
