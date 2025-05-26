@@ -142,14 +142,21 @@ const CourseScheduling = () => {
       // Now update the database
       // If we're moving from courses-list, we need to schedule the course
       if (source.droppableId === 'courses-list') {
-        // Use the removeCourseFromSlot function to schedule a course in a new slot
-        // This actually adds the course to the slot, despite the name suggesting removal
-        const { removeCourseFromSlot } = useSchedule();
-        
-        // Schedule course at destination
-        removeCourseFromSlot(course.id, destDay, destTime)
+        // Schedule course at destination using context's removeCourseFromSlot
+        // Get a reference to the appropriate timeSlotId
+        getTimeSlotId(destDay, destTime)
+          .then(timeSlotId => {
+            if (!timeSlotId) {
+              showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
+              refreshData();
+              return;
+            }
+            
+            // Schedule the course in the database
+            return scheduleCourse(course.id, facultyId, roomId, timeSlotId);
+          })
           .then(result => {
-            if (!result) {
+            if (result === false) { // explicitly check for false
               showNotification('Error scheduling course. Please try again.', 'error');
               refreshData();
             }
