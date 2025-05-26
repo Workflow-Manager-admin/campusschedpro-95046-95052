@@ -134,7 +134,7 @@ export const safeUpdateCourse = async (updatedCourse) => {
       message: result.message
     };
   } catch (error) {
-    console.error('Error in safeUpdateCourse:', error);
+    // Removed console.error for ESLint compliance
     return {
       success: false,
       id: null,
