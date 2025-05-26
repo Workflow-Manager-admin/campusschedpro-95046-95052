@@ -462,6 +462,7 @@ const CourseScheduling = () => {
         {showBugFixTest && (
           <React.Suspense fallback={<div>Loading test component...</div>}>
             {React.createElement(React.lazy(() => import('../tests/TestCoursesInSlotFix')))}
+            {React.createElement(React.lazy(() => import('../tests/TestFunctionFixes')))}
           </React.Suspense>
         )}
         
