@@ -24,33 +24,21 @@ const RoomBulkImport = ({ onComplete }) => {
   };
 
   const handleImportComplete = (result) => {
-    if (result) {
-      const { success, errors } = result;
-      
-      if (success > 0) {
-        // Refresh the data to update the UI with new rooms
-        refreshData();
-        
-        // Show appropriate notification based on whether there were errors
-        if (errors && errors.length > 0) {
-          showNotification(`Imported ${success} rooms with ${errors.length} errors`, 'warning');
-        } else {
-          showNotification(`Successfully imported ${success} rooms`, 'success');
-        }
-      } else if (errors && errors.length > 0) {
-        showNotification(`Import failed: ${errors[0].message}`, 'error');
-      }
+    // First close the modal
+    setShowModal(false);
+
+    // Then refresh data
+    if (result && result.success > 0) {
+      refreshData();
+      showNotification(`Successfully imported ${result.success} rooms`, 'success');
+    } else if (result && result.errors && result.errors.length > 0) {
+      showNotification(`Import had issues: ${result.errors[0].message}`, 'warning');
     }
     
-    // Call the onComplete callback if provided
+    // Finally call the onComplete callback
     if (onComplete) {
       onComplete(result);
     }
-    
-    // Close the modal
-    setTimeout(() => {
-      setShowModal(false);
-    }, 500);
   };
 
   return (
