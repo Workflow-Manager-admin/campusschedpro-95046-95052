@@ -100,45 +100,68 @@ export const ScheduleProvider = ({ children }) => {
 
   // Initialize data and subscriptions on mount
   useEffect(() => {
-    loadInitialData();
-    
-    // Set up real-time subscriptions
-    const courseSubscription = supabase
-      .channel('public:courses')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
-        loadInitialData();
-      })
-      .subscribe();
-      
-    const roomSubscription = supabase
-      .channel('public:rooms')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
-        loadInitialData();
-      })
-      .subscribe();
-      
-    const scheduleSubscription = supabase
-      .channel('public:schedule')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
-        loadInitialData();
-      })
-      .subscribe();
-      
-    const facultySubscription = supabase
-      .channel('public:faculty')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, () => {
-        loadInitialData();
-      })
-      .subscribe();
-    
-    // Clean up subscriptions
-    return () => {
-      supabase.removeChannel(courseSubscription);
-      supabase.removeChannel(roomSubscription);
-      supabase.removeChannel(scheduleSubscription);
-      supabase.removeChannel(facultySubscription);
+    let isMounted = true;
+
+    const setupSubscriptions = async () => {
+      try {
+        if (isMounted) {
+          await loadInitialData();
+        }
+
+        // Set up real-time subscriptions
+        const subscriptions = [
+          supabase
+            .channel('public:courses')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
+              if (isMounted) loadInitialData();
+            })
+            .subscribe(),
+
+          supabase
+            .channel('public:rooms')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
+              if (isMounted) loadInitialData();
+            })
+            .subscribe(),
+
+          supabase
+            .channel('public:schedule')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
+              if (isMounted) loadInitialData();
+            })
+            .subscribe(),
+
+          supabase
+            .channel('public:faculty')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, () => {
+              if (isMounted) loadInitialData();
+            })
+            .subscribe()
+        ];
+
+        // Clean up function
+        return () => {
+          isMounted = false;
+          subscriptions.forEach(subscription => {
+            if (subscription) {
+              supabase.removeChannel(subscription);
+            }
+          });
+        };
+      } catch (error) {
+        console.warn('Error setting up subscriptions:', error);
+        return () => {
+          isMounted = false;
+        };
+      }
     };
-  }, [loadInitialData]);
+
+    // Set up subscriptions and store cleanup function
+    const cleanup = setupSubscriptions();
+    return () => {
+      cleanup.then(cleanupFn => cleanupFn && cleanupFn());
+    };
+  }, [loadInitialData, supabase]);
 
   // Calculate room allocations based on schedule
   const updateAllocations = useCallback((scheduleData) => {
@@ -375,13 +398,13 @@ export const ScheduleProvider = ({ children }) => {
   };
 
   // Notification handlers
-  const showNotification = (message, severity = 'info') => {
+  const showNotification = useCallback((message, severity = 'info') => {
     setNotification({ open: true, message, severity });
-  };
+  }, []);
 
-  const handleCloseNotification = () => {
+  const handleCloseNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, open: false }));
-  };
+  }, []);
 
   // Transform allocations for component consumption
   const getAllocationsArray = useCallback(() => {
