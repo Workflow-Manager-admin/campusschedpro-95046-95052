@@ -174,7 +174,7 @@ const CourseScheduling = () => {
           .then(unscheduleResult => {
             if (!unscheduleResult) {
               showNotification('Error unscheduling course from previous slot.', 'error');
-              refreshData();
+              if (refreshData) refreshData();
               return null;
             }
             
@@ -184,7 +184,7 @@ const CourseScheduling = () => {
           .then(timeSlotId => {
             if (!timeSlotId) {
               showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
-              refreshData();
+              if (refreshData) refreshData();
               return null;
             }
             
@@ -194,18 +194,18 @@ const CourseScheduling = () => {
           .then(scheduleResult => {
             if (scheduleResult === false) { // explicitly check for false
               showNotification('Error rescheduling course. Please try again.', 'error');
-              refreshData();
+              if (refreshData) refreshData();
             }
           })
           .catch(error => {
             showNotification(`Error moving course: ${error.message}`, 'error');
-            refreshData();
+            if (refreshData) refreshData();
           });
       }
       
     } catch (error) {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
-      refreshData();
+      if (refreshData) refreshData();
     }
   }, [schedule, courses, setSchedule, showNotification, refreshData]);
 
