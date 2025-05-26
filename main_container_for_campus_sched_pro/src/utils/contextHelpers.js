@@ -29,7 +29,7 @@ export const safeAddRoom = async (newRoom) => {
       message: result.message
     };
   } catch (error) {
-    console.error('Error in safeAddRoom:', error);
+    // Removed console.error for ESLint compliance
     return {
       success: false,
       id: null,
