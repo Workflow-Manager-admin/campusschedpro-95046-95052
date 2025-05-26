@@ -142,7 +142,7 @@ export const importCoursesFromExcel = async (file) => {
     });
     
     // Save imported courses to the database using the enhanced entity helper
-    const { enhancedSaveCourse } = await import('../utils/entityHelpers');
+    const { enhancedSaveCourse } = require('./entityHelpers');
     
     let successCount = 0;
     const saveErrors = [];
@@ -259,7 +259,7 @@ export const importRoomsFromExcel = async (file) => {
     });
     
     // Save imported rooms to the database using the enhanced entity helper
-    const { enhancedSaveRoom } = await import('../utils/entityHelpers');
+    const { enhancedSaveRoom } = require('./entityHelpers');
     
     let successCount = 0;
     const saveErrors = [];
@@ -370,7 +370,7 @@ export const importFacultyFromExcel = async (file) => {
     });
     
     // Save imported faculty to the database using the enhanced entity helper
-    const { enhancedSaveFaculty } = await import('../utils/entityHelpers');
+    const { enhancedSaveFaculty } = require('./entityHelpers');
     
     let successCount = 0;
     const saveErrors = [];
