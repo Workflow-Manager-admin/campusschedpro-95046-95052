@@ -47,7 +47,9 @@ export const findScheduleConflicts = (schedule) => {
   const conflicts = [];
   
   Object.entries(schedule).forEach(([slotId, courses]) => {
-    if (courses.length > 1) {
+    // Ensure courses is an array with valid length
+    const validCourses = Array.isArray(courses) ? courses : [];
+    if (validCourses.length > 1) {
       // Check each course pair in the slot
       for (let i = 0; i < courses.length; i++) {
         for (let j = i + 1; j < courses.length; j++) {
