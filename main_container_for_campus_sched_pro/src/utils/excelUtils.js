@@ -258,13 +258,37 @@ export const importRoomsFromExcel = async (file) => {
       }
     });
     
-    // TODO: In a real app, would save rooms to database here
-    // For now, just simulate success
-    console.log('Imported rooms:', importedRooms);
+    // Save imported rooms to the database using the enhanced entity helper
+    const { enhancedSaveRoom } = await import('../utils/entityHelpers');
+    
+    let successCount = 0;
+    const saveErrors = [];
+    
+    // Process each room
+    for (const room of importedRooms) {
+      try {
+        const result = await enhancedSaveRoom(room);
+        
+        if (result.success) {
+          successCount++;
+        } else {
+          saveErrors.push({
+            message: `Could not save room ${room.name || 'unknown'}: ${result.message}`
+          });
+        }
+      } catch (error) {
+        saveErrors.push({
+          message: `Error saving room ${room.name || 'unknown'}: ${error.message || 'Unknown error'}`
+        });
+      }
+    }
+    
+    // Combine parsing errors with saving errors
+    const allErrors = [...errors, ...saveErrors];
     
     return {
-      success: importedRooms.length,
-      errors
+      success: successCount,
+      errors: allErrors
     };
   } catch (error) {
     console.error('Error importing rooms:', error);
@@ -345,13 +369,37 @@ export const importFacultyFromExcel = async (file) => {
       }
     });
     
-    // TODO: In a real app, would save faculty to database here
-    // For now, just simulate success
-    console.log('Imported faculty:', importedFaculty);
+    // Save imported faculty to the database using the enhanced entity helper
+    const { enhancedSaveFaculty } = await import('../utils/entityHelpers');
+    
+    let successCount = 0;
+    const saveErrors = [];
+    
+    // Process each faculty member
+    for (const faculty of importedFaculty) {
+      try {
+        const result = await enhancedSaveFaculty(faculty);
+        
+        if (result.success) {
+          successCount++;
+        } else {
+          saveErrors.push({
+            message: `Could not save faculty ${faculty.name || 'unknown'}: ${result.message}`
+          });
+        }
+      } catch (error) {
+        saveErrors.push({
+          message: `Error saving faculty ${faculty.name || 'unknown'}: ${error.message || 'Unknown error'}`
+        });
+      }
+    }
+    
+    // Combine parsing errors with saving errors
+    const allErrors = [...errors, ...saveErrors];
     
     return {
-      success: importedFaculty.length,
-      errors
+      success: successCount,
+      errors: allErrors
     };
   } catch (error) {
     console.error('Error importing faculty:', error);
