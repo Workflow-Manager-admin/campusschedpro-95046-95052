@@ -68,6 +68,7 @@ const RoomAllocation = () => {
         roomId: room.id,
         roomName: room.name,
         building: room.building,
+        capacity: room.capacity,
         courses: [] // No assigned courses
       };
     }) : [];
