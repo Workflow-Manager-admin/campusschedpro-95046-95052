@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSchedule } from '../../context/ScheduleContext';
 import RoomAllocationErrorBoundary from './RoomAllocationErrorBoundary';
+import { isRoomSuitableForCourse } from '../../utils/roomUtils';
+import { 
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, Select, MenuItem, FormControl, InputLabel,
+  FormHelperText, Alert
+} from '@mui/material';
 
 /**
  * Room allocation component for displaying all assigned rooms and courses together
@@ -8,10 +14,29 @@ import RoomAllocationErrorBoundary from './RoomAllocationErrorBoundary';
  * PUBLIC_INTERFACE
  */
 const RoomAllocation = () => {
-  // Minimal state
+  // State for view and search
   const [viewMode, setViewMode] = useState('room');
   const [searchQuery, setSearchQuery] = useState('');
-  const { allocations = [], courses = [], updateAllocations } = useSchedule() || {};
+  
+  // State for course assignment
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedRoomId, setSelectedRoomId] = useState('');
+  const [assignmentError, setAssignmentError] = useState('');
+  
+  // State for unassignment confirmation
+  const [unassignDialogOpen, setUnassignDialogOpen] = useState(false);
+  const [courseToUnassign, setCourseToUnassign] = useState(null);
+  
+  // Get data from context
+  const { 
+    allocations = [], 
+    courses = [], 
+    rooms = [],
+    updateAllocations,
+    updateCourse,
+    showNotification
+  } = useSchedule() || {};
   
   // Initialize data on mount
   useEffect(() => {
@@ -27,6 +52,106 @@ const RoomAllocation = () => {
     (course.name && course.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
     (course.code && course.code.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+  
+  // Room assignment handlers
+  const openAssignDialog = (course) => {
+    setSelectedCourse(course);
+    setSelectedRoomId('');
+    setAssignmentError('');
+    setAssignDialogOpen(true);
+  };
+  
+  const closeAssignDialog = () => {
+    setAssignDialogOpen(false);
+    setSelectedCourse(null);
+    setSelectedRoomId('');
+    setAssignmentError('');
+  };
+  
+  const handleRoomChange = (event) => {
+    setSelectedRoomId(event.target.value);
+    setAssignmentError('');
+  };
+  
+  const assignCourseToRoom = async () => {
+    if (!selectedCourse || !selectedRoomId) {
+      setAssignmentError('Please select a room');
+      return;
+    }
+    
+    try {
+      // Find the selected room
+      const room = rooms.find(r => r.id === selectedRoomId);
+      if (!room) {
+        setAssignmentError('Room not found');
+        return;
+      }
+      
+      // Check if room is suitable for course
+      const suitabilityCheck = isRoomSuitableForCourse(room, selectedCourse);
+      if (!suitabilityCheck.suitable) {
+        setAssignmentError(suitabilityCheck.message);
+        return;
+      }
+      
+      // Update the course with room assignment
+      const updatedCourse = {
+        ...selectedCourse,
+        room: room.name,
+        roomId: room.id,
+        building: room.building
+      };
+      
+      const success = await updateCourse(updatedCourse);
+      
+      if (success) {
+        showNotification(`${selectedCourse.code} has been assigned to ${room.name}`, 'success');
+        updateAllocations();
+        closeAssignDialog();
+      } else {
+        setAssignmentError('Failed to assign course to room');
+      }
+    } catch (error) {
+      setAssignmentError(`Error: ${error.message || 'Unknown error'}`);
+    }
+  };
+  
+  // Unassignment handlers
+  const openUnassignDialog = (course) => {
+    setCourseToUnassign(course);
+    setUnassignDialogOpen(true);
+  };
+  
+  const closeUnassignDialog = () => {
+    setUnassignDialogOpen(false);
+    setCourseToUnassign(null);
+  };
+  
+  const unassignCourse = async () => {
+    if (!courseToUnassign) return;
+    
+    try {
+      // Update the course to remove room assignment
+      const updatedCourse = {
+        ...courseToUnassign,
+        room: null,
+        roomId: null,
+        building: null
+      };
+      
+      const success = await updateCourse(updatedCourse);
+      
+      if (success) {
+        showNotification(`${courseToUnassign.code} has been unassigned from room`, 'success');
+        updateAllocations();
+        closeUnassignDialog();
+      } else {
+        showNotification('Failed to unassign course', 'error');
+      }
+    } catch (error) {
+      showNotification(`Error: ${error.message || 'Unknown error'}`, 'error');
+    }
+  };
 
   return (
     <RoomAllocationErrorBoundary>
