@@ -19,7 +19,7 @@ const RoomAllocation = () => {
   const { 
     courses, 
     rooms, 
-    allocations,
+    allocations = [], // Provide empty array default if allocations is undefined
     assignRoom,
     showNotification,
     updateAllocations
