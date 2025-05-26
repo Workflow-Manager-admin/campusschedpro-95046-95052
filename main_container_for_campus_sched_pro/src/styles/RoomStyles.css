@@ -228,82 +228,6 @@
   margin-bottom: 20px;
 }
 
-.room-allocation-container {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 24px;
-  height: calc(100% - 60px);
-  min-height: 500px;
-}
-
-.unassigned-courses-panel {
-  background: var(--background-light);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.unassigned-courses-panel h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  color: var(--primary-green);
-}
-
-.unassigned-courses-list {
-  flex: 1;
-  overflow-y: auto;
-  background: var(--background-grey);
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.unassigned-course-item {
-  background: var(--background-light);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.unassigned-course-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.unassigned-course-item h4 {
-  margin: 0 0 8px 0;
-  color: var(--primary-green);
-}
-
-.unassigned-course-item p {
-  margin: 4px 0;
-  font-size: 0.9em;
-  color: var(--text-secondary);
-}
-
-.allocated-rooms-panel {
-  background: var(--background-light);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: auto;
-  height: 100%;
-}
-
-.empty-list-message {
-  padding: 20px;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
 .allocation-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -390,12 +314,68 @@
   background-color: var(--background-light);
 }
 
+.search-bar {
+  margin-bottom: 12px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-light);
+}
+
+/* Course Allocation View Styles */
+.course-allocation-panel {
+  background: var(--background-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  height: 100%;
+  grid-column: span 2;
+}
+
+.course-allocation-table-container {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+}
+
+.courses-with-rooms-table {
+  background: var(--background-light);
+  width: 100%;
+}
+
+.courses-with-rooms-table th {
+  position: sticky;
+  top: 0;
+  background: var(--background-grey);
+  z-index: 1;
+}
+
+/* Responsive adjustments */
 @media (max-width: 1024px) {
-  .room-container {
+  .room-container,
+  .room-allocation-container {
     grid-template-columns: 1fr;
   }
   
-  .room-details {
+  .room-details,
+  .unassigned-courses-panel {
     margin-top: 20px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .view-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-buttons {
+    margin-top: 10px;
+    justify-content: space-between;
   }
 }
