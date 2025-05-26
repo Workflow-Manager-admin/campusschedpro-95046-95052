@@ -23,8 +23,8 @@ export const useSchedule = () => {
 export const ScheduleProvider = ({ children }) => {
   // Supabase client for realtime subscriptions
   const supabase = createClient(
-    process.env.REACT_APP_SUPABASE_URL || 'https://your-supabase-url.supabase.co',
-    process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-supabase-anon-key'
+    (typeof process !== 'undefined' && process.env.REACT_APP_SUPABASE_URL) || 'https://your-supabase-url.supabase.co',
+    (typeof process !== 'undefined' && process.env.REACT_APP_SUPABASE_ANON_KEY) || 'your-supabase-anon-key'
   );
 
   // State for courses, rooms, schedule, and UI
