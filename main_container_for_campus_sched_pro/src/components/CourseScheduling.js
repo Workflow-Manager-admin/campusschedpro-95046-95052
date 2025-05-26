@@ -62,6 +62,7 @@ const CourseScheduling = () => {
     department: 'IT',
   });
   const [yearFilter, setYearFilter] = useState('All Years');
+  const [showBugFixTest, setShowBugFixTest] = useState(false);
   
   // State to store the filtered schedule when academic year filter is applied
   const [filteredSchedule, setFilteredSchedule] = useState(null);
@@ -260,6 +261,7 @@ const CourseScheduling = () => {
       
       // Iterate through all time slots in the schedule
       Object.entries(schedule).forEach(([slotId, coursesInSlot]) => {
+        // Ensure coursesInSlot is an array before processing
         if (!Array.isArray(coursesInSlot)) return;
         
         // Filter courses in this slot by academic year
@@ -315,6 +317,14 @@ const CourseScheduling = () => {
             </div>
           </div>
           <div className="header-actions">
+            <Button 
+              size="small" 
+              variant="outlined"
+              onClick={() => setShowBugFixTest(!showBugFixTest)}
+              sx={{ mr: 1 }}
+            >
+              {showBugFixTest ? 'Hide Bug Fix Test' : 'Verify Bug Fix'}
+            </Button>
             <button 
               className="btn"
               onClick={() => window.location.href = '/conflicts'}
@@ -343,6 +353,12 @@ const CourseScheduling = () => {
             </button>
           </div>
         </div>
+        
+        {showBugFixTest && (
+          <React.Suspense fallback={<div>Loading test component...</div>}>
+            {React.createElement(React.lazy(() => import('../tests/TestCoursesInSlotFix')))}
+          </React.Suspense>
+        )}
         
         <div className="scheduling-content">
           <ReduxDragDropContext onDragEnd={handleDragEnd}>
