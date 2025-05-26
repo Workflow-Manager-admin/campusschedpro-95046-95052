@@ -242,22 +242,38 @@ const RoomAllocation = () => {
       <div className="room-allocation">
         <div className="room-header">
           <h2>Room Allocation</h2>
-          <div>
-            <button 
-              className="btn"
-              onClick={() => setShowAssignDialog(true)}
-              disabled={unassignedCourses.length === 0}
-            >
-              Assign Room
-            </button>
-            <button 
-              className="btn btn-accent" 
-              onClick={handleAutoAssign}
-              disabled={unassignedCourses.length === 0}
-              style={{ marginLeft: '10px' }}
-            >
-              Auto-Assign All
-            </button>
+          <div className="view-controls">
+            <div className="view-tabs">
+              <button 
+                className={`view-tab ${viewMode === 'room' ? 'active' : ''}`}
+                onClick={() => setViewMode('room')}
+              >
+                Room View
+              </button>
+              <button 
+                className={`view-tab ${viewMode === 'course' ? 'active' : ''}`}
+                onClick={() => setViewMode('course')}
+              >
+                Course View
+              </button>
+            </div>
+            <div className="action-buttons">
+              <button 
+                className="btn"
+                onClick={() => setShowAssignDialog(true)}
+                disabled={unassignedCourses.length === 0}
+              >
+                Assign Room
+              </button>
+              <button 
+                className="btn btn-accent" 
+                onClick={handleAutoAssign}
+                disabled={unassignedCourses.length === 0}
+                style={{ marginLeft: '10px' }}
+              >
+                Auto-Assign All
+              </button>
+            </div>
           </div>
         </div>
 
