@@ -13,81 +13,66 @@ import {
 import { useSchedule } from '../../context/ScheduleContext';
 import { isRoomSuitableForCourse, findSuitableRooms } from '../../utils/roomUtils';
 import RoomAllocationErrorBoundary from './RoomAllocationErrorBoundary';
-// Removed unused import: import PropTypes from 'prop-types';
 
 const RoomAllocation = () => {
   const { 
     courses, 
     rooms, 
-    allocations = [], // Provide empty array default if allocations is undefined
+    allocations = [], // Default empty array
     assignRoom,
     showNotification,
     updateAllocations
   } = useSchedule();
 
-  // Only update allocations once when component mounts or when explicitly needed
+  // State management
   const [dataInitialized, setDataInitialized] = useState(false);
-
-  // Only update allocations once when component mounts
-  useEffect(() => {
-    if (!dataInitialized) {
-      // Fetch data only once on initial mount
-      updateAllocations();
-      setDataInitialized(true);
-    }
-  }, [dataInitialized, updateAllocations]); // Added updateAllocations to dependencies
-  
-  // Track significant changes to update view without full API refetch
-  useEffect(() => {
-    // If we're already initialized but courses or allocations have meaningful changes
-    // (like when course assignments happen elsewhere in the app)
-    if (dataInitialized && courses.length > 0 && rooms.length > 0) {
-      // Don't call updateAllocations as that could trigger API fetches
-      // Instead, let the context subscriptions handle it
-    }
-  }, [courses, rooms, dataInitialized]);
-
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('room'); // 'room' or 'course' view mode
+  const [viewMode, setViewMode] = useState('room'); // 'room' or 'course' view
   const [courseSearchQuery, setCourseSearchQuery] = useState('');
-  
-  // Show all allocations without filtering by building - memoized
-  const filteredAllocations = useMemo(() => {
-    // Defensive check to ensure allocations is an array before returning
-    if (!Array.isArray(allocations)) {
-      return [];
+
+  // Initialize data only once
+  useEffect(() => {
+    if (!dataInitialized) {
+      updateAllocations();
+      setDataInitialized(true);
     }
-    return allocations;
+  }, [dataInitialized, updateAllocations]);
+
+  // All allocations (no building filtering)
+  const filteredAllocations = useMemo(() => {
+    return Array.isArray(allocations) ? allocations : [];
   }, [allocations]);
 
-  // All courses that don't have room assignments - memoized
+  // Unassigned courses
   const unassignedCourses = useMemo(() => {
     return courses.filter(course => !course.room);
   }, [courses]);
   
-  // Filter unassigned courses by search query - memoized
+  // Filtered unassigned courses by search
   const filteredCourses = useMemo(() => {
+    if (!searchQuery) return unassignedCourses;
+    
+    const query = searchQuery.toLowerCase();
     return unassignedCourses.filter(course => 
-      course.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      course.code.toLowerCase().includes(searchQuery.toLowerCase())
+      (course.name && course.name.toLowerCase().includes(query)) || 
+      (course.code && course.code.toLowerCase().includes(query))
     );
   }, [unassignedCourses, searchQuery]);
 
-  // Handle course selection for room assignment
+  // Course selection handler
   const handleSelectCourse = useCallback((course) => {
     setSelectedCourse(course);
     setSelectedRoom(null);
   }, []);
 
-  // Handle room selection
+  // Room selection handler
   const handleSelectRoom = useCallback((room) => {
     setSelectedRoom(room);
     
     if (selectedCourse) {
-      // Check if room is suitable for selected course
       const suitabilityCheck = isRoomSuitableForCourse(room, selectedCourse);
       if (!suitabilityCheck.suitable) {
         showNotification(suitabilityCheck.message, 'warning');
@@ -95,65 +80,54 @@ const RoomAllocation = () => {
     }
   }, [selectedCourse, showNotification]);
 
-  // Handle room assignment
+  // Room assignment handler
   const handleAssignRoom = useCallback(async () => {
     if (!selectedCourse || !selectedRoom) {
       showNotification('Please select both a course and a room', 'error');
       return;
     }
 
-    // Check room suitability
     const suitabilityCheck = isRoomSuitableForCourse(selectedRoom, selectedCourse);
     if (!suitabilityCheck.suitable) {
       showNotification(suitabilityCheck.message, 'error');
       return;
     }
     
-    // Use context's assignRoom function
     await assignRoom(selectedCourse.id, selectedRoom.id);
     
-    // Reset selection
     setSelectedCourse(null);
     setSelectedRoom(null);
     setShowAssignDialog(false);
   }, [selectedCourse, selectedRoom, showNotification, assignRoom]);
 
-  // Handle auto assign all unassigned courses
+  // Auto assign handler
   const handleAutoAssign = useCallback(async () => {
     let assignedCount = 0;
     let failedCount = 0;
-    let assignmentPromises = [];
+    const assignmentPromises = [];
 
-    // Prepare all assignments in parallel to reduce repeated API calls
     unassignedCourses.forEach(course => {
-      // Find suitable rooms
       const suitableRooms = findSuitableRooms(rooms, course);
       if (suitableRooms.length === 0) {
         failedCount++;
         return;
       }
-
-      // Queue the assignment (will be executed later)
       assignmentPromises.push({
         course,
         roomId: suitableRooms[0].id
       });
     });
 
-    // Show notification for in-progress assignments
     if (assignmentPromises.length > 0) {
       showNotification(`Assigning ${assignmentPromises.length} courses to rooms...`, 'info');
     }
 
-    // Process assignments in smaller batches to avoid overwhelming the API
     const batchSize = 5;
     const successResults = [];
     const failureResults = [];
     
     for (let i = 0; i < assignmentPromises.length; i += batchSize) {
       const batch = assignmentPromises.slice(i, i + batchSize);
-      
-      // Execute this batch in parallel
       const results = await Promise.all(
         batch.map(({ course, roomId }) => 
           assignRoom(course.id, roomId)
@@ -162,7 +136,6 @@ const RoomAllocation = () => {
         )
       );
       
-      // Sort results
       results.forEach(result => {
         if (result.success) {
           successResults.push(result.course);
@@ -172,11 +145,9 @@ const RoomAllocation = () => {
       });
     }
     
-    // Update counts outside the loop
     assignedCount = successResults.length;
     failedCount = failureResults.length;
     
-    // Show final results
     if (assignedCount > 0) {
       showNotification(`Auto-assigned ${assignedCount} courses to rooms`, 'success');
     }
@@ -185,7 +156,6 @@ const RoomAllocation = () => {
       showNotification(`Could not find suitable rooms for ${failedCount} courses`, 'warning');
     }
     
-    // Only update allocations once after all changes
     if (assignedCount > 0) {
       updateAllocations();
     }
@@ -201,14 +171,12 @@ const RoomAllocation = () => {
     });
   }, [selectedCourse, rooms]);
   
-  // Get all courses with their room assignments
+  // Get courses with room assignments
   const getCoursesWithRooms = useMemo(() => {
     const coursesWithRooms = [];
     
-    // First add courses that have room assignments
     courses.forEach(course => {
       if (course.room) {
-        // Find the room details
         const roomDetails = rooms.find(r => r.id === course.roomId);
         coursesWithRooms.push({
           ...course,
@@ -219,13 +187,14 @@ const RoomAllocation = () => {
       }
     });
     
-    // Filter by search query if provided
+    if (!courseSearchQuery) return coursesWithRooms;
+    
+    const query = courseSearchQuery.toLowerCase();
     return coursesWithRooms.filter(course => 
-      courseSearchQuery === '' ||
-      course.name.toLowerCase().includes(courseSearchQuery.toLowerCase()) || 
-      course.code.toLowerCase().includes(courseSearchQuery.toLowerCase()) ||
-      (course.roomName && course.roomName.toLowerCase().includes(courseSearchQuery.toLowerCase())) ||
-      (course.building && course.building.toLowerCase().includes(courseSearchQuery.toLowerCase()))
+      course.name.toLowerCase().includes(query) || 
+      course.code.toLowerCase().includes(query) ||
+      (course.roomName && course.roomName.toLowerCase().includes(query)) ||
+      (course.building && course.building.toLowerCase().includes(query))
     );
   }, [courses, rooms, courseSearchQuery]);
 
@@ -271,7 +240,6 @@ const RoomAllocation = () => {
 
         <div className="room-allocation-container">
           {viewMode === 'room' ? (
-            // Room-centric view (original implementation)
             <>
               <div className="unassigned-courses-panel">
                 <h3>Unassigned Courses</h3>
@@ -320,69 +288,67 @@ const RoomAllocation = () => {
                 {/* Building filter removed - now showing all rooms together */}
 
                 <div className="allocation-container">
-                  {Array.isArray(filteredAllocations) && filteredAllocations.map(allocation => {
-                    // Skip rendering if allocation is null or missing required properties
+                  {filteredAllocations.map(allocation => {
                     if (!allocation || !allocation.roomId) return null;
                     
                     return (
-                    <div key={allocation.roomId} className="allocation-card">
-                      <div className="allocation-header">
-                        <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
-                        <span>{allocation.building || 'Unknown Building'}</span>
-                      </div>
+                      <div key={allocation.roomId} className="allocation-card">
+                        <div className="allocation-header">
+                          <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
+                          <span>{allocation.building || 'Unknown Building'}</span>
+                        </div>
 
-                      <table className="schedule-table">
-                        <thead>
-                          <tr>
-                            <th>Course</th>
-                            <th>Instructor</th>
-                            <th>Schedule</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Array.isArray(allocation.courses) && allocation.courses.map(course => {
-                            // Skip rendering if course is null
-                            if (!course) return null;
-                            
-                            return (
-                              <tr key={course.id || `course-${Math.random()}`}>
-                                <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
-                                <td>{course.instructor || 'Unassigned'}</td>
-                                <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
-                                <td>
-                                <button 
-                                  className="btn-icon"
-                                  title="Unassign Room"
-                                  onClick={async (e) => {
-                                    e.stopPropagation(); // Prevent event bubbling
-                                    const success = await assignRoom(course.id, null);
-                                    if (success) {
-                                      showNotification(`Unassigned ${course.code} from room`, 'info');
-                                      // The loadInitialData in ScheduleContext will handle updating allocations
-                                    }
-                                  }}
-                                >
-                                  ⨯
-                                </button>
-                              </td>
-                            </tr>
-                            );
-                  })}
-                          {(!Array.isArray(allocation.courses) || allocation.courses.length === 0) && (
+                        <table className="schedule-table">
+                          <thead>
                             <tr>
-                              <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
-                                No courses assigned
-                              </td>
+                              <th>Course</th>
+                              <th>Instructor</th>
+                              <th>Schedule</th>
+                              <th></th>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {Array.isArray(allocation.courses) && allocation.courses.length > 0 ? (
+                              allocation.courses.map(course => {
+                                if (!course) return null;
+                                
+                                return (
+                                  <tr key={course.id || `course-${Math.random()}`}>
+                                    <td>{course.code || 'Unknown'} - {course.name || 'Unnamed Course'}</td>
+                                    <td>{course.instructor || 'Unassigned'}</td>
+                                    <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
+                                    <td>
+                                      <button 
+                                        className="btn-icon"
+                                        title="Unassign Room"
+                                        onClick={async (e) => {
+                                          e.stopPropagation(); 
+                                          const success = await assignRoom(course.id, null);
+                                          if (success) {
+                                            showNotification(`Unassigned ${course.code} from room`, 'info');
+                                          }
+                                        }}
+                                      >
+                                        ⨯
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan={4} style={{ textAlign: 'center', padding: '20px 0' }}>
+                                  No courses assigned
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     );
-                })}
+                  })}
                   
-                  {(!Array.isArray(filteredAllocations) || filteredAllocations.length === 0) && (
+                  {filteredAllocations.length === 0 && (
                     <div className="no-results">
                       <p>No rooms available in the system</p>
                     </div>
@@ -391,7 +357,6 @@ const RoomAllocation = () => {
               </div>
             </>
           ) : (
-            // Course-centric view (new implementation)
             <div className="course-allocation-panel">
               <div className="search-bar" style={{ marginBottom: '20px' }}>
                 <input
@@ -541,10 +506,7 @@ const RoomAllocation = () => {
  * PUBLIC_INTERFACE
  */
 RoomAllocation.propTypes = {
-  // This component is self-contained and uses context,
-  // so it does not accept any props
+  // This component is self-contained and uses context
 };
-
-RoomAllocation.defaultProps = {};
 
 export default RoomAllocation;
