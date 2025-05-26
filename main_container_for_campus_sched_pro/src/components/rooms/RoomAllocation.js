@@ -198,6 +198,14 @@ const RoomAllocation = () => {
                           <h4>{course.code || ''} - {course.name || ''}</h4>
                           <p>Instructor: {course.instructor || 'Unassigned'}</p>
                         </div>
+                        <Button 
+                          variant="contained" 
+                          color="primary"
+                          size="small"
+                          onClick={() => openAssignDialog(course)}
+                        >
+                          Assign to Room
+                        </Button>
                       </div>
                     ))
                   ) : (
