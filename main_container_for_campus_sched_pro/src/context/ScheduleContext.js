@@ -440,6 +440,7 @@ export const ScheduleProvider = ({ children }) => {
     // Operations
     setCourses,
     setRooms,
+    setSchedule,
     setCurrentAcademicYear,
     assignRoom,
     addCourse,
@@ -447,10 +448,14 @@ export const ScheduleProvider = ({ children }) => {
     deleteCourseById,
     updateAllocations,
     loadInitialData,
+    refreshData: loadInitialData,
     
     // Notifications
     showNotification,
-    handleCloseNotification
+    handleCloseNotification,
+    
+    // Course Operations
+    removeCourseFromSlot: unscheduleCourse
   };
 
   return (
