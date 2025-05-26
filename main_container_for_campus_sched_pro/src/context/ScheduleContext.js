@@ -334,8 +334,12 @@ export const ScheduleProvider = ({ children }) => {
           Object.keys(newSchedule).forEach(day => {
             Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
               if (newSchedule[day][timeSlot]) {
-                newSchedule[day][timeSlot] = newSchedule[day][timeSlot].filter(
-                  course => course.id !== courseId
+                // Ensure we're working with an array before using filter
+                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
+                  newSchedule[day][timeSlot] : [];
+                
+                newSchedule[day][timeSlot] = slotCourses.filter(
+                  course => course && course.id !== courseId
                 );
               }
             });
@@ -425,8 +429,12 @@ export const ScheduleProvider = ({ children }) => {
           Object.keys(newSchedule).forEach(day => {
             Object.keys(newSchedule[day] || {}).forEach(timeSlot => {
               if (newSchedule[day][timeSlot]) {
-                newSchedule[day][timeSlot] = newSchedule[day][timeSlot].map(course => {
-                  if (course.roomId === roomData.id) {
+                // Ensure we're working with an array before using map
+                const slotCourses = Array.isArray(newSchedule[day][timeSlot]) ? 
+                  newSchedule[day][timeSlot] : [];
+                
+                newSchedule[day][timeSlot] = slotCourses.map(course => {
+                  if (course && course.roomId === roomData.id) {
                     return {...course, room: roomData};
                   }
                   return course;
