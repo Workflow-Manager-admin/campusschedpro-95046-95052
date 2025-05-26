@@ -674,7 +674,6 @@ export const ScheduleProvider = ({ children }) => {
     setRooms,
     departments: Array.isArray(departments) ? departments : [],
     faculty: Array.isArray(faculty) ? faculty : [],
-    setFaculty,
     schedule,
     setSchedule,
     conflicts: Array.isArray(conflicts) ? conflicts : [],
