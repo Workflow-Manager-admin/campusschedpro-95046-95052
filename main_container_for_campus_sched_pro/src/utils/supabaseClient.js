@@ -57,52 +57,90 @@ export const supabase = createClient(
   }
 );
 
-// Subscribe to real-time changes for schedules
-export const subscribeToSchedules = (callback) => {
-  return supabase
-    .channel('schedules-changes')
+/**
+ * Enhanced subscription creation with error handling and reconnection
+ * @param {string} channelName - Unique channel name
+ * @param {string} table - Table to subscribe to
+ * @param {Function} callback - Callback function for changes
+ * @param {Object} options - Additional subscription options
+ * @returns {Object} Subscription channel
+ */
+const createSubscription = (channelName, table, callback, options = {}) => {
+  const channel = supabase.channel(channelName);
+  
+  // Configure channel with postgres changes
+  channel
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
-      table: 'schedules'
-    }, callback)
-    .subscribe();
+      table: table,
+      ...options
+    }, (payload) => {
+      try {
+        callback(payload);
+      } catch (error) {
+        console.error(`Error in ${table} subscription callback:`, error);
+      }
+    })
+    .on('error', (error) => {
+      console.error(`Channel ${channelName} error:`, error);
+      // Attempt to reconnect after a delay
+      setTimeout(() => {
+        console.log(`Attempting to reconnect ${channelName}...`);
+        channel.subscribe();
+      }, 5000);
+    })
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log(`Successfully subscribed to ${table} changes`);
+      } else if (status === 'CLOSED') {
+        console.log(`Subscription to ${table} closed`);
+      } else if (status === 'CHANNEL_ERROR') {
+        console.error(`Error in ${table} subscription`);
+      }
+    });
+
+  return channel;
+};
+
+// Subscribe to real-time changes for schedules
+export const subscribeToSchedules = (callback) => {
+  return createSubscription('schedules-changes', 'schedules', callback);
 };
 
 // Subscribe to real-time changes for room allocations
 export const subscribeToRoomAllocations = (callback) => {
-  return supabase
-    .channel('room-allocations-changes')
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'room_allocations'
-    }, callback)
-    .subscribe();
+  return createSubscription('room-allocations-changes', 'room_allocations', callback);
 };
 
 // Subscribe to real-time changes for courses
 export const subscribeToCourses = (callback) => {
-  return supabase
-    .channel('courses-changes')
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'courses'
-    }, callback)
-    .subscribe();
+  return createSubscription('courses-changes', 'courses', callback);
 };
 
 // Subscribe to real-time changes for conflicts
 export const subscribeToConflicts = (callback) => {
-  return supabase
-    .channel('conflicts-changes')
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'schedule_conflicts'
-    }, callback)
-    .subscribe();
+  return createSubscription('conflicts-changes', 'schedule_conflicts', callback);
+};
+
+// Subscribe to real-time changes for faculty
+export const subscribeToFaculty = (callback) => {
+  return createSubscription('faculty-changes', 'faculty', callback);
+};
+
+// Subscribe to real-time changes for rooms
+export const subscribeToRooms = (callback) => {
+  return createSubscription('rooms-changes', 'rooms', callback);
+};
+
+// Subscribe to real-time changes for constraint violations
+export const subscribeToConstraintViolations = (callback) => {
+  return createSubscription('constraint-violations-changes', 'constraint_violations', callback);
+};
+
+// Subscribe to real-time changes for equipment
+export const subscribeToEquipment = (callback) => {
+  return createSubscription('equipment-changes', 'equipment', callback);
 };
 
 // Start connection monitoring
