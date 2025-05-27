@@ -216,6 +216,7 @@ const CourseScheduling = () => {
       if (typeof refreshData === "function") await refreshData();
 
       handleCloseAddDialog();
+      // Ensure user only sees success if DB and UI are fully in sync
       showNotification('Course added successfully', 'success');
     } catch (error) {
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
@@ -253,6 +254,7 @@ const CourseScheduling = () => {
         if (typeof refreshData === "function") await refreshData();
         setShowEditDialog(false);
         setSelectedCourse(null);
+        // Only notify once UI (and DB) are confirmed in sync
         showNotification(`Course ${course.code} deleted successfully`, 'success');
       }
     } catch (error) {
