@@ -564,35 +564,30 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
   return true;
 };
 
-// Remove a course from a time slot
-export const unscheduleCourse = async (courseId, day, time) => {
+/**
+ * PUBLIC_INTERFACE
+ * Remove a course from a time slot by courseId and timeSlotId (NOT day/time-text).
+ * @param {string} courseId 
+ * @param {string} timeSlotId 
+ * @returns {Promise<boolean>}
+ */
+export const unscheduleCourse = async (courseId, timeSlotId) => {
   try {
-    // First get the time slot ID from day and time
-    const { data: timeSlots } = await supabase
-      .from('time_slots')
-      .select('id')
-      .eq('day', day)
-      .eq('time', time);
-    
-    if (!timeSlots || timeSlots.length === 0) {
-      console.error(`Time slot not found for ${day}-${time}`);
+    if (!courseId || !timeSlotId) {
+      console.error('Invalid unscheduleCourse arguments:', courseId, timeSlotId);
       return false;
     }
-    
-    const timeSlotId = timeSlots[0].id;
-    
-    // Now delete the schedule entry
+    // Delete the schedule entry matching course and time slot
     const { error } = await supabase
       .from('schedule')
       .delete()
       .eq('course_id', courseId)
       .eq('time_slot_id', timeSlotId);
-      
+
     if (error) {
       console.error('Error removing course from schedule:', error);
       return false;
     }
-    
     return true;
   } catch (error) {
     console.error('Unexpected error in unscheduleCourse:', error);

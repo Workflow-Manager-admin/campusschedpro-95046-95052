@@ -478,6 +478,7 @@ export const ScheduleProvider = ({ children }) => {
   // PUBLIC_INTERFACE
   /**
    * Unschedules a course from a specific day/time slot, persists removal in DB, reloads schedule after.
+   * Always uses DB timeSlotId for correct deletion.
    * @param {string} courseId
    * @param {string} day
    * @param {string} time
@@ -486,13 +487,14 @@ export const ScheduleProvider = ({ children }) => {
   const unscheduleCourseFromSlot = async (courseId, day, time) => {
     try {
       setActionLoadingState((prev) => ({ ...prev, schedule: 'PENDING' }));
+      // Dynamically import helpers only once for code splitting if required
       const { getTimeSlotId, unscheduleCourse } = await import("../utils/supabaseClient");
       const timeSlotId = await getTimeSlotId(day, time);
       if (!timeSlotId) {
         showNotification(`Could not find time slot for ${day}-${time}`, "error");
         return false;
       }
-      const ok = await unscheduleCourse(courseId, timeSlotId);
+      const ok = await unscheduleCourse(courseId, timeSlotId); // <-- Fixed: Always use (courseId, timeSlotId)
       if (ok) {
         await loadInitialData();
         showNotification(`Unscheduled course from ${day} ${time}`, "success");
