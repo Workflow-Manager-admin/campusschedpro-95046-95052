@@ -222,6 +222,10 @@ export const ScheduleProvider = ({ children }) => {
   }, [rooms, schedule]);
 
   // Room operations
+  /**
+   * PUBLIC_INTERFACE
+   * Assigns a room to course after successful DB commit and triggers state refresh.
+   */
   const assignRoom = async (courseId, roomId, day, timeSlot) => {
     try {
       // Input validation
@@ -238,48 +242,21 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
 
-      // Update the course in the database with the room assignment
+      // Update in database first, do NOT update state until DB confirmed
       const success = await saveCourse({
         ...course,
         room: room.name,
         roomId: room.id,
         building: room.building
       });
-      
+
       if (!success) {
         showNotification('Failed to update room assignment in database', 'error');
         return false;
       }
 
-      // Update the local state
-      const updatedCourse = {
-        ...course,
-        room: room.name,
-        roomId: room.id,
-        building: room.building
-      };
-
-      // Update courses array
-      setCourses(prevCourses => 
-        prevCourses.map(c => c.id === courseId ? updatedCourse : c)
-      );
-
-      // Update schedule
-      const slotId = `${day}-${timeSlot}`;
-      setSchedule(prevSchedule => {
-        const newSchedule = { ...prevSchedule };
-        if (!newSchedule[slotId]) {
-          newSchedule[slotId] = [];
-        }
-        newSchedule[slotId] = newSchedule[slotId]
-          .filter(c => c.id !== courseId)
-          .concat(updatedCourse);
-        return newSchedule;
-      });
-
-      // Update allocations
-      updateAllocations();
-
+      // Success: Now reload whole state/context from DB to guarantee sync
+      await loadInitialData();
       showNotification(`Successfully assigned ${course.code} to ${room.name}`, 'success');
       return true;
     } catch (error) {
@@ -289,17 +266,21 @@ export const ScheduleProvider = ({ children }) => {
   };
 
   // Course operations
+  /**
+   * PUBLIC_INTERFACE
+   * Add a course via DB and only update UI after DB confirmation. Always reload state from DB after mutation.
+   */
   const addCourse = async (courseData) => {
     try {
       setIsLoading(true);
       const courseId = await saveCourse(courseData);
-      
+
       if (courseId) {
-        const newCourse = { id: courseId, ...courseData };
-        setCourses(prevCourses => [...prevCourses, newCourse]);
+        // Only refresh state from DB, never update state directly
+        await loadInitialData();
         return courseId;
       }
-      
+
       setErrors(prev => ({ ...prev, course: 'Failed to save course' }));
       return null;
     } catch (error) {
@@ -310,33 +291,20 @@ export const ScheduleProvider = ({ children }) => {
     }
   };
 
+  /**
+   * PUBLIC_INTERFACE
+   * Update a course only after DB confirmation, then reload all state from DB.
+   */
   const updateCourse = async (courseData) => {
     try {
       setIsLoading(true);
       const success = await saveCourse(courseData);
-      
+
       if (success) {
-        // Update course in local state
-        setCourses(prevCourses => 
-          prevCourses.map(course => course.id === courseData.id ? courseData : course)
-        );
-        
-        // Update schedule if needed
-        setSchedule(prevSchedule => {
-          const newSchedule = { ...prevSchedule };
-          Object.entries(newSchedule).forEach(([slotId, courses]) => {
-            if (Array.isArray(courses)) {
-              newSchedule[slotId] = courses.map(course => 
-                course.id === courseData.id ? courseData : course
-              );
-            }
-          });
-          return newSchedule;
-        });
-        
+        await loadInitialData();
         return true;
       }
-      
+
       setErrors(prev => ({ ...prev, course: 'Failed to update course' }));
       return false;
     } catch (error) {
