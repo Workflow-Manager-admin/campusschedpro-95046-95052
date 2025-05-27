@@ -1,7 +1,6 @@
 import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
-import reactHooksRecommended from "eslint-plugin-react-hooks/configs/recommended";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,jsx}"] },
@@ -44,12 +43,13 @@ export default [
       "react/jsx-uses-vars": "error"
     }
   },
-  // Add the recommended React Hooks configuration directly (for ESLint flat config)
+  // Add the recommended React Hooks rules for ESLint flat config
   {
-    ...reactHooksRecommended,
-    plugins: {
-      ...((reactHooksRecommended && reactHooksRecommended.plugins) || {}),
-      'react-hooks': pluginReactHooks
+    plugins: { 'react-hooks': pluginReactHooks },
+    rules: {
+      // react-hooks/recommended
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn"
     }
   }
 ];
