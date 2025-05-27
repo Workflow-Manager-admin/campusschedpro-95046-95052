@@ -213,14 +213,14 @@ const CourseScheduling = () => {
       }
 
       // Only close dialog and show notification after full state has reloaded
-      await refreshData?.();
+      if (typeof refreshData === "function") await refreshData();
 
       handleCloseAddDialog();
       showNotification('Course added successfully', 'success');
     } catch (error) {
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
       // Also trigger a refresh for safety
-      if (refreshData) await refreshData();
+      if (typeof refreshData === "function") await refreshData();
     } finally {
       setIsAddingCourse(false);
     }
@@ -250,7 +250,7 @@ const CourseScheduling = () => {
     try {
       const success = await deleteCourseById(course.id);
       if (success) {
-        await refreshData?.();
+        if (typeof refreshData === "function") await refreshData();
         setShowEditDialog(false);
         setSelectedCourse(null);
         showNotification(`Course ${course.code} deleted successfully`, 'success');
@@ -258,7 +258,7 @@ const CourseScheduling = () => {
     } catch (error) {
       showNotification(`Failed to delete course: ${error.message || 'Unknown error'}`, 'error');
       // Also trigger state refresh if error (to keep UI in sync) 
-      if (refreshData) await refreshData();
+      if (typeof refreshData === "function") await refreshData();
     } finally {
       setDeletingCourseId(null);
     }
