@@ -209,15 +209,18 @@ export const enhancedSaveCourse = async (course) => {
 /**
  * Enhanced function to save a faculty with better error handling
  * @param {Object} faculty - Faculty object to save
- * @returns {Promise<{success: boolean, data: Object|null, message: string}>}
+ * @returns {Promise<{success: boolean, data: Object|null, message: string, errors?: string[]}>}
  */
 export const enhancedSaveFaculty = async (faculty) => {
   try {
-    if (!faculty.name || !faculty.email) {
-      return { 
-        success: false, 
-        data: null, 
-        message: 'Faculty name and email are required' 
+    // Validate faculty data
+    const validation = validateFaculty(faculty);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        data: null,
+        message: 'Invalid faculty data',
+        errors: validation.errors
       };
     }
     
