@@ -167,6 +167,7 @@ SELECT
     f.name AS faculty_name,
     r.id AS room_id,
     r.name AS room_name,
+    b.id AS building_id,
     b.name AS building_name,
     ts.day,
     ts.time
