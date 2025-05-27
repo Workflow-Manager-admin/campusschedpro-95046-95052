@@ -3,6 +3,7 @@ import { useSchedule } from "../context/ScheduleContext";
 import DataFetchErrorBoundary from "./common/DataFetchErrorBoundary";
 import { CircularProgress } from "@mui/material";
 import "../styles/CourseScheduling.css";
+import "../styles/ErrorHandling.css";
 
 const CourseScheduling = () => {
   const { courses, courseSchedule, isLoading, errors, refreshData } = useSchedule();

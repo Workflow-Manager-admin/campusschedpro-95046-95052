@@ -1,0 +1,86 @@
+/* Error Boundary Container */
+.error-boundary-container {
+  padding: 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin: 2rem auto;
+  border-radius: 8px;
+}
+
+/* Data Fetch Error */
+.data-fetch-error {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+/* Error Alert */
+.error-alert {
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: rgba(211, 47, 47, 0.1);
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  border-radius: 4px;
+  color: #d32f2f;
+}
+
+/* Loader Container */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 200px;
+}
+
+.loader-container p {
+  margin-top: 1rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+}
+
+/* Development Error Details */
+.dev-error-details {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  overflow: auto;
+  max-height: 200px;
+  text-align: left;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+/* Retry Button Animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.retry-button {
+  animation: pulse 2s infinite;
+}
+
+/* Error Stack Trace */
+.error-stack {
+  text-align: left;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  overflow: auto;
+  max-height: 300px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
