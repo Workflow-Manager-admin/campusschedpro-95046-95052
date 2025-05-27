@@ -200,10 +200,12 @@ const RoomAllocation = () => {
       };
       
       const success = await updateCourse(updatedCourse);
-      
+
       if (success) {
         showNotification(`${courseToUnassign.code} has been unassigned from room`, 'success');
-        updateAllocations();
+        if (typeof context.refreshData === 'function') {
+          await context.refreshData();
+        }
         closeUnassignDialog();
       } else {
         showNotification('Failed to unassign course', 'error');
