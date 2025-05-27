@@ -26,6 +26,11 @@ const FacultyManagement = () => {
     email: '',
     expertise: ''
   });
+
+  // granular, per-action loading states for add, update, and delete
+  const [isAddingFaculty, setIsAddingFaculty] = useState(false);
+  const [isUpdatingFaculty, setIsUpdatingFaculty] = useState(false);
+  const [deletingFacultyId, setDeletingFacultyId] = useState(null);
   
   // Define loadFacultyData without dependencies to prevent infinite loops
   const loadFacultyData = useCallback(async () => {
@@ -83,9 +88,10 @@ const FacultyManagement = () => {
   };
 
   const handleAddFaculty = async () => {
+    setIsAddingFaculty(true);
     try {
       const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim()).filter(e => e);
-      
+
       const newFacultyMember = {
         name: newFaculty.name,
         department: newFaculty.department,
@@ -93,29 +99,31 @@ const FacultyManagement = () => {
         expertise: expertiseArray,
         status: 'Available'
       };
-      
+
       // First close the dialog to prevent UI updates during API call
       setShowAddDialog(false);
-      
+
       // Use the safer faculty creation function
       showNotification('Adding new faculty member...', 'info');
-      
+
       const result = await safeSaveFaculty(newFacultyMember);
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Failed to create faculty');
       }
 
       // Reset form after successful save
       setNewFaculty({ name: '', department: '', email: '', expertise: '' });
-      
+
       // Do a clean reload of faculty data instead of partial state updates
       await loadFacultyData();
-      
+
       showNotification('Faculty member added successfully', 'success');
     } catch (error) {
       console.error('Error adding faculty:', error);
       showNotification(`Failed to add faculty: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setIsAddingFaculty(false);
     }
   };
 
