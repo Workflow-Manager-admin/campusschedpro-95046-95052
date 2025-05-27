@@ -1,27 +1,19 @@
 {
-  "name": "react-kavia",
-  "version": "0.1.0",
-  "private": true,
+  "name": "campusschedpro",
+  "version": "1.0.0",
+  "description": "Campus Schedule Pro Application",
+  "main": "index.js",
   "scripts": {
-    "build": "node minimal-build.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "dependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-scripts": "5.0.1"
-  },
-  "eslintConfig": {
-    "extends": ["react-app"],
-    "rules": {
-      "no-unused-vars": "off",
-      "no-console": "off"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ]
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "next": "^13.4.7",
+    "@mui/material": "^5.13.5",
+    "@mui/icons-material": "^5.13.5",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0"
   }
 }
