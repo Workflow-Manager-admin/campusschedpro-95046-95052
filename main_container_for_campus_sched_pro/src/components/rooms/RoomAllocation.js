@@ -159,10 +159,14 @@ const RoomAllocation = () => {
       };
       
       const success = await updateCourse(updatedCourse);
-      
+
       if (success) {
+        // UI notification and state will be refreshed after DB commit
         showNotification(`${selectedCourse.code} has been assigned to ${room.name}`, 'success');
-        updateAllocations();
+        // robust state refresh from DB (allocations, schedule, courses, rooms)
+        if (typeof context.refreshData === 'function') {
+          await context.refreshData();
+        }
         closeAssignDialog();
       } else {
         setAssignmentError('Failed to assign course to room');

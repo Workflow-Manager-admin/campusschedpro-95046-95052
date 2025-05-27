@@ -315,39 +315,20 @@ export const ScheduleProvider = ({ children }) => {
     }
   };
 
+  /**
+   * PUBLIC_INTERFACE
+   * Delete a course in DB and reload state from DB after success. Never mutate state optimistically.
+   */
   const deleteCourseById = async (courseId) => {
     try {
       setIsLoading(true);
       const success = await deleteCourse(courseId);
-      
+
       if (success) {
-        // Update local state
-        setCourses(prev => prev.filter(course => course.id !== courseId));
-        
-        // Remove from schedule
-        setSchedule(prev => {
-          const newSchedule = { ...prev };
-          Object.entries(newSchedule).forEach(([slotId, courses]) => {
-            if (Array.isArray(courses)) {
-              newSchedule[slotId] = courses.filter(course => course.id !== courseId);
-              if (newSchedule[slotId].length === 0) {
-                delete newSchedule[slotId];
-              }
-            }
-          });
-          return newSchedule;
-        });
-        
-        // Update conflicts
-        setConflicts(prev => 
-          prev.filter(conflict => 
-            conflict.course1.id !== courseId && conflict.course2.id !== courseId
-          )
-        );
-        
+        await loadInitialData();
         return true;
       }
-      
+
       setErrors(prev => ({ ...prev, course: 'Failed to delete course' }));
       return false;
     } catch (error) {
