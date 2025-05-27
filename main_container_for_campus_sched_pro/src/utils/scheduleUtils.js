@@ -62,7 +62,7 @@ export const findScheduleConflicts = (schedule) => {
           
           if (course1.instructor === course2.instructor) {
             conflicts.push({
-              id: `instructor-${slotId}-${course1.id}-${course2.id}`,
+              id: `instructor-${slotId}-${course1.code || i}-${course2.code || j}`,
               type: 'instructor',
               slotId,
               courses: [course1, course2],
@@ -72,7 +72,7 @@ export const findScheduleConflicts = (schedule) => {
           
           if (course1.room && course2.room && course1.room === course2.room) {
             conflicts.push({
-              id: `room-${slotId}-${course1.id}-${course2.id}`,
+              id: `room-${slotId}-${course1.code || i}-${course2.code || j}`,
               type: 'room',
               slotId,
               courses: [course1, course2],
