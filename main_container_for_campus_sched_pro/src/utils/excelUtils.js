@@ -1,75 +1,95 @@
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from './supabaseClient';
 import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver'; // NEW: FileSaver for robust cross-browser download
 
 /**
- * Creates and downloads an Excel template file
+ * PUBLIC_INTERFACE
+ * Creates and downloads an Excel template file using FileSaver for robust downloads.
+ * In case of download failure, it will call the errorCallback (if provided).
  * 
  * @param {Array} headers - Array of column headers
  * @param {Array} exampleData - Array of example data 
  * @param {string} filename - Name of the file to download
+ * @param {function} errorCallback - Optional. Called with error message if download fails.
  */
-const createAndDownloadTemplate = (headers, exampleData, filename) => {
-  // Create worksheet with headers and example data
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...exampleData]);
-  
-  // Create workbook and append worksheet
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Template');
-  
-  // Write workbook to file and download
-  XLSX.writeFile(wb, filename);
+const createAndDownloadTemplate = (headers, exampleData, filename, errorCallback) => {
+  try {
+    // Create worksheet with headers and example data
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...exampleData]);
+
+    // Create workbook and append worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
+
+    // Generate XLSX file as Blob (for FileSaver)
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+
+    // Use FileSaver's saveAs (works in all supported browsers)
+    saveAs(blob, filename);
+  } catch (err) {
+    if (errorCallback) {
+      errorCallback("Template download failed. Please check your browser settings or try a different browser. (" + (err.message || err.toString()) + ")");
+    } else {
+      // Rethrow so error can surface in UI if no callback present
+      throw err;
+    }
+  }
 };
 
 /**
+ * PUBLIC_INTERFACE
  * Generates a course template Excel file for download
  */
-export const generateCourseTemplate = () => {
+export const generateCourseTemplate = (errorCallback) => {
   const headers = [
     'Course Name', 'Course Code', 'Credits', 'Instructor', 
     'Expected Enrollment', 'Department', 'Requires Lab (Yes/No)', 
     'Required Equipment (comma separated)'
   ];
-  
+
   const exampleData = [[
     'Introduction to Programming', 'CS101', '3', 'Dr. Smith',
     '30', 'Computer Science', 'Yes', 'Computers, Projector'
   ]];
-  
-  createAndDownloadTemplate(headers, exampleData, 'course_template.xlsx');
+
+  createAndDownloadTemplate(headers, exampleData, 'course_template.xlsx', errorCallback);
 };
 
 /**
+ * PUBLIC_INTERFACE
  * Generates a faculty template Excel file for download
  */
-export const generateFacultyTemplate = () => {
+export const generateFacultyTemplate = (errorCallback) => {
   const headers = [
     'Faculty Name', 'Email', 'Department', 'Expertise (comma separated)'
   ];
-  
+
   const exampleData = [[
     'Dr. Jane Smith', 'jsmith@example.edu', 'Computer Science', 
     'Machine Learning, Data Science, AI'
   ]];
-  
-  createAndDownloadTemplate(headers, exampleData, 'faculty_template.xlsx');
+
+  createAndDownloadTemplate(headers, exampleData, 'faculty_template.xlsx', errorCallback);
 };
 
 /**
+ * PUBLIC_INTERFACE
  * Generates a room template Excel file for download
  */
-export const generateRoomTemplate = () => {
+export const generateRoomTemplate = (errorCallback) => {
   const headers = [
     'Room Name', 'Building', 'Type', 'Capacity', 'Floor',
     'Equipment (comma separated)'
   ];
-  
+
   const exampleData = [[
     'Room 101', 'Engineering Building', 'Classroom', '30', '1',
     'Projector, Whiteboard, Computers'
   ]];
-  
-  createAndDownloadTemplate(headers, exampleData, 'room_template.xlsx');
+
+  createAndDownloadTemplate(headers, exampleData, 'room_template.xlsx', errorCallback);
 };
 
 /**
