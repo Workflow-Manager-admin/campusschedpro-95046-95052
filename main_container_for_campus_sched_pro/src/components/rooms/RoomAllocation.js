@@ -238,6 +238,23 @@ const RoomAllocation = () => {
   return (
     <RoomAllocationErrorBoundary>
       <div className="room-allocation">
+        {isRefreshing && (
+          <div style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            zIndex: 10000, background: "rgba(255,255,255,0.6)", display: 'flex',
+            alignItems: 'center', justifyContent: 'center', userSelect: 'none'
+          }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <svg width="60" height="60" style={{ marginBottom: 8 }}>
+                <circle cx="30" cy="30" r="26" stroke="#1976d2" strokeWidth="7" fill="none" strokeDasharray="163.36"
+                  strokeDashoffset="81.68">
+                  <animate attributeName="stroke-dashoffset" values="163.36;0" dur="1.6s" repeatCount="indefinite" />
+                </circle>
+              </svg>
+              <div style={{ fontSize: 20, color: "#1976d2" }}>Refreshing...</div>
+            </div>
+          </div>
+        )}
         <div className="room-header">
           <h2>Room Allocation</h2>
           <div className="view-controls">
@@ -449,6 +466,7 @@ const RoomAllocation = () => {
                   label="Select Room"
                   onChange={handleRoomChange}
                   error={!!assignmentError}
+                  disabled={isAssigning}
                 >
                   <MenuItem value="">
                     <em>Select a room</em>
@@ -473,18 +491,31 @@ const RoomAllocation = () => {
                 </Select>
                 {assignmentError && <FormHelperText error>{assignmentError}</FormHelperText>}
               </FormControl>
+              {isAssigning && (
+                <div style={{ display: 'flex', alignItems: 'center', margin: '18px 0', gap: 8 }}>
+                  <span>Assigning...</span>
+                  <span>
+                    <svg width="22" height="22">
+                      <circle cx="11" cy="11" r="9" stroke="#1976d2" strokeWidth="4" fill="none" strokeDasharray="56.5"
+                        strokeDashoffset="28.25">
+                        <animate attributeName="stroke-dashoffset" values="56.5;0" dur="1s" repeatCount="indefinite" />
+                      </circle>
+                    </svg>
+                  </span>
+                </div>
+              )}
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeAssignDialog}>Cancel</Button>
+          <Button onClick={closeAssignDialog} disabled={isAssigning}>Cancel</Button>
           <Button 
             onClick={assignCourseToRoom} 
             variant="contained" 
             color="primary"
-            disabled={!selectedRoomId}
+            disabled={!selectedRoomId || isAssigning}
           >
-            Assign
+            {isAssigning ? "Assigning..." : "Assign"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -497,19 +528,35 @@ const RoomAllocation = () => {
         <DialogTitle>Unassign Course</DialogTitle>
         <DialogContent>
           {courseToUnassign && (
+            <>
             <Alert severity="warning">
               Are you sure you want to unassign {courseToUnassign.code} - {courseToUnassign.name} from {courseToUnassign.room}?
             </Alert>
+            {isUnassigning && (
+              <div style={{ display: 'flex', alignItems: 'center', margin: '17px 0', gap: 8 }}>
+                <span>Unassigning...</span>
+                <span>
+                  <svg width="18" height="18">
+                    <circle cx="9" cy="9" r="7" stroke="#d32f2f" strokeWidth="3" fill="none" strokeDasharray="43.96"
+                      strokeDashoffset="21.98">
+                      <animate attributeName="stroke-dashoffset" values="43.96;0" dur="1s" repeatCount="indefinite" />
+                    </circle>
+                  </svg>
+                </span>
+              </div>
+            )}
+            </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeUnassignDialog}>Cancel</Button>
+          <Button onClick={closeUnassignDialog} disabled={isUnassigning}>Cancel</Button>
           <Button 
             onClick={unassignCourse} 
             variant="contained" 
             color="secondary"
+            disabled={isUnassigning}
           >
-            Unassign
+            {isUnassigning ? "Unassigning..." : "Unassign"}
           </Button>
         </DialogActions>
       </Dialog>
