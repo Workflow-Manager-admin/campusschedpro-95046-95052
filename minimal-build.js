@@ -1,119 +1,63 @@
-const { spawn } = require('child_process');
-const fs = require('fs').promises;
+const { spawnSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
-// Logging utility
-const log = {
-    info: (msg) => {
-        const timestamp = new Date().toISOString();
-        console.log(`[${timestamp}] INFO: ${msg}`);
-        fs.appendFile('build.log', `[${timestamp}] INFO: ${msg}\n`).catch(() => {});
-    },
-    error: (msg) => {
-        const timestamp = new Date().toISOString();
-        console.error(`[${timestamp}] ERROR: ${msg}`);
-        fs.appendFile('build.log', `[${timestamp}] ERROR: ${msg}\n`).catch(() => {});
-    }
-};
+// Ensure we're in the right directory
+const scriptDir = path.dirname(require.main.filename);
+process.chdir(scriptDir);
 
-async function runBuild() {
-    // Clear previous log
-    try {
-        await fs.unlink('build.log');
-    } catch (e) {}
-
-    log.info('Starting minimal build process');
-    log.info(`Memory: ${JSON.stringify(process.memoryUsage())}`);
-
-    // Set minimal environment
-    const env = {
-        ...process.env,
-        NODE_ENV: 'production',
-        INLINE_RUNTIME_CHUNK: 'false',
-        GENERATE_SOURCEMAP: 'false',
-        NODE_OPTIONS: '--max-old-space-size=512'
-    };
-
-    log.info('Environment configured');
-
-    // Run react-scripts build directly
-    const build = spawn('npx', ['react-scripts', 'build'], {
-        env,
-        stdio: ['inherit', 'pipe', 'pipe']
-    });
-
-    // Capture output
-    build.stdout.on('data', (data) => {
-        const output = data.toString();
-        log.info(`BUILD OUTPUT: ${output}`);
-    });
-
-    build.stderr.on('data', (data) => {
-        const output = data.toString();
-        log.error(`BUILD ERROR: ${output}`);
-    });
-
-    return new Promise((resolve, reject) => {
-        build.on('exit', (code) => {
-            if (code === 0) {
-                log.info('Build completed successfully');
-                resolve();
-            } else {
-                log.error(`Build failed with code ${code}`);
-                reject(new Error(`Build failed with code ${code}`));
-            }
-        });
-
-        build.on('error', (err) => {
-            log.error(`Build process error: ${err.message}`);
-            reject(err);
-        });
-
-        // Set timeout to prevent hanging
-        setTimeout(() => {
-            log.error('Build timed out after 5 minutes');
-            build.kill();
-            reject(new Error('Build timed out'));
-        }, 300000); // 5 minutes timeout
+// Clean up function
+function cleanup() {
+    const foldersToRemove = ['node_modules', 'build'];
+    foldersToRemove.forEach(folder => {
+        if (fs.existsSync(folder)) {
+            console.log(`Removing ${folder}...`);
+            fs.rmSync(folder, { recursive: true, force: true });
+        }
     });
 }
 
-// Update package.json to minimal configuration
-const updatePackageJson = async () => {
-    log.info('Updating package.json');
-    const packageJson = {
-        name: "react-kavia",
-        version: "0.1.0",
-        private: true,
-        dependencies: {
-            "react": "^18.2.0",
-            "react-dom": "^18.2.0",
-            "react-scripts": "5.0.1"
-        },
-        scripts: {
-            "start": "react-scripts start",
-            "build": "node minimal-build.js",
-            "test": "react-scripts test",
-            "eject": "react-scripts eject"
+// Run command function
+function runCommand(command, args) {
+    console.log(`Running: ${command} ${args.join(' ')}`);
+    const result = spawnSync(command, args, {
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            NODE_OPTIONS: '--max-old-space-size=1024',
+            DISABLE_ESLINT_PLUGIN: 'true',
+            DISABLE_NEW_JSX_TRANSFORM: 'true',
+            NODE_ENV: 'production',
+            CI: 'false'
         }
-    };
+    });
 
-    await fs.writeFile('package.json', JSON.stringify(packageJson, null, 2));
-    log.info('package.json updated');
-};
-
-// Run the build process
-(async () => {
-    try {
-        await updatePackageJson();
-        log.info('Running npm install');
-        await new Promise((resolve, reject) => {
-            const install = spawn('npm', ['install'], { stdio: 'inherit' });
-            install.on('exit', (code) => code === 0 ? resolve() : reject());
-        });
-        await runBuild();
-    } catch (error) {
-        log.error(`Build failed: ${error.message}`);
-        process.exit(1);
+    if (result.error) {
+        throw result.error;
     }
-})();
+
+    return result.status;
+}
+
+try {
+    // Clean up first
+    cleanup();
+
+    // Install only the bare minimum dependencies
+    const installStatus = runCommand('npm', ['ci', '--omit=dev', '--no-audit', '--no-fund', '--prefer-offline']);
+    if (installStatus !== 0) {
+        throw new Error('npm install failed');
+    }
+
+    // Run the build
+    const buildStatus = runCommand('npx', ['react-scripts', 'build', '--no-warnings']);
+    if (buildStatus !== 0) {
+        throw new Error('build failed');
+    }
+
+    console.log('Build completed successfully');
+} catch (error) {
+    console.error('Build failed:', error);
+    cleanup(); // Clean up on failure
+    process.exit(1);
+}
