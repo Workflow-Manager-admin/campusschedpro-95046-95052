@@ -38,3 +38,13 @@ export 'fetchSchedules' (imported as 'fetchSchedules') was not found in '../util
 
 webpack compiled with 2 errors
 Compiling...
+Failed to compile.
+
+Attempted import error: 'fetchCourseScheduleView' is not exported from '../utils/supabaseClient' (imported as 'fetchCourseScheduleView').
+ERROR in ./src/context/ScheduleContext.js 40:143-166
+export 'fetchCourseScheduleView' (imported as 'fetchCourseScheduleView') was not found in '../utils/supabaseClient' (possible exports: fetchCourses, fetchFaculty, fetchRooms, supabase)
+
+ERROR in ./src/context/ScheduleContext.js 40:170-184
+export 'fetchSchedules' (imported as 'fetchSchedules') was not found in '../utils/supabaseClient' (possible exports: fetchCourses, fetchFaculty, fetchRooms, supabase)
+
+webpack compiled with 2 errors
