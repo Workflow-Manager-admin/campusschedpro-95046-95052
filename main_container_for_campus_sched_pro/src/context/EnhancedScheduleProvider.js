@@ -353,38 +353,27 @@ export const EnhancedScheduleProvider = ({ children }) => {
 
 export const useSchedule = () => {
   const context = useContext(ScheduleContext);
-  if (!context) {
-    // Return a default context structure with all required fields
-    return {
-      scheduleData: null,
-      roomAllocations: null,
-      courses: null,
-      conflicts: null,
-      loading: false,
-      error: null,
-      progress: 0,
-      retryCount: 0,
-      notification: { open: false, message: '', severity: 'info' },
-      handleCloseNotification: () => {},
-      refreshData: () => {},
-      showNotification: () => {},
-      errors: {}, // Ensure errors object exists
-      schedule: {}, // Add schedule field for compatibility
-      setSchedule: () => {}, // Add setSchedule function
-    };
-  }
-
-  // Transform the context to match expected shape
+  
+  // Never return null/undefined context - always return the initial value shape
   return {
     ...context,
-    errors: context.error ? { general: context.error.message } : {},
-    schedule: context.scheduleData || {}, // Map scheduleData to schedule for compatibility
-    setSchedule: (newSchedule) => {
-      if (context.showNotification) {
-        context.showNotification('Schedule updated', 'success');
-      }
-      // You might want to implement actual schedule updates here
-    }
+    // Ensure these fields are always present with the correct shape
+    scheduleData: context?.scheduleData ?? null,
+    roomAllocations: context?.roomAllocations ?? null,
+    courses: context?.courses ?? null,
+    conflicts: context?.conflicts ?? null,
+    loading: context?.loading ?? false,
+    error: context?.error ?? null,
+    progress: context?.progress ?? 0,
+    retryCount: context?.retryCount ?? 0,
+    notification: context?.notification ?? { open: false, message: '', severity: 'info' },
+    handleCloseNotification: context?.handleCloseNotification ?? (() => {}),
+    refreshData: context?.refreshData ?? (() => {}),
+    showNotification: context?.showNotification ?? (() => {}),
+    // Maintain backward compatibility
+    errors: context?.error ? { general: context.error.message } : {},
+    schedule: context?.scheduleData ?? {},
+    setSchedule: context?.handleScheduleUpdate ?? (() => {}),
   };
 };
 
