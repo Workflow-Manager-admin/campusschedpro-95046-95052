@@ -33,7 +33,13 @@ export const ScheduleProvider = ({ children }) => {
   const [currentAcademicYear, setCurrentAcademicYear] = useState('2023-2024');
   
   // Loading and error states
-  const [isLoading, setIsLoading] = useState(true);
+  // Remove the single isLoading, use granular loading state for actions
+  const [isLoading, setIsLoading] = useState(true); // Used only for initial data boot
+  const [actionLoadingState, setActionLoadingState] = useState({
+    courseId: null, // for add/update/delete per course
+    roomId: null,   // for add/update/delete per room
+    facultyId: null // for add/update/delete per faculty
+  });
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState({
     open: false,

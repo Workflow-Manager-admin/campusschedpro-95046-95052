@@ -14,18 +14,12 @@ import './styles/RoomStyles.css';
 import './styles/ConflictResolution.css';
 import './styles/BulkImport.css';
 
-// Component that wraps the application and provides loading state
+/**
+ * AppContent no longer displays a global loading overlay.
+ * Per-component loading is now handled by the relevant components.
+ */
 const AppContent = () => {
-  const { isLoading, errors, notification, handleCloseNotification, refreshData } = useSchedule();
-
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <CircularProgress size={60} thickness={4} />
-        <p>Loading CampusSchedPro data...</p>
-      </div>
-    );
-  }
+  const { errors, notification, handleCloseNotification, refreshData } = useSchedule();
 
   if (errors?.general) {
     return (
