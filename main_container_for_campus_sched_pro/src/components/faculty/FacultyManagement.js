@@ -1,318 +1,45 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { CircularProgress } from '@mui/material';
-
-import { 
-  getFacultyStatus 
-} from '../../utils/facultyUtils';
-import { useSchedule } from '../../context/ScheduleContext';
-import { getAllFaculty, getFacultyAssignments, deleteFaculty } from '../../utils/supabaseClient';
-import { safeSaveFaculty } from '../../utils/contextHelpers';
-import FacultyCard from './FacultyCard';
-import FacultyDetails from './FacultyDetails';
-import FacultyBulkImport from './FacultyBulkImport';
+import React from "react";
+import { useSchedule } from "../../context/ScheduleContext";
+import "../../styles/FacultyManagement.css";
 
 const FacultyManagement = () => {
-  const { showNotification } = useSchedule();
-  
-  const [faculty, setFaculty] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedFaculty, setSelectedFaculty] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [newFaculty, setNewFaculty] = useState({
-    name: '',
-    department: '',
-    email: '',
-    expertise: ''
-  });
-
-  // granular, per-action loading states for add, update, and delete
-  const [isAddingFaculty, setIsAddingFaculty] = useState(false);
-  const [isUpdatingFaculty, setIsUpdatingFaculty] = useState(false);
-  const [deletingFacultyId, setDeletingFacultyId] = useState(null);
-  
-  // Define loadFacultyData without dependencies to prevent infinite loops
-  const loadFacultyData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const facultyData = await getAllFaculty();
-      
-      const facultyWithAssignments = await Promise.all(
-        facultyData.map(async (fac) => {
-          const assignments = await getFacultyAssignments(fac.id);
-          const facultyWithStatus = {
-            ...fac,
-            assignments
-          };
-          
-          return {
-            ...facultyWithStatus,
-            ...getFacultyStatus(facultyWithStatus, assignments)
-          };
-        })
-      );
-      
-      setFaculty(facultyWithAssignments);
-    } catch (error) {
-      console.error('Error loading faculty data:', error);
-      // Using showNotification directly here is fine as long as the function isn't in dependencies
-      showNotification('Failed to load faculty data from the database', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showNotification]); // Include showNotification in the dependency array
-  
-  useEffect(() => {
-    // Load faculty data once when component mounts
-    loadFacultyData();
-  }, [loadFacultyData]); // Include loadFacultyData in the dependency array
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleStatusFilter = (status) => {
-    setStatusFilter(status);
-  };
-
-  const filteredFaculty = faculty.filter(f => {
-    const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         f.department.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || f.status.toLowerCase().includes(statusFilter.toLowerCase());
-    return matchesSearch && matchesStatus;
-  });
-
-  const handleSelectFaculty = (selected) => {
-    setSelectedFaculty(selected);
-  };
-
-  const handleAddFaculty = async () => {
-    setIsAddingFaculty(true);
-    try {
-      const expertiseArray = newFaculty.expertise.split(',').map(e => e.trim()).filter(e => e);
-
-      const newFacultyMember = {
-        name: newFaculty.name,
-        department: newFaculty.department,
-        email: newFaculty.email,
-        expertise: expertiseArray,
-        status: 'Available'
-      };
-
-      // First close the dialog to prevent UI updates during API call
-      setShowAddDialog(false);
-
-      // Use the safer faculty creation function
-      showNotification('Adding new faculty member...', 'info');
-
-      const result = await safeSaveFaculty(newFacultyMember);
-
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to create faculty');
-      }
-
-      // Reset form after successful save
-      setNewFaculty({ name: '', department: '', email: '', expertise: '' });
-
-      // Do a clean reload of faculty data instead of partial state updates
-      await loadFacultyData();
-
-      showNotification('Faculty member added successfully', 'success');
-    } catch (error) {
-      console.error('Error adding faculty:', error);
-      showNotification(`Failed to add faculty: ${error.message || 'Unknown error'}`, 'error');
-    } finally {
-      setIsAddingFaculty(false);
-    }
-  };
-
-  const handleUpdateFaculty = async (updatedFaculty) => {
-    setIsUpdatingFaculty(true);
-    try {
-      // Use the safer faculty update function
-      showNotification('Updating faculty member...', 'info');
-
-      const result = await safeSaveFaculty(updatedFaculty);
-
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to update faculty');
-      }
-
-      // Reload faculty data to ensure consistency
-      await loadFacultyData();
-
-      // Update selected faculty with the latest data
-      const updatedList = faculty.find(f => f.id === updatedFaculty.id);
-      setSelectedFaculty(updatedList || null);
-
-      showNotification('Faculty member updated successfully', 'success');
-    } catch (error) {
-      console.error('Error updating faculty:', error);
-      showNotification(`Failed to update faculty: ${error.message || 'Unknown error'}`, 'error');
-    } finally {
-      setIsUpdatingFaculty(false);
-    }
-  };
-
-  const handleDeleteFaculty = async (facultyId) => {
-    setDeletingFacultyId(facultyId);
-    try {
-      await deleteFaculty(facultyId);
-
-      // Clear selection first
-      setSelectedFaculty(null);
-
-      // Reload faculty data
-      await loadFacultyData();
-
-      showNotification('Faculty member deleted successfully', 'success');
-    } catch (error) {
-      console.error('Error deleting faculty:', error);
-      showNotification('Failed to delete faculty member from the database', 'error');
-    } finally {
-      setDeletingFacultyId(null);
-    }
-  };
-
-  const handleBulkImportComplete = () => {
-    showNotification('Faculty import completed. Refreshing data...', 'success');
-    loadFacultyData();
-  };
+  const { faculty, loading, errors, refreshData } = useSchedule();
 
   if (loading) {
+    return <div className="loader">Loading faculty data...</div>;
+  }
+
+  if (errors?.general) {
     return (
-      <div className="faculty-management">
-        <div className="loading-container">
-          <CircularProgress size={40} />
-          <p>Loading faculty data...</p>
-        </div>
+      <div className="error-container">
+        <strong>Error: {errors.general}</strong>
+        <button onClick={refreshData} className="btn btn-accent">Retry</button>
       </div>
     );
   }
 
   return (
-    <div className="faculty-management">
-      <div className="faculty-content-container">
-        <div className="faculty-header">
-          <h2>Faculty Management</h2>
-          <div className="faculty-actions">
-            <button className="btn" onClick={() => setShowAddDialog(true)}>
-              + Add Faculty
-            </button>
-            <FacultyBulkImport onComplete={handleBulkImportComplete} />
-          </div>
-        </div>
-
-        <div className="faculty-container">
-          <div className="faculty-list">
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Search faculty..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="search-input"
-              />
-            </div>
-
-            <div className="faculty-filters">
-              {['all', 'available', 'partially booked', 'fully booked'].map(status => (
-                <div
-                  key={status}
-                  className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
-                  onClick={() => handleStatusFilter(status)}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </div>
-              ))}
-            </div>
-
-            <div className="faculty-grid">
-              <div className="faculty-cards-container">
-                {filteredFaculty.map(f => (
-                  <FacultyCard
-                    key={f.id}
-                    faculty={f}
-                    selected={selectedFaculty?.id === f.id}
-                    onClick={() => handleSelectFaculty(f)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {selectedFaculty && (
-            <FacultyDetails
-              faculty={selectedFaculty}
-              onSave={handleUpdateFaculty}
-              onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
-              onClose={() => setSelectedFaculty(null)}
-              isUpdatingFaculty={isUpdatingFaculty}
-              isDeleting={deletingFacultyId === selectedFaculty.id}
-            />
-          )}
-        </div>
-
-        {showAddDialog && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="dialog-content" style={{ padding: '24px' }}>
-                <h2>Add New Faculty</h2>
-                
-                <div className="form-group">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={newFaculty.name}
-                    onChange={(e) => setNewFaculty(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Department</label>
-                  <input
-                    type="text"
-                    value={newFaculty.department}
-                    onChange={(e) => setNewFaculty(prev => ({ ...prev, department: e.target.value }))}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    value={newFaculty.email}
-                    onChange={(e) => setNewFaculty(prev => ({ ...prev, email: e.target.value }))}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Expertise (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={newFaculty.expertise}
-                    onChange={(e) => setNewFaculty(prev => ({ ...prev, expertise: e.target.value }))}
-                  />
-                </div>
-                
-                <div className="dialog-actions">
-                  <button className="btn" onClick={() => setShowAddDialog(false)} disabled={isAddingFaculty}>
-                    Cancel
-                  </button>
-                  <button 
-                    className="btn btn-accent"
-                    onClick={handleAddFaculty}
-                    disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email || isAddingFaculty}
-                  >
-                    {isAddingFaculty ? <CircularProgress size={18} /> : 'Add Faculty'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+    <div className="container">
+      <h2>Faculty List</h2>
+      <table className="entity-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            {/* Only show direct flat fields */}
+          </tr>
+        </thead>
+        <tbody>
+          {faculty.map(fac => (
+            <tr key={fac.id}>
+              <td>{fac.name}</td>
+              <td>{fac.email}</td>
+              <td>{fac.department}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
