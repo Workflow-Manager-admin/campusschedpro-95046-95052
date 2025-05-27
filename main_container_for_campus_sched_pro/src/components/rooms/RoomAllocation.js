@@ -199,6 +199,7 @@ const RoomAllocation = () => {
   const unassignCourse = async () => {
     if (!courseToUnassign) return;
     setIsUnassigning(true);
+    setRefreshingIds(ids => [...new Set([...ids, courseToUnassign.id])]);
     try {
       // Remove all schedule assignments for this course from DB before removing room metadata.
       if (courseToUnassign.schedule && Array.isArray(courseToUnassign.schedule) && courseToUnassign.schedule.length > 0) {
@@ -224,17 +225,20 @@ const RoomAllocation = () => {
 
       if (success) {
         showNotification(`${courseToUnassign.code} has been unassigned from room and schedule`, 'success');
+        // Async refresh: when done, remove shimmer
         if (typeof context.refreshData === 'function') {
-          setIsRefreshing(true);
-          await context.refreshData();
-          setIsRefreshing(false);
+          context.refreshData().finally(() => {
+            setRefreshingIds(ids => ids.filter(id => id !== courseToUnassign.id));
+          });
         }
         closeUnassignDialog();
       } else {
         showNotification('Failed to unassign course', 'error');
+        setRefreshingIds(ids => ids.filter(id => id !== courseToUnassign.id));
       }
     } catch (error) {
       showNotification(`Error: ${error.message || 'Unknown error'}`, 'error');
+      setRefreshingIds(ids => ids.filter(id => id !== courseToUnassign.id));
     } finally {
       setIsUnassigning(false);
     }
@@ -243,23 +247,7 @@ const RoomAllocation = () => {
   return (
     <RoomAllocationErrorBoundary>
       <div className="room-allocation">
-        {isRefreshing && (
-          <div style={{
-            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-            zIndex: 10000, background: "rgba(255,255,255,0.6)", display: 'flex',
-            alignItems: 'center', justifyContent: 'center', userSelect: 'none'
-          }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <svg width="60" height="60" style={{ marginBottom: 8 }}>
-                <circle cx="30" cy="30" r="26" stroke="#1976d2" strokeWidth="7" fill="none" strokeDasharray="163.36"
-                  strokeDashoffset="81.68">
-                  <animate attributeName="stroke-dashoffset" values="163.36;0" dur="1.6s" repeatCount="indefinite" />
-                </circle>
-              </svg>
-              <div style={{ fontSize: 20, color: "#1976d2" }}>Refreshing...</div>
-            </div>
-          </div>
-        )}
+        {/* No global overlay spinner. Granular card/row spinner instead. */}
         <div className="room-header">
           <h2>Room Allocation</h2>
           <div className="view-controls">
