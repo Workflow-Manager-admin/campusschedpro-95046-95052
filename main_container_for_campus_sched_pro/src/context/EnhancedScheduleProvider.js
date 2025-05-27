@@ -268,13 +268,17 @@ export const EnhancedScheduleProvider = ({ children }) => {
   // Context value with enhanced error handling
   const contextValue = {
     scheduleData,
+    roomAllocations,
+    courses,
+    conflicts,
     loading,
     error,
     progress,
     retryCount,
     notification,
     handleCloseNotification,
-    refreshData: handleRetry
+    refreshData: handleRetry,
+    showNotification
   };
 
   return (
