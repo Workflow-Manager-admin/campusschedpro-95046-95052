@@ -193,20 +193,16 @@ const RoomAllocation = () => {
   // PUBLIC_INTERFACE
   const unassignCourse = async () => {
     if (!courseToUnassign) return;
-    
+    setIsUnassigning(true);
     try {
       // Remove all schedule assignments for this course from DB before removing room metadata.
       if (courseToUnassign.schedule && Array.isArray(courseToUnassign.schedule) && courseToUnassign.schedule.length > 0) {
         for (const slot of courseToUnassign.schedule) {
-          // Assume schedule slot is formatted "Day-Time"
           if (typeof slot === "string" && slot.includes('-')) {
             const [day, time] = slot.split('-');
-            // Delete from the schedule table (Supabase)
             if (context.unscheduleCourseFromSlot) {
-              // Best: use provider/context abstraction if available
               await context.unscheduleCourseFromSlot(courseToUnassign.id, day, time);
             } else if (typeof window.unscheduleCourse === "function") {
-              // Fallback for dev: if helper is globally available
               await window.unscheduleCourse(courseToUnassign.id, day, time);
             }
           }
@@ -219,13 +215,14 @@ const RoomAllocation = () => {
         roomId: null,
         building: null
       };
-      
       const success = await updateCourse(updatedCourse);
 
       if (success) {
         showNotification(`${courseToUnassign.code} has been unassigned from room and schedule`, 'success');
         if (typeof context.refreshData === 'function') {
+          setIsRefreshing(true);
           await context.refreshData();
+          setIsRefreshing(false);
         }
         closeUnassignDialog();
       } else {
@@ -233,6 +230,8 @@ const RoomAllocation = () => {
       }
     } catch (error) {
       showNotification(`Error: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setIsUnassigning(false);
     }
   };
 
