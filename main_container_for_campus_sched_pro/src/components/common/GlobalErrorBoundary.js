@@ -1,60 +1,116 @@
 import React from 'react';
-import { Alert, Button } from '@mui/material';
+import { Alert, Button, Box, Typography, Collapse } from '@mui/material';
+import { handleSupabaseError } from '../../utils/supabaseErrorHandler';
 
 class GlobalErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { 
+      hasError: false, 
+      error: null, 
+      errorInfo: null,
+      showDetails: false
+    };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    const processedError = handleSupabaseError(error, 'Application Error');
+    return { 
+      hasError: true, 
+      error: processedError 
+    };
   }
 
   componentDidCatch(error, errorInfo) {
+    const processedError = handleSupabaseError(error, 'Application Error');
+    
     this.setState({
-      error,
+      error: processedError,
       errorInfo
     });
+
     // Log error to monitoring service
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('Error caught by boundary:', processedError, errorInfo);
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    this.setState({ 
+      hasError: false, 
+      error: null, 
+      errorInfo: null,
+      showDetails: false 
+    });
+    
     if (this.props.onRetry) {
       this.props.onRetry();
     }
   };
 
+  toggleDetails = () => {
+    this.setState(prev => ({ showDetails: !prev.showDetails }));
+  };
+
   render() {
     if (this.state.hasError) {
+      const { error, errorInfo, showDetails } = this.state;
+
       return (
-        <div className="error-boundary-container" style={{ padding: '20px', textAlign: 'center' }}>
+        <Box className="error-boundary-container" sx={{ p: 3 }}>
           <Alert 
             severity="error"
+            variant="filled"
             action={
-              <Button color="inherit" size="small" onClick={this.handleRetry}>
-                Retry
+              <Button 
+                color="inherit" 
+                size="small" 
+                onClick={this.handleRetry}
+              >
+                Try Again
               </Button>
             }
           >
-            {this.props.fallback || 'Something went wrong. Please try again.'}
+            <Typography variant="h6" gutterBottom>
+              {this.props.fallback || 'Something went wrong'}
+            </Typography>
+            <Typography variant="body2">
+              {error.message || 'An unexpected error occurred. Please try again.'}
+            </Typography>
           </Alert>
+
           {process.env.NODE_ENV === 'development' && (
-            <pre style={{ 
-              marginTop: '20px', 
-              padding: '15px', 
-              backgroundColor: '#f5f5f5',
-              borderRadius: '4px',
-              overflow: 'auto',
-              maxHeight: '200px'
-            }}>
-              {this.state.error?.toString()}
-              {this.state.errorInfo?.componentStack}
-            </pre>
+            <Box sx={{ mt: 2 }}>
+              <Button 
+                size="small" 
+                color="inherit" 
+                onClick={this.toggleDetails}
+                sx={{ mb: 1 }}
+              >
+                {showDetails ? 'Hide' : 'Show'} Error Details
+              </Button>
+              
+              <Collapse in={showDetails}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: 'grey.100', 
+                  borderRadius: 1,
+                  overflow: 'auto',
+                  maxHeight: 400
+                }}>
+                  <Typography variant="caption" component="pre" sx={{ mb: 2 }}>
+                    {error.originalError?.toString()}
+                  </Typography>
+                  
+                  {errorInfo && (
+                    <Typography variant="caption" component="pre">
+                      Component Stack:
+                      {errorInfo.componentStack}
+                    </Typography>
+                  )}
+                </Box>
+              </Collapse>
+            </Box>
           )}
-        </div>
+        </Box>
       );
     }
 
