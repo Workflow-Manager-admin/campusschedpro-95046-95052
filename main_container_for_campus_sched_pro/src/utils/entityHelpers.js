@@ -107,15 +107,18 @@ export const enhancedSaveRoom = async (room) => {
 /**
  * Enhanced function to save a course with better error handling
  * @param {Object} course - Course object to save
- * @returns {Promise<{success: boolean, data: Object|null, message: string}>}
+ * @returns {Promise<{success: boolean, data: Object|null, message: string, errors?: string[]}>}
  */
 export const enhancedSaveCourse = async (course) => {
   try {
-    if (!course.name || !course.code) {
-      return { 
-        success: false, 
-        data: null, 
-        message: 'Course name and code are required' 
+    // Validate course data
+    const validation = validateCourse(course);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        data: null,
+        message: 'Invalid course data',
+        errors: validation.errors
       };
     }
     
