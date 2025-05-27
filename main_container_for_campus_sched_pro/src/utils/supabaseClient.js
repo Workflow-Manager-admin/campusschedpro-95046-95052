@@ -93,7 +93,18 @@ async function withErrorHandling(queryFn, context) {
  */
 export async function fetchCourses() {
   return await withErrorHandling(
-    () => supabase.from('courses').select('*'),
+    async () => {
+      const { data } = await supabase
+        .from('courses')
+        .select(`
+          *,
+          faculty:schedule(faculty(*)),
+          department:department_id(name),
+          academic_year:academic_year_id(name),
+          required_equipment:course_equipment(equipment:equipment_id(name))
+        `);
+      return mapArray(data, mapCourse);
+    },
     'Fetching courses'
   );
 }
@@ -105,7 +116,20 @@ export async function fetchCourses() {
  */
 export async function fetchFaculty() {
   return await withErrorHandling(
-    () => supabase.from('faculty').select('*'),
+    async () => {
+      const { data } = await supabase
+        .from('faculty')
+        .select(`
+          *,
+          department:department_id(name),
+          expertise:faculty_expertise(expertise),
+          assignments:schedule(
+            course:course_id(id, code, name),
+            time_slot:time_slot_id(*)
+          )
+        `);
+      return mapArray(data, mapFaculty);
+    },
     'Fetching faculty'
   );
 }
@@ -117,7 +141,16 @@ export async function fetchFaculty() {
  */
 export async function fetchRooms() {
   return await withErrorHandling(
-    () => supabase.from('rooms').select('*'),
+    async () => {
+      const { data } = await supabase
+        .from('rooms')
+        .select(`
+          *,
+          building:building_id(name),
+          equipment:room_equipment(equipment:equipment_id(name))
+        `);
+      return mapArray(data, mapRoom);
+    },
     'Fetching rooms'
   );
 }
