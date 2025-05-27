@@ -11,8 +11,9 @@ import {
   getConnectionState, 
   ConnectionState 
 } from '../utils/supabaseConnectionMonitor';
-import { handleSupabaseError } from '../utils/supabaseErrorHandler';
+import { handleSupabaseError, isConnectionError } from '../utils/supabaseErrorHandler';
 import { findScheduleConflicts } from '../utils/scheduleHelpers';
+import { useDataFetch } from '../hooks/useDataFetch';
 
 const ScheduleContext = createContext();
 
@@ -60,11 +61,21 @@ export function EnhancedScheduleProvider({ children }) {
     setNotification(prev => ({ ...prev, open: false }));
   }, []);
 
+  // Setup data fetchers with retry logic
+  const courseFetcher = useDataFetch(fetchCourses);
+  const facultyFetcher = useDataFetch(fetchFaculty);
+  const roomsFetcher = useDataFetch(fetchRooms);
+  const scheduleFetcher = useDataFetch(fetchCourseScheduleView);
+
   // Handle data fetching errors
   const handleFetchError = useCallback((error, context) => {
     const handledError = handleSupabaseError(error, context);
     setErrors(prev => ({ ...prev, [context]: handledError.message }));
-    showNotification(handledError.message, 'error');
+    
+    // Only show notification for non-connection errors (connection errors are handled by monitor)
+    if (!isConnectionError(error)) {
+      showNotification(handledError.message, 'error');
+    }
   }, [showNotification]);
 
   // Clear specific error
@@ -95,7 +106,7 @@ export function EnhancedScheduleProvider({ children }) {
     };
   }, [showNotification]);
 
-  // Load all data
+  // Load all data with retry logic
   const loadData = useCallback(async () => {
     if (connectionStatus === ConnectionState.ERROR) {
       showNotification('Cannot load data: Database connection unavailable', 'error');
@@ -106,21 +117,21 @@ export function EnhancedScheduleProvider({ children }) {
     clearError('data');
 
     try {
-      // Fetch all data in parallel
+      // Fetch all data in parallel with retry logic
       const [coursesData, facultyData, roomsData, scheduleData] = await Promise.all([
-        fetchCourses().catch(error => {
+        courseFetcher.execute().catch(error => {
           handleFetchError(error, 'courses');
           return [];
         }),
-        fetchFaculty().catch(error => {
+        facultyFetcher.execute().catch(error => {
           handleFetchError(error, 'faculty');
           return [];
         }),
-        fetchRooms().catch(error => {
+        roomsFetcher.execute().catch(error => {
           handleFetchError(error, 'rooms');
           return [];
         }),
-        fetchCourseScheduleView().catch(error => {
+        scheduleFetcher.execute().catch(error => {
           handleFetchError(error, 'schedule');
           return [];
         })
@@ -144,47 +155,52 @@ export function EnhancedScheduleProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [connectionStatus, handleFetchError, clearError, showNotification]);
+  }, [
+    connectionStatus,
+    courseFetcher,
+    facultyFetcher,
+    roomsFetcher,
+    scheduleFetcher,
+    handleFetchError,
+    clearError,
+    showNotification
+  ]);
 
   // Load initial data and set up real-time subscriptions
   useEffect(() => {
     loadData();
 
-    // Set up real-time subscriptions
-    const coursesSubscription = supabase
-      .channel('public:courses')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
-        loadData().catch(error => handleFetchError(error, 'real-time-update'));
-      })
-      .subscribe();
+    // Set up real-time subscriptions with error handling
+    const setupSubscription = (channel, table) => {
+      return supabase
+        .channel(`public:${table}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
+          loadData().catch(error => handleFetchError(error, `real-time-update-${table}`));
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`Subscribed to ${table} changes`);
+          } else if (status === 'CLOSED') {
+            console.log(`Subscription to ${table} closed`);
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error(`Error in ${table} subscription`);
+            handleFetchError(new Error(`Subscription error for ${table}`), `subscription-${table}`);
+          }
+        });
+    };
 
-    const facultySubscription = supabase
-      .channel('public:faculty')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, () => {
-        loadData().catch(error => handleFetchError(error, 'real-time-update'));
-      })
-      .subscribe();
-
-    const roomsSubscription = supabase
-      .channel('public:rooms')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
-        loadData().catch(error => handleFetchError(error, 'real-time-update'));
-      })
-      .subscribe();
-
-    const scheduleSubscription = supabase
-      .channel('public:schedule')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
-        loadData().catch(error => handleFetchError(error, 'real-time-update'));
-      })
-      .subscribe();
+    const subscriptions = [
+      setupSubscription('courses', 'courses'),
+      setupSubscription('faculty', 'faculty'),
+      setupSubscription('rooms', 'rooms'),
+      setupSubscription('schedule', 'schedule')
+    ];
 
     // Cleanup subscriptions
     return () => {
-      supabase.removeChannel(coursesSubscription);
-      supabase.removeChannel(facultySubscription);
-      supabase.removeChannel(roomsSubscription);
-      supabase.removeChannel(scheduleSubscription);
+      subscriptions.forEach(subscription => {
+        supabase.removeChannel(subscription);
+      });
     };
   }, [loadData, handleFetchError]);
 
