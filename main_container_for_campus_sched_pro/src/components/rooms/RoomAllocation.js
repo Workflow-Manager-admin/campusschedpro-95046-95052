@@ -116,39 +116,38 @@ const RoomAllocation = () => {
       setAssignmentError('No course selected');
       return;
     }
-    
     if (!selectedRoomId) {
       setAssignmentError('Please select a room');
       return;
     }
-    
+    setIsAssigning(true);
     try {
       // Validate rooms array
       if (!Array.isArray(rooms)) {
         setAssignmentError('Room data is not available');
+        setIsAssigning(false);
         return;
       }
-      
       // Find the selected room
       const room = rooms.find(r => r && r.id === selectedRoomId);
       if (!room) {
         setAssignmentError('Room not found');
+        setIsAssigning(false);
         return;
       }
-      
       // Validate room object
       if (!room.name || !room.id) {
         setAssignmentError('Invalid room data');
+        setIsAssigning(false);
         return;
       }
-      
       // Check if room is suitable for course
       const suitabilityCheck = isRoomSuitableForCourse(room, selectedCourse);
       if (!suitabilityCheck.suitable) {
         setAssignmentError(suitabilityCheck.message);
+        setIsAssigning(false);
         return;
       }
-      
       // Update the course with room assignment
       const updatedCourse = {
         ...selectedCourse,
@@ -164,11 +163,11 @@ const RoomAllocation = () => {
       const success = await updateCourse(updatedCourse);
 
       if (success) {
-        // UI notification and state will be refreshed after DB commit
         showNotification(`${selectedCourse.code} has been assigned to ${room.name}`, 'success');
-        // robust state refresh from DB (allocations, schedule, courses, rooms)
         if (typeof context.refreshData === 'function') {
+          setIsRefreshing(true);
           await context.refreshData();
+          setIsRefreshing(false);
         }
         closeAssignDialog();
       } else {
@@ -176,6 +175,8 @@ const RoomAllocation = () => {
       }
     } catch (error) {
       setAssignmentError(`Error: ${error.message || 'Unknown error'}`);
+    } finally {
+      setIsAssigning(false);
     }
   };
   
@@ -565,3 +566,4 @@ const RoomAllocation = () => {
 };
 
 export default RoomAllocation;
+
