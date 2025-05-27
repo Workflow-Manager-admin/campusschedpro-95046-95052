@@ -1,46 +1,26 @@
-const webpack = require('webpack');
-const config = require('./webpack.basic.js');
-const fs = require('fs');
+const { execSync } = require('child_process');
 
-// Create log file stream
-const logStream = fs.createWriteStream('build.log', { flags: 'w' });
+// Set essential environment variables
+process.env.DISABLE_ESLINT_PLUGIN = 'true';
+process.env.DISABLE_NEW_JSX_TRANSFORM = 'true';
+process.env.NODE_ENV = 'production';
+process.env.CI = 'false';
 
-function log(message) {
-    const timestamp = new Date().toISOString();
-    const logMessage = `[${timestamp}] ${message}\n`;
-    logStream.write(logMessage);
-    console.log(message);
-}
+try {
+    // Clean install of dependencies
+    console.log('Installing dependencies...');
+    execSync('npm install --no-audit --no-fund --no-optional', { stdio: 'inherit' });
 
-log('Starting direct webpack build...');
-
-// Run webpack directly
-const compiler = webpack(config);
-
-compiler.run((err, stats) => {
-    if (err) {
-        log(`Fatal webpack error: ${err.message}`);
-        process.exit(1);
-    }
-
-    const info = stats.toJson();
-
-    if (stats.hasErrors()) {
-        log('Build errors:');
-        info.errors.forEach(error => log(error.message));
-        process.exit(1);
-    }
-
-    if (stats.hasWarnings()) {
-        log('Build warnings:');
-        info.warnings.forEach(warning => log(warning.message));
-    }
-
-    log(`Build completed successfully in ${info.time}ms`);
-    compiler.close((closeErr) => {
-        if (closeErr) {
-            log(`Warning: Error while closing compiler: ${closeErr.message}`);
+    // Run the build
+    console.log('Starting production build...');
+    execSync('npx react-scripts build', {
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            NODE_OPTIONS: '--max-old-space-size=4096'
         }
-        logStream.end();
     });
-});
+} catch (error) {
+    console.error('Build failed:', error);
+    process.exit(1);
+}
