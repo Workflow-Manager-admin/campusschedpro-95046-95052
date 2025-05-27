@@ -82,3 +82,22 @@ src/utils/supabaseClient.js
 Search for the keywords to learn more about each error.
 
 webpack compiled with 2 errors
+Compiling...
+Failed to compile.
+
+Attempted import error: 'findScheduleConflicts' is not exported from '../utils/scheduleHelpers' (imported as 'findScheduleConflicts').
+ERROR in ./src/context/EnhancedScheduleProvider.js 147:27-48
+export 'findScheduleConflicts' (imported as 'findScheduleConflicts') was not found in '../utils/scheduleHelpers' (possible exports: safeScheduleCourse, safeUnscheduleCourse)
+
+ERROR in [eslint] 
+src/utils/supabaseClient.js
+  Line 106:14:  'mapArray' is not defined    no-undef
+  Line 106:29:  'mapCourse' is not defined   no-undef
+  Line 131:14:  'mapArray' is not defined    no-undef
+  Line 131:29:  'mapFaculty' is not defined  no-undef
+  Line 152:14:  'mapArray' is not defined    no-undef
+  Line 152:29:  'mapRoom' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 2 errors
