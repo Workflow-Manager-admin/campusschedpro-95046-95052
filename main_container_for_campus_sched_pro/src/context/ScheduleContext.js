@@ -4,7 +4,7 @@ import {
   fetchFaculty, 
   fetchCourseScheduleView, 
   fetchSchedules 
-} from "../../../utils/supabaseClient";
+} from "../utils/supabaseClient";
 
 const ScheduleContext = createContext();
 
