@@ -7,11 +7,14 @@ import { useSchedule } from '../context/ScheduleContext';
 
 const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
-  const { actionLoadingState } = useSchedule() || {};
+  const {
+    actionLoadingState,
+    unscheduleCourseFromSlot: contextUnscheduleCourseFromSlot
+  } = useSchedule() || {};
 
   // Ensure courses is always an array for safety
   const safeCourses = Array.isArray(courses) ? courses : [];
-  
+
   const getSlotColor = () => {
     if (!safeCourses.length) return 'var(--background-light)';
     if (safeCourses.length > 1) return 'rgba(255, 87, 34, 0.1)'; // Conflict color
@@ -20,14 +23,15 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
 
   const handleRemoveCourse = (course, index, event) => {
     event.stopPropagation();
-    if (!removeCourseFromSlot) {
-      console.warn("No removeCourseFromSlot function provided to TimeSlot component");
+    const removeFn = removeCourseFromSlot || contextUnscheduleCourseFromSlot;
+    if (!removeFn) {
+      console.warn("No removeCourseFromSlot or context unscheduleCourseFromSlot provided to TimeSlot component");
       return;
     }
     try {
-      const [day, time] = slotId.split('-');
+      const [rmDay, rmTime] = slotId.split('-');
       if (course && course.id) {
-        removeCourseFromSlot(course.id, day, time).catch(error => {
+        removeFn(course.id, rmDay, rmTime).catch(error => {
           console.error("Error removing course:", error);
         });
       } else {
