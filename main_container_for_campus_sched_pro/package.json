@@ -27,6 +27,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:nowarnings": "node build-no-warnings.js",
+    "build:safe": "node build-safe.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
