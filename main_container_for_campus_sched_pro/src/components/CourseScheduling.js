@@ -91,9 +91,8 @@ const CourseScheduling = () => {
         return;
       }
 
-      // UI update (optimistic)
-      const newSchedule = { ...schedule };
-
+      // Remove all optimistic UI state mutation for schedule change!
+      // Only update UI through provider/context after DB commit + reload
       let sourceDay, sourceTime, destDay, destTime;
 
       if (source.droppableId !== 'courses-list') {
@@ -104,36 +103,18 @@ const CourseScheduling = () => {
 
       // If moving from courses list to a time slot
       if (source.droppableId === 'courses-list') {
-        // Create destination array if it doesn't exist
-        if (!newSchedule[destination.droppableId]) {
-          newSchedule[destination.droppableId] = [];
-        }
-        newSchedule[destination.droppableId].push(course);
-
-        // Persist using context method
-        scheduleCourseToSlot(course.id, facultyId, roomId, destDay, destTime).then(success => {
-          if (!success) {
-            showNotification('Error scheduling course. Please try again.', 'error');
-            if (refreshData) refreshData();
-          }
-        });
+        // Only persist using context method, UI will update after confirmation
+        scheduleCourseToSlot(course.id, facultyId, roomId, destDay, destTime)
+          .then(success => {
+            if (!success) {
+              showNotification('Error scheduling course. Please try again.', 'error');
+              if (refreshData) refreshData();
+            }
+          });
       }
       // If moving between slots (rescheduling)
       else {
-        // Remove from source slot
-        newSchedule[source.droppableId] = newSchedule[source.droppableId]
-          .filter(c => c.id !== draggableId);
-
-        if (newSchedule[source.droppableId].length === 0) {
-          delete newSchedule[source.droppableId];
-        }
-
-        if (!newSchedule[destination.droppableId]) {
-          newSchedule[destination.droppableId] = [];
-        }
-        newSchedule[destination.droppableId].push(course);
-
-        // First unschedule, then schedule via context methods
+        // First unschedule, then schedule via context methods; do NOT touch schedule state until reload
         unscheduleCourseFromSlot(course.id, sourceDay, sourceTime)
           .then(unscheduleSuccess => {
             if (!unscheduleSuccess) {
@@ -151,13 +132,7 @@ const CourseScheduling = () => {
           });
       }
 
-      // Check for conflicts
-      const conflicts = findScheduleConflicts(newSchedule);
-      if (conflicts.length > 0) {
-        showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
-      }
-
-      setSchedule(newSchedule);
+      // Do not modify schedule or check for conflicts directly here, new provider state will do that
     } catch (error) {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
       if (refreshData) refreshData();
@@ -237,10 +212,15 @@ const CourseScheduling = () => {
         throw new Error('Failed to create course - no ID returned');
       }
 
+      // Only close dialog and show notification after full state has reloaded
+      await refreshData?.();
+
       handleCloseAddDialog();
       showNotification('Course added successfully', 'success');
     } catch (error) {
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
+      // Also trigger a refresh for safety
+      if (refreshData) await refreshData();
     } finally {
       setIsAddingCourse(false);
     }
@@ -270,12 +250,15 @@ const CourseScheduling = () => {
     try {
       const success = await deleteCourseById(course.id);
       if (success) {
+        await refreshData?.();
         setShowEditDialog(false);
         setSelectedCourse(null);
         showNotification(`Course ${course.code} deleted successfully`, 'success');
       }
     } catch (error) {
       showNotification(`Failed to delete course: ${error.message || 'Unknown error'}`, 'error');
+      // Also trigger state refresh if error (to keep UI in sync) 
+      if (refreshData) await refreshData();
     } finally {
       setDeletingCourseId(null);
     }
