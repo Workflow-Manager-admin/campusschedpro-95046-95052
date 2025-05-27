@@ -79,9 +79,22 @@ const CourseScheduling = () => {
     const course = courses.find(c => c.id === draggableId);
     if (!course) return;
 
-    // Extract faculty and room IDs if available
-    const facultyId = course.instructor ? course.facultyId : null;
-    const roomId = course.room ? course.roomId : null;
+    // Enforce: facultyId and roomId must NOT be null
+    // (Assume instructor, room, facultyId, roomId available on the course object)
+    // Attempt to infer from course and warn/block if missing
+    const facultyId = course.facultyId || null;
+    const roomId = course.roomId || null;
+    const needsFaculty = !facultyId; // Consider as invalid if still null/undefined
+    const needsRoom = !roomId;
+
+    if (needsFaculty || needsRoom) {
+      showNotification(
+        `Cannot schedule course: Please assign a valid ${needsFaculty ? "faculty" : ""}${needsFaculty && needsRoom ? " and " : ""}${needsRoom ? "room" : ""} before scheduling.`,
+        'error'
+      );
+      if (refreshData) refreshData();
+      return;
+    }
 
     try {
       // Common validation for both source types
