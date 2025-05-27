@@ -394,26 +394,35 @@ export const deleteRoom = async (roomId) => {
 
 // --- Schedule Management Functions ---
 
-// PUBLIC_INTERFACE
-// Fetch complete schedule; only query columns present in course_schedule_view
+/**
+ * PUBLIC_INTERFACE
+ * Fetch complete schedule using only columns present in course_schedule_view.
+ * Maps and returns only fields: course_code, course_name, faculty_name, room_name, day_of_week, start_time, end_time, department, semester, year_label, remarks, slot_label, etc.
+ * Ignores obsolete fields (course_id, faculty_id, room_id) and does not assume those exist in queried results.
+ */
 export const getSchedule = async () => {
-  // Only select the columns known to be present in course_schedule_view; do not include building_id/building_name
+  // Select only columns defined in course_schedule_view, per the latest schema
   const { data, error } = await supabase
     .from('course_schedule_view')
     .select(`
-      id,
-      course_id,
+      schedule_id,
+      year_label,
+      semester,
       course_code,
       course_name,
-      faculty_id,
+      department,
       faculty_name,
-      room_id,
+      faculty_email,
       room_name,
+      room_type,
+      room_location,
+      day_of_week,
+      slot_label,
       start_time,
       end_time,
-      day_of_week,
-      semester,
-      capacity
+      scheduled_date,
+      equipment_assigned,
+      remarks
     `);
 
   if (error) {
@@ -421,26 +430,38 @@ export const getSchedule = async () => {
     return {};
   }
 
-  // Transform data to match application structure
+  // Map to scheduler state keyed by slot; slotId uses day_of_week and slot_label for uniqueness
   const schedule = {};
 
   data.forEach(item => {
-    // Create a slotId based on available fields; modify keys as needed
-    const slotId = item.day_of_week !== undefined && item.start_time !== undefined
-      ? `${item.day_of_week}-${item.start_time}` : item.id;
+    // Reformat slot ID: "Monday-9:00-10:00" etc. Prefer slot_label if present.
+    const slotId = item.day_of_week && item.slot_label
+      ? `${item.day_of_week}-${item.slot_label}`
+      : item.day_of_week && item.start_time
+      ? `${item.day_of_week}-${item.start_time}`
+      : item.schedule_id; // fallback
 
     if (!schedule[slotId]) {
       schedule[slotId] = [];
     }
 
     schedule[slotId].push({
-      id: item.course_id,
-      name: item.course_name,
       code: item.course_code,
-      // credits: item.course_credits, // Uncomment if field exists
+      name: item.course_name,
       instructor: item.faculty_name || '',
+      instructorEmail: item.faculty_email || '',
       room: item.room_name || '',
-      // Add more fields as needed based on actual view columns
+      roomType: item.room_type || '',
+      roomLocation: item.room_location || '',
+      department: item.department || '',
+      semester: item.semester || '',
+      yearLabel: item.year_label || '',
+      scheduledDate: item.scheduled_date || '',
+      equipment: item.equipment_assigned || '',
+      startTime: item.start_time,
+      endTime: item.end_time,
+      remarks: item.remarks,
+      // No id, course_id, faculty_id, room_id: not present in the view!
     });
   });
 

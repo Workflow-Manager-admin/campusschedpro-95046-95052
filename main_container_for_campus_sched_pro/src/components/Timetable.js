@@ -42,6 +42,9 @@ const Timetable = ({ schedule: propSchedule, onCourseMove, timetableRef }) => {
                 const slotId = `${day}-${time}`;
                 const coursesInSlot = Array.isArray(schedule[slotId]) ? schedule[slotId] : [];
                 
+                // Defensive: coursesInSlot may contain only fields per the new schedule API
+                // (code, name, instructor, room, etc.). No course_id property is guaranteed.
+
                 return (
                   <TimeSlot
                     key={slotId}

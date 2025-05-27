@@ -23,8 +23,8 @@ export const isSlotAvailable = (schedule, slotId, course) => {
   return !currentCourses.some(existingCourse => {
     // Ensure existingCourse is an object
     if (!existingCourse) return false;
-    // Don't count the same course as a conflict
-    if (existingCourse.id === course.id) {
+    // Don't count the same course as a conflict - use code (since id no longer exists)
+    if (existingCourse.code === course.code) {
       return false;
     }
     
