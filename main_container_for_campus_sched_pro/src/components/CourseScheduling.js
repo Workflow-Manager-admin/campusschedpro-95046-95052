@@ -46,7 +46,8 @@ const CourseScheduling = () => {
     isLoading,
     refreshData,
     removeCourseFromSlot,
-    faculty
+    faculty,
+    actionLoadingState
   } = useSchedule();
   
   const timetableRef = useRef(null);
@@ -259,29 +260,35 @@ const CourseScheduling = () => {
     }));
   };
   
+  const [isAddingCourse, setIsAddingCourse] = useState(false);
+  const [isUpdatingCourse, setIsUpdatingCourse] = useState(false);
+  const [deletingCourseId, setDeletingCourseId] = useState(null);
+
   const handleAddCourse = async () => {
     if (!newCourse.name || !newCourse.code || !newCourse.instructor) {
       showNotification('Please fill in all required fields', 'error');
       return;
     }
-    
+
     const courseToAdd = {
       ...newCourse,
       requiredEquipment: newCourse.requiresLab ? ['Computers'] : []
     };
-    
+
+    setIsAddingCourse(true);
     try {
       const courseId = await addCourse(courseToAdd);
-      
+
       if (!courseId) {
         throw new Error('Failed to create course - no ID returned');
       }
-      
+
       handleCloseAddDialog();
       showNotification('Course added successfully', 'success');
     } catch (error) {
-      // Removed console.error for ESLint compliance
       showNotification(`Failed to add course: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setIsAddingCourse(false);
     }
   };
   
@@ -291,18 +298,21 @@ const CourseScheduling = () => {
   };
   
   const handleUpdateCourse = async (updatedCourse) => {
+    setIsUpdatingCourse(true);
     try {
       await updateCourse(updatedCourse);
       setShowEditDialog(false);
       setSelectedCourse(null);
       showNotification(`Course ${updatedCourse.code} updated successfully`, 'success');
     } catch (error) {
-      // Removed console.error for ESLint compliance
       showNotification(`Failed to update course: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setIsUpdatingCourse(false);
     }
   };
   
   const handleDeleteCourse = async (course) => {
+    setDeletingCourseId(course.id);
     try {
       const success = await deleteCourseById(course.id);
       if (success) {
@@ -311,8 +321,9 @@ const CourseScheduling = () => {
         showNotification(`Course ${course.code} deleted successfully`, 'success');
       }
     } catch (error) {
-      // Removed console.error for ESLint compliance
       showNotification(`Failed to delete course: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setDeletingCourseId(null);
     }
   };
 
@@ -729,6 +740,8 @@ const CourseScheduling = () => {
                 setShowEditDialog(false);
                 setSelectedCourse(null);
               }}
+              isUpdatingCourse={isUpdatingCourse}
+              isDeleting={deletingCourseId === selectedCourse.id}
             />
           )}
         </div>
