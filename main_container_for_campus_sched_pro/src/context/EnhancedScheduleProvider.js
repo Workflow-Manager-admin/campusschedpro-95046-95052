@@ -44,36 +44,145 @@ export const EnhancedScheduleProvider = ({ children }) => {
   }, []);
 
   // Set up real-time subscription with error handling
+  // Set up real-time subscriptions for multiple data types
   useEffect(() => {
-    const subscription = supabase
-      .from('schedules')
-      .on('*', (payload) => {
-        setScheduleData((current) => {
-          // Handle different real-time events
-          switch (payload.eventType) {
-            case 'INSERT':
-              return [...(current || []), payload.new];
-            case 'UPDATE':
-              return current?.map(item => 
-                item.id === payload.new.id ? payload.new : item
-              );
-            case 'DELETE':
-              return current?.filter(item => item.id !== payload.old.id);
-            default:
-              return current;
-          }
-        });
-      })
-      .subscribe((status, err) => {
-        if (err) {
-          handleSubscriptionError(err);
+    const subscriptions = [];
+
+    // Subscribe to schedule changes
+    const scheduleSubscription = subscribeToSchedules((payload) => {
+      setScheduleData((current) => {
+        if (!current) return current;
+        
+        switch (payload.eventType) {
+          case 'INSERT':
+            return [...current, payload.new];
+          case 'UPDATE':
+            return current.map(item => 
+              item.id === payload.new.id ? payload.new : item
+            );
+          case 'DELETE':
+            return current.filter(item => item.id !== payload.old.id);
+          default:
+            return current;
         }
       });
+    });
+    subscriptions.push(scheduleSubscription);
 
+    // Subscribe to room allocation changes
+    const roomAllocationSubscription = subscribeToRoomAllocations((payload) => {
+      setRoomAllocations((current) => {
+        if (!current) return current;
+        
+        switch (payload.eventType) {
+          case 'INSERT':
+            return [...current, payload.new];
+          case 'UPDATE':
+            return current.map(item => 
+              item.roomId === payload.new.roomId ? payload.new : item
+            );
+          case 'DELETE':
+            return current.filter(item => item.roomId !== payload.old.roomId);
+          default:
+            return current;
+        }
+      });
+    });
+    subscriptions.push(roomAllocationSubscription);
+
+    // Subscribe to conflict changes
+    const conflictSubscription = subscribeToConflicts((payload) => {
+      setConflicts((current) => {
+        if (!current) return current;
+        
+        switch (payload.eventType) {
+          case 'INSERT':
+            showNotification(`New scheduling conflict detected: ${payload.new.message}`, 'warning');
+            return [...current, payload.new];
+          case 'UPDATE':
+            return current.map(item => 
+              item.id === payload.new.id ? payload.new : item
+            );
+          case 'DELETE':
+            return current.filter(item => item.id !== payload.old.id);
+          default:
+            return current;
+        }
+      });
+    });
+    subscriptions.push(conflictSubscription);
+
+    // Subscribe to course changes
+    const courseSubscription = subscribeToCourses((payload) => {
+      setCourses((current) => {
+        if (!current) return current;
+        
+        switch (payload.eventType) {
+          case 'INSERT':
+            return [...current, payload.new];
+          case 'UPDATE':
+            // Check if this update affects room allocation
+            if (payload.old.roomId !== payload.new.roomId) {
+              checkRoomConstraints(payload.new);
+            }
+            return current.map(item => 
+              item.id === payload.new.id ? payload.new : item
+            );
+          case 'DELETE':
+            return current.filter(item => item.id !== payload.old.id);
+          default:
+            return current;
+        }
+      });
+    });
+    subscriptions.push(courseSubscription);
+
+    // Cleanup function to remove all subscriptions
     return () => {
-      subscription.unsubscribe();
+      subscriptions.forEach(subscription => {
+        if (subscription && subscription.unsubscribe) {
+          subscription.unsubscribe();
+        }
+      });
     };
   }, [handleSubscriptionError]);
+
+  // Check room constraints when course room assignment changes
+  const checkRoomConstraints = useCallback(async (course) => {
+    if (!course.roomId) return;
+
+    try {
+      const { data: room } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('id', course.roomId)
+        .single();
+
+      if (!room) {
+        showNotification(`Error: Room not found for course ${course.code}`, 'error');
+        return;
+      }
+
+      const suitabilityCheck = isRoomSuitableForCourse(room, course);
+      
+      if (!suitabilityCheck.suitable) {
+        showNotification(suitabilityCheck.message, 'warning');
+        
+        // Log constraint violation
+        await supabase
+          .from('constraint_violations')
+          .insert([{
+            course_id: course.id,
+            room_id: room.id,
+            violation_type: 'room_constraint',
+            message: suitabilityCheck.message,
+            timestamp: new Date()
+          }]);
+      }
+    } catch (error) {
+      handleSupabaseError(error, 'Room Constraint Check');
+    }
+  }, [showNotification]);
 
   // Initial data fetch
   useEffect(() => {
