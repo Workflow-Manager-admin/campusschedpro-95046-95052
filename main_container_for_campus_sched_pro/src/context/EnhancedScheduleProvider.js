@@ -298,6 +298,12 @@ export const EnhancedScheduleProvider = ({ children }) => {
     setNotification(prev => ({ ...prev, open: false }));
   }, []);
 
+  // Schedule update handler
+  const handleScheduleUpdate = useCallback((newSchedule) => {
+    setScheduleData(newSchedule);
+    showNotification('Schedule updated successfully', 'success');
+  }, [showNotification]);
+
   // Context value with enhanced error handling
   const contextValue = {
     scheduleData,
@@ -311,7 +317,10 @@ export const EnhancedScheduleProvider = ({ children }) => {
     notification,
     handleCloseNotification,
     refreshData: handleRetry,
-    showNotification
+    showNotification,
+    schedule: scheduleData || {}, // For compatibility
+    setSchedule: handleScheduleUpdate, // For compatibility
+    errors: error ? { general: error.message } : {} // For compatibility
   };
 
   return (
