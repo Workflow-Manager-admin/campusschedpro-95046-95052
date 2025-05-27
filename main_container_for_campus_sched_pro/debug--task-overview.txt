@@ -1,0 +1,18 @@
+This task involves:
+- Auditing all Supabase query logic in supabaseClient.js, ScheduleContext.js, CourseScheduling.js, and all faculty and course UI components.
+- Ensuring every query, select, join, and column mapping references only the fields/relationships present in the DB schema.
+- Removing or reworking any Supabase queries that reference non-existent relations (e.g., improper .select('faculty(name),course(title),...') style usage).
+- Refactoring field mapping in React components and context providers to exactly match the schema/columns.
+- Testing fetch and mapping layers to confirm there are no "missing column", "undefined field", or nested object structure errors throughout scheduling, courses, and faculty management UIs.
+- Strictly following valid FKs or Supabase views only; no "magic" REST joins.
+
+Key files likely affected (to review, not to edit if not needed):
+- supabaseClient.js
+- src/context/ScheduleContext.js
+- src/components/CourseScheduling.js
+- src/components/faculty/*
+- src/components/common/CourseBulkImport.js
+- src/components/rooms/*
+- All utils/supabase* and entityHelpers.js files
+
+After initial analysis, I will update this file with audit notes and then proceed to the required code changes.
