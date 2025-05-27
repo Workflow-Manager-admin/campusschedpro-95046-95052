@@ -42,6 +42,17 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     }
   };
 
+  // DEBUG: Render meta and slot courses for slot tracking
+  const debugSlotMeta = typeof window !== "undefined" && window._scheduleDebug;
+  if (debugSlotMeta && window._scheduleDebug) {
+    window._scheduleDebug[`slot_render_${slotId}`] = {
+      slotId,
+      courses: safeCourses,
+      courseIds: safeCourses.map(c=>c.id),
+      courseCodes: safeCourses.map(c=>c.code)
+    };
+  }
+
   return (
     <ReduxDroppable 
       droppableId={slotId}
@@ -49,7 +60,15 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
       style={{ backgroundColor: getSlotColor(), position: 'relative' }}
     >
       {(provided, snapshot) => (
-        <>
+        <div data-debugslot={slotId} style={{ position: 'relative' }}>
+          {/* DEBUG: Add small slot info at corner for visual slot tracking */}
+          <div style={{ position: "absolute", top: 1, right: 4, fontSize: "9px", opacity: 0.25, pointerEvents: "none" }}>
+            {slotId}
+            <br />
+            <span style={{ fontWeight: 700 }}>
+              {safeCourses.length} course{safeCourses.length!==1 ? "s" : ""}
+            </span>
+          </div>
           {safeCourses.map((course, index) => {
             const isCourseLoading = actionLoadingState && actionLoadingState.courseId === course.id;
             return (
@@ -92,7 +111,7 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
               </Tooltip>
             );
           })}
-        </>
+        </div>
       )}
     </ReduxDroppable>
   );
