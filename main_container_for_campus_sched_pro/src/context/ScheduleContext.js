@@ -12,20 +12,27 @@ export function useSchedule() {
 
 // Utility: Map the schedule rows returned from Supabase view to internal model
 function mapScheduleRowsToModel(scheduleRows) {
-  // Adjust field mapping here as per the shape returned from fetchCourseScheduleView
-  // Example assumes view fields: id, course_code, course_name, faculty_name, room_code, day, start_time, end_time, equipment (can be customized further)
-  return scheduleRows.map(row => ({
-    id: row.id,
-    courseCode: row.course_code,
-    courseName: row.course_name,
-    facultyName: row.faculty_name,
-    roomCode: row.room_code,
-    day: row.day,
-    startTime: row.start_time,
-    endTime: row.end_time,
-    equipment: row.equipment, // If any, else remove/massage as needed
-    // Add any other required mappings here
-  }));
+  const scheduleMap = {};
+  
+  scheduleRows.forEach(row => {
+    const slotId = `${row.day_of_week}-${row.start_time}-${row.end_time}`;
+    
+    if (!scheduleMap[slotId]) {
+      scheduleMap[slotId] = [];
+    }
+    
+    scheduleMap[slotId].push({
+      id: row.schedule_id,
+      code: row.course_code,
+      name: row.course_name,
+      instructor: row.faculty_name,
+      room: row.room_name,
+      department: row.department,
+      equipment: row.equipment_assigned ? row.equipment_assigned.split(',') : []
+    });
+  });
+  
+  return scheduleMap;
 }
 
 // PUBLIC_INTERFACE
