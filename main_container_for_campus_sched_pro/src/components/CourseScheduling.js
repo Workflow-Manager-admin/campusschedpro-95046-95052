@@ -495,15 +495,32 @@ const CourseScheduling = () => {
                 <ReduxDroppable droppableId="courses-list" className="courses-list">
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {filteredCourses.map((course, index) => (
-                        <Course 
-                          key={course.id} 
-                          course={course} 
-                          index={index}
-                          onEdit={() => handleEditCourse(course)}
-                          onDelete={() => handleDeleteCourse(course)}
-                        />
-                      ))}
+                      {filteredCourses.map((course, index) => {
+                        // Determine unassigned
+                        const missingFaculty = !course.facultyId;
+                        const missingRoom = !course.roomId;
+                        // Only allow drag if all data present
+                        const dragDisabled = missingFaculty || missingRoom;
+
+                        return (
+                          <div key={course.id} className={`course-list-item${dragDisabled ? ' incomplete-assignment' : ''}`}>
+                            <Course 
+                              course={course} 
+                              index={index}
+                              onEdit={() => handleEditCourse(course)}
+                              onDelete={() => handleDeleteCourse(course)}
+                              dragDisabled={dragDisabled}
+                            />
+                            {(missingFaculty || missingRoom) && (
+                              <div style={{ color: "crimson", fontSize: "0.82em", marginTop: 2 }}>
+                                {missingFaculty && <span>Faculty not assigned.&nbsp;</span>}
+                                {missingRoom && <span>Room not assigned.</span>}
+                                <span style={{fontStyle: 'italic', color:'#de9311'}}> (cannot schedule)</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                       {provided.placeholder}
                     </div>
                   )}
