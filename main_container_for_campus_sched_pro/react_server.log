@@ -43,3 +43,28 @@ src/utils/supabaseClient.js
 Search for the keywords to learn more about each error.
 
 webpack compiled with 1 error
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/utils/supabaseClient.js
+  Line 155:14:  'mapArray' is not defined    no-undef
+  Line 155:29:  'mapCourse' is not defined   no-undef
+  Line 180:14:  'mapArray' is not defined    no-undef
+  Line 180:29:  'mapFaculty' is not defined  no-undef
+  Line 201:14:  'mapArray' is not defined    no-undef
+  Line 201:29:  'mapRoom' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+ERROR in [eslint] 
+src/utils/supabaseClient.js
+  Line 155:14:  'mapArray' is not defined    no-undef
+  Line 155:29:  'mapCourse' is not defined   no-undef
+  Line 180:14:  'mapArray' is not defined    no-undef
+  Line 180:29:  'mapFaculty' is not defined  no-undef
+  Line 201:14:  'mapArray' is not defined    no-undef
+  Line 201:29:  'mapRoom' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error

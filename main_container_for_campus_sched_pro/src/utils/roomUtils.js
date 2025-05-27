@@ -8,25 +8,90 @@
  * @param {Object} course - Course to be scheduled in the room
  * @returns {Object} - Validation result with status and message
  */
+/**
+ * PUBLIC_INTERFACE
+ * Check if a room meets the requirements for a course with enhanced validation
+ */
 export const isRoomSuitableForCourse = (room, course) => {
-  // Check capacity
-  if (course.expectedEnrollment > room.capacity) {
+  // Validate input parameters
+  if (!room || !course) {
     return {
       suitable: false,
-      message: `Room ${room.name} capacity (${room.capacity}) is insufficient for ${course.code} (${course.expectedEnrollment} students)`
+      message: 'Invalid room or course data provided'
     };
   }
 
-  // Check if course requires lab and room is a lab type
-  if (course.requiresLab && room.type !== 'Computer Lab' && !room.type.toLowerCase().includes('lab')) {
+  // Basic room validation
+  if (!room.id || !room.name || !room.capacity) {
     return {
       suitable: false,
-      message: `${course.code} requires a lab, but ${room.name} is not a lab`
+      message: 'Invalid room configuration'
     };
   }
 
-  // Check required equipment
+  // Course validation
+  if (!course.id || !course.code) {
+    return {
+      suitable: false,
+      message: 'Invalid course configuration'
+    };
+  }
+
+  // Check room type compatibility
+  const roomType = (room.type || '').toLowerCase();
+  const courseType = (course.type || '').toLowerCase();
+  
+  if (courseType && !roomType.includes(courseType)) {
+    return {
+      suitable: false,
+      message: `${course.code} requires a ${course.type} room, but ${room.name} is a ${room.type}`
+    };
+  }
+
+  // Check capacity with buffer
+  const requiredCapacity = course.expectedEnrollment || 0;
+  const capacityBuffer = Math.ceil(requiredCapacity * 0.1); // 10% buffer
+  
+  if (requiredCapacity > 0 && (requiredCapacity + capacityBuffer) > room.capacity) {
+    return {
+      suitable: false,
+      message: `Room ${room.name} capacity (${room.capacity}) is insufficient for ${course.code} (${requiredCapacity} students + ${capacityBuffer} buffer)`
+    };
+  }
+
+  // Check if course requires lab facilities
+  if (course.requiresLab && !roomType.includes('lab')) {
+    return {
+      suitable: false,
+      message: `${course.code} requires a lab, but ${room.name} is not a lab facility`
+    };
+  }
+
+  // Check accessibility requirements
+  if (course.requiresAccessibility && !room.isAccessible) {
+    return {
+      suitable: false,
+      message: `${course.code} requires an accessible room, but ${room.name} is not accessibility-compliant`
+    };
+  }
+
+  // Check multimedia requirements
+  if (course.requiresMultimedia && !room.hasMultimedia) {
+    return {
+      suitable: false,
+      message: `${course.code} requires multimedia equipment, but ${room.name} lacks multimedia facilities`
+    };
+  }
+
+  // Check specific equipment requirements
   if (course.requiredEquipment && course.requiredEquipment.length > 0) {
+    if (!Array.isArray(room.equipment)) {
+      return {
+        suitable: false,
+        message: `${room.name} has no equipment information available`
+      };
+    }
+
     const missingEquipment = course.requiredEquipment.filter(
       equipment => !room.equipment.some(e => e.toLowerCase().includes(equipment.toLowerCase()))
     );
@@ -39,9 +104,49 @@ export const isRoomSuitableForCourse = (room, course) => {
     }
   }
 
+  // Check software requirements for computer labs
+  if (course.requiredSoftware && course.requiredSoftware.length > 0) {
+    if (!room.installedSoftware || !Array.isArray(room.installedSoftware)) {
+      return {
+        suitable: false,
+        message: `${room.name} has no software information available`
+      };
+    }
+
+    const missingSoftware = course.requiredSoftware.filter(
+      software => !room.installedSoftware.some(s => s.toLowerCase().includes(software.toLowerCase()))
+    );
+
+    if (missingSoftware.length > 0) {
+      return {
+        suitable: false,
+        message: `${room.name} is missing required software for ${course.code}: ${missingSoftware.join(', ')}`
+      };
+    }
+  }
+
+  // Check special requirements
+  if (course.specialRequirements && course.specialRequirements.length > 0) {
+    const unmetRequirements = course.specialRequirements.filter(
+      req => !room.features || !room.features.includes(req)
+    );
+
+    if (unmetRequirements.length > 0) {
+      return {
+        suitable: false,
+        message: `${room.name} does not meet special requirements for ${course.code}: ${unmetRequirements.join(', ')}`
+      };
+    }
+  }
+
   return {
     suitable: true,
-    message: 'Room is suitable for this course'
+    message: 'Room is suitable for this course',
+    details: {
+      capacityUtilization: Math.round((requiredCapacity / room.capacity) * 100) + '%',
+      availableEquipment: room.equipment || [],
+      features: room.features || []
+    }
   };
 };
 
