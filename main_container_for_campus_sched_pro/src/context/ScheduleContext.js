@@ -73,15 +73,37 @@ export function ScheduleProvider({ children }) {
     setNotification((n) => ({ ...n, open: false }));
   }, []);
 
+  // Notification handler
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
+
+  // Initialize conflicts array
+  const [conflicts, setConflicts] = useState([]);
+
+  // Detect conflicts whenever schedule changes
+  useEffect(() => {
+    if (schedule && Object.keys(schedule).length > 0) {
+      const detectedConflicts = detectConflicts(schedule);
+      setConflicts(detectedConflicts);
+    }
+  }, [schedule]);
+
   // Exposed context value
   const value = {
     schedule,
+    setSchedule,
     loading,
     errors,
     refreshData: loadSchedule,
     notification,
     handleCloseNotification,
-    // Add more actions/setters if needed (e.g., save/update schedule row, etc.)
+    showNotification,
+    conflicts
   };
 
   return (
