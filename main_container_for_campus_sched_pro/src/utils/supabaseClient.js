@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { mapArray, mapCourse, mapFaculty, mapRoom } from './dataMappers';
 import { handleSupabaseError } from './supabaseErrorHandler';
 import { startMonitoring, stopMonitoring, getCurrentConnectionState, ConnectionState } from './supabaseConnectionMonitor';
 
@@ -8,7 +9,7 @@ import { startMonitoring, stopMonitoring, getCurrentConnectionState, ConnectionS
  */
 function validateEnvironment() {
   const requiredVars = {
-    REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL,
+    REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL||,
     REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY
   };
 

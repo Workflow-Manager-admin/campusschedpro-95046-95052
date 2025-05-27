@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { detectConflicts } from '../../utils/conflictDetection';
+import { supabase } from '../../utils/supabaseClient';
 import { Alert, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Chip } from '@mui/material';
 import { useSchedule } from '../../context/ScheduleContext';
 import { suggestAlternativeTimeSlots, formatSlotId } from '../../utils/scheduleUtils';
