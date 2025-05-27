@@ -1,5 +1,6 @@
 import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,jsx}"] },
@@ -32,11 +33,19 @@ export default [
   },
   pluginJs.configs.recommended,
   {
-    plugins: { react: pluginReact },
+    plugins: {
+      react: pluginReact,
+      'react-hooks': pluginReactHooks
+    },
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
       "react/jsx-uses-vars": "error"
     }
+  },
+  {
+    // Add the recommended React Hooks configuration
+    extends: ["plugin:react-hooks/recommended"],
+    plugins: { 'react-hooks': pluginReactHooks }
   }
 ];
