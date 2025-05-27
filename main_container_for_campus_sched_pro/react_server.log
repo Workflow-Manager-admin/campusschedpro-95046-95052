@@ -28,3 +28,13 @@ Module not found: Error: You attempted to import ../../../utils/supabaseClient w
 You can either move it inside src/, or add a symlink to it from project's node_modules/.
 
 webpack compiled with 1 error
+Compiling...
+Failed to compile.
+
+Module not found: Error: You attempted to import ../../../utils/supabaseClient which falls outside of the project src/ directory. Relative imports outside of src/ are not supported.
+You can either move it inside src/, or add a symlink to it from project's node_modules/.
+ERROR in ./src/context/ScheduleContext.js 7:0-116
+Module not found: Error: You attempted to import ../../../utils/supabaseClient which falls outside of the project src/ directory. Relative imports outside of src/ are not supported.
+You can either move it inside src/, or add a symlink to it from project's node_modules/.
+
+webpack compiled with 1 error
