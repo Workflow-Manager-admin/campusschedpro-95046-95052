@@ -475,6 +475,13 @@ export const ScheduleProvider = ({ children }) => {
       }
       // persist to DB
       const ok = await scheduleCourse(courseId, facultyId, roomId, timeSlotId);
+      if (!ok && typeof window !== "undefined") {
+        window._scheduleDebug = window._scheduleDebug || {};
+        window._scheduleDebug.failedScheduleAction = {
+          courseId, facultyId, roomId, timeSlotId, day, time,
+          at: Date.now()
+        };
+      }
       if (ok) {
         await loadInitialData(); // reload state/UI
         showNotification(`Scheduled course in ${day} ${time}`, "success");
