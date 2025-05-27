@@ -33,8 +33,7 @@ export const ScheduleProvider = ({ children }) => {
   const [currentAcademicYear, setCurrentAcademicYear] = useState('2023-2024');
   
   // Loading and error states
-  // Remove the single isLoading, use granular loading state for actions
-  const [isLoading, setIsLoading] = useState(true); // Used only for initial data boot
+  const [isLoading, setIsLoading] = useState(true);
   const [actionLoadingState, setActionLoadingState] = useState({
     courseId: null, // for add/update/delete per course
     roomId: null,   // for add/update/delete per room
@@ -79,10 +78,8 @@ export const ScheduleProvider = ({ children }) => {
       const scheduleData = await getSchedule();
       if (scheduleData) {
         setSchedule(scheduleData);
-        // Find conflicts
         const conflictsFound = findScheduleConflicts(scheduleData);
         setConflicts(conflictsFound || []);
-        // Update room allocations
         updateAllocations(scheduleData);
       } else {
         setSchedule({});
@@ -155,12 +152,11 @@ export const ScheduleProvider = ({ children }) => {
       }
     };
 
-    // Set up subscriptions and store cleanup function
     const cleanup = setupSubscriptions();
     return () => {
       cleanup.then(cleanupFn => cleanupFn && cleanupFn());
     };
-  }, [loadInitialData]); // Removed supabase from dependencies since it's now imported
+  }, [loadInitialData]);
 
   // Calculate room allocations based on schedule
   const updateAllocations = useCallback((scheduleData) => {
@@ -168,22 +164,17 @@ export const ScheduleProvider = ({ children }) => {
     const allocations = {};
     
     try {
-      // Process each time slot in the schedule
       Object.entries(dataToProcess).forEach(([slotId, coursesInSlot]) => {
         if (!slotId || !Array.isArray(coursesInSlot)) return;
 
         const [day, timeSlot] = slotId.split('-');
         if (!day || !timeSlot) return;
 
-        // Process each course in the slot
         coursesInSlot.forEach(course => {
           if (!course?.roomId) return;
-
-          // Initialize room allocation if needed
           if (!allocations[course.roomId]) {
             const room = rooms.find(r => r.id === course.roomId);
             if (!room) return;
-
             allocations[course.roomId] = {
               count: 0,
               courses: [],
@@ -195,8 +186,6 @@ export const ScheduleProvider = ({ children }) => {
               }
             };
           }
-
-          // Add course to allocation
           allocations[course.roomId].count++;
           allocations[course.roomId].courses.push({
             course: {
@@ -212,7 +201,6 @@ export const ScheduleProvider = ({ children }) => {
         });
       });
 
-      // Sort courses within each allocation
       Object.values(allocations).forEach(allocation => {
         allocation.courses.sort((a, b) => {
           const dayCompare = a.day.localeCompare(b.day);
@@ -227,14 +215,90 @@ export const ScheduleProvider = ({ children }) => {
     }
   }, [rooms, schedule]);
 
-  // Room operations
+  // ---- ATOMIC ROOM OPERATIONS IMPLEMENTED BELOW ----
+
+  /**
+   * PUBLIC_INTERFACE
+   * Atomically add a room to DB, then reload all state from DB. UI/context always reflects DB, never optimistic.
+   */
+  const addRoom = async (roomData) => {
+    try {
+      setActionLoadingState((prev) => ({ ...prev, roomId: 'PENDING' }));
+      const roomId = await saveRoom(roomData);
+      if (roomId) {
+        await loadInitialData();
+        return roomId;
+      }
+      setErrors((prev) => ({ ...prev, room: 'Failed to save room' }));
+      return null;
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, room: `Error saving room: ${error.message}` }));
+      return null;
+    } finally {
+      setActionLoadingState((prev) => ({ ...prev, roomId: null }));
+    }
+  };
+
+  /**
+   * PUBLIC_INTERFACE
+   * Atomically update a room in DB, reload entire state after DB confirmed.
+   */
+  const updateRoom = async (roomData) => {
+    try {
+      setActionLoadingState((prev) => ({ ...prev, roomId: roomData.id }));
+      const success = await saveRoom(roomData);
+      if (success) {
+        await loadInitialData();
+        return true;
+      }
+      setErrors((prev) => ({ ...prev, room: 'Failed to update room' }));
+      return false;
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, room: `Error updating room: ${error.message}` }));
+      return false;
+    } finally {
+      setActionLoadingState((prev) => ({ ...prev, roomId: null }));
+    }
+  };
+
+  /**
+   * PUBLIC_INTERFACE
+   * Atomically delete a room by ID in DB and clean up all dangling relations (courses referencing this room, set roomId/building to null).
+   * Then reload all state from DB. Never mutate state optimistically.
+   */
+  const deleteRoomById = async (roomId) => {
+    try {
+      setActionLoadingState((prev) => ({ ...prev, roomId }));
+      // Find all courses assigned to this room
+      const coursesToUpdate = courses.filter((c) => c.roomId === roomId);
+      // Unassign this room from all courses in DB (set roomId/building to null)
+      for (const course of coursesToUpdate) {
+        await saveCourse({ ...course, room: null, roomId: null, building: null });
+      }
+      // Delete the room itself
+      const success = await deleteRoom(roomId);
+      if (success) {
+        await loadInitialData();
+        return true;
+      }
+      setErrors((prev) => ({ ...prev, room: 'Failed to delete room' }));
+      return false;
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, room: `Error deleting room: ${error.message}` }));
+      return false;
+    } finally {
+      setActionLoadingState((prev) => ({ ...prev, roomId: null }));
+    }
+  };
+
+  // ---- EXISTING OPERATIONS (courses, assignments) ----
+
   /**
    * PUBLIC_INTERFACE
    * Assigns a room to course after successful DB commit and triggers state refresh.
    */
   const assignRoom = async (courseId, roomId, day, timeSlot) => {
     try {
-      // Input validation
       if (!courseId || !roomId || !day || !timeSlot) {
         showNotification('Missing required information for room assignment', 'error');
         return false;
@@ -261,7 +325,6 @@ export const ScheduleProvider = ({ children }) => {
         return false;
       }
 
-      // Success: Now reload whole state/context from DB to guarantee sync
       await loadInitialData();
       showNotification(`Successfully assigned ${course.code} to ${room.name}`, 'success');
       return true;
@@ -271,19 +334,16 @@ export const ScheduleProvider = ({ children }) => {
     }
   };
 
-  // Course operations
   /**
    * PUBLIC_INTERFACE
    * Add a course via DB and only update UI after DB confirmation. Always reload state from DB after mutation.
    */
   const addCourse = async (courseData) => {
     try {
-      // Set loading state specific to this course (optimistically reserve a random string if no id yet)
       setActionLoadingState(prev => ({ ...prev, courseId: 'PENDING' }));
       const courseId = await saveCourse(courseData);
 
       if (courseId) {
-        // Only refresh state from DB, never update state directly
         await loadInitialData();
         return courseId;
       }
@@ -389,10 +449,10 @@ export const ScheduleProvider = ({ children }) => {
     allocations: getAllocationsArray(),
     academicYears,
     currentAcademicYear,
-    isLoading, // still present for initial boot only!
+    isLoading,
     errors,
     notification,
-    actionLoadingState, // <-- new, granular action loading state
+    actionLoadingState, 
     
     // Operations
     setCourses,
@@ -400,6 +460,9 @@ export const ScheduleProvider = ({ children }) => {
     setSchedule,
     setCurrentAcademicYear,
     assignRoom,
+    addRoom,
+    updateRoom,
+    deleteRoomById,
     addCourse,
     updateCourse,
     deleteCourseById,
