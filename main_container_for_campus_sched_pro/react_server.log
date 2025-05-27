@@ -350,3 +350,148 @@ Search for the keywords to learn more about each error.
 
 webpack compiled with 2 errors
 Compiling...
+Failed to compile.
+
+[eslint] 
+src/utils/supabaseClient.js
+Syntax error: Unexpected token (12:64) (12:64)
+ERROR in ./src/utils/supabaseClient.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/utils/supabaseClient.js: Unexpected token (11:64)
+
+   9 | function validateEnvironment() {
+  10 |   const requiredVars = {
+> 11 |     REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL||,
+     |                                                                 ^
+  12 |     REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY
+  13 |   };
+  14 |
+    at constructor (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:360:19)
+    at FlowParserMixin.raise (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:6613:19)
+    at FlowParserMixin.unexpected (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:6633:16)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11358:16)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:4770:20)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10992:23)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10977:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10957:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10810:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10897:34)
+    at FlowParserMixin.parseExprOpRightExpr (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10892:21)
+    at FlowParserMixin.parseExprOp (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10858:27)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10819:17)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10792:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10745:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3555:18)
+    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12334:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:17)
+    at FlowParserMixin.parseObjectProperty (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11868:83)
+    at FlowParserMixin.parseObjPropValue (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11896:100)
+    at FlowParserMixin.parseObjPropValue (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3345:26)
+    at FlowParserMixin.parsePropertyDefinition (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11833:17)
+    at FlowParserMixin.parseObjectLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11748:21)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11250:23)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:4770:20)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10992:23)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10977:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10957:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10810:61)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10815:23)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10792:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10745:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3555:18)
+    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12329:16)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:17)
+    at FlowParserMixin.parseVar (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13260:91)
+    at FlowParserMixin.parseVarStatement (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13106:10)
+    at FlowParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12727:23)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12644:17)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2922:24)
+    at FlowParserMixin.parseStatementListItem (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12624:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13192:61)
+    at FlowParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13185:10)
+    at FlowParserMixin.parseBlock (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13173:10)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12018:24)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2899:11)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12004:10)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2907:18)
+
+ERROR in [eslint] 
+src/utils/supabaseClient.js
+  Line 12:64:  Parsing error: Unexpected token (12:64)
+
+webpack compiled with 2 errors
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/utils/supabaseClient.js
+Syntax error: Unexpected token (12:64) (12:64)
+ERROR in ./src/utils/supabaseClient.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/utils/supabaseClient.js: Unexpected token (12:64)
+
+  10 | function validateEnvironment() {
+  11 |   const requiredVars = {
+> 12 |     REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL||,
+     |                                                                 ^
+  13 |     REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY
+  14 |   };
+  15 |
+    at constructor (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:360:19)
+    at FlowParserMixin.raise (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:6613:19)
+    at FlowParserMixin.unexpected (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:6633:16)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11358:16)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:4770:20)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10992:23)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10977:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10957:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10810:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10897:34)
+    at FlowParserMixin.parseExprOpRightExpr (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10892:21)
+    at FlowParserMixin.parseExprOp (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10858:27)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10819:17)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10792:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10745:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3555:18)
+    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12334:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:17)
+    at FlowParserMixin.parseObjectProperty (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11868:83)
+    at FlowParserMixin.parseObjPropValue (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11896:100)
+    at FlowParserMixin.parseObjPropValue (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3345:26)
+    at FlowParserMixin.parsePropertyDefinition (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11833:17)
+    at FlowParserMixin.parseObjectLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11748:21)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:11250:23)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:4770:20)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10992:23)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10977:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10957:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10810:61)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10815:23)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10792:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10745:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:3555:18)
+    at /home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12329:16)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:10714:17)
+    at FlowParserMixin.parseVar (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13260:91)
+    at FlowParserMixin.parseVarStatement (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13106:10)
+    at FlowParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12727:23)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12644:17)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2922:24)
+    at FlowParserMixin.parseStatementListItem (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12624:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13192:61)
+    at FlowParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13185:10)
+    at FlowParserMixin.parseBlock (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:13173:10)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12018:24)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2899:11)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:12004:10)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/node_modules/@babel/parser/lib/index.js:2907:18)
+
+ERROR in [eslint] 
+src/utils/supabaseClient.js
+  Line 12:64:  Parsing error: Unexpected token (12:64)
+
+webpack compiled with 2 errors
