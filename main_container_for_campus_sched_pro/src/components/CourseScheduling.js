@@ -27,7 +27,6 @@ import Course from './Course';
 import CourseDetails from './CourseDetails';
 import ShareScheduleButton from './ShareScheduleButton';
 import { validateCourseMove, findScheduleConflicts } from '../utils/scheduleUtils';
-import { scheduleCourse, unscheduleCourse, getTimeSlotId } from '../utils/supabaseClient';
 import { useSchedule } from '../context/ScheduleContext';
 
 const ACADEMIC_YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
@@ -47,7 +46,9 @@ const CourseScheduling = () => {
     refreshData,
     removeCourseFromSlot,
     faculty,
-    actionLoadingState
+    actionLoadingState,
+    scheduleCourseToSlot,
+    unscheduleCourseFromSlot
   } = useSchedule();
   
   const timetableRef = useRef(null);
@@ -77,7 +78,7 @@ const CourseScheduling = () => {
 
     const course = courses.find(c => c.id === draggableId);
     if (!course) return;
-    
+
     // Extract faculty and room IDs if available
     const facultyId = course.instructor ? course.facultyId : null;
     const roomId = course.room ? course.roomId : null;
@@ -89,47 +90,65 @@ const CourseScheduling = () => {
         showNotification(validation.message, 'error');
         return;
       }
-      
-      // Create a new schedule with the updated course positions
+
+      // UI update (optimistic)
       const newSchedule = { ...schedule };
-      
-      // Extract day and time from source and destination IDs
+
       let sourceDay, sourceTime, destDay, destTime;
-      
+
       if (source.droppableId !== 'courses-list') {
         [sourceDay, sourceTime] = source.droppableId.split('-');
       }
-      
+
       [destDay, destTime] = destination.droppableId.split('-');
-      
+
       // If moving from courses list to a time slot
       if (source.droppableId === 'courses-list') {
         // Create destination array if it doesn't exist
         if (!newSchedule[destination.droppableId]) {
           newSchedule[destination.droppableId] = [];
         }
-        
-        // Add course to destination
         newSchedule[destination.droppableId].push(course);
-      } 
-      // If moving between time slots
+
+        // Persist using context method
+        scheduleCourseToSlot(course.id, facultyId, roomId, destDay, destTime).then(success => {
+          if (!success) {
+            showNotification('Error scheduling course. Please try again.', 'error');
+            if (refreshData) refreshData();
+          }
+        });
+      }
+      // If moving between slots (rescheduling)
       else {
         // Remove from source slot
         newSchedule[source.droppableId] = newSchedule[source.droppableId]
           .filter(c => c.id !== draggableId);
-        
-        // Clean up empty slots
+
         if (newSchedule[source.droppableId].length === 0) {
           delete newSchedule[source.droppableId];
         }
-        
-        // Create destination array if it doesn't exist
+
         if (!newSchedule[destination.droppableId]) {
           newSchedule[destination.droppableId] = [];
         }
-        
-        // Add to destination slot
         newSchedule[destination.droppableId].push(course);
+
+        // First unschedule, then schedule via context methods
+        unscheduleCourseFromSlot(course.id, sourceDay, sourceTime)
+          .then(unscheduleSuccess => {
+            if (!unscheduleSuccess) {
+              showNotification('Error unscheduling course from previous slot.', 'error');
+              if (refreshData) refreshData();
+              return false;
+            }
+            return scheduleCourseToSlot(course.id, facultyId, roomId, destDay, destTime);
+          })
+          .then(scheduleSuccess => {
+            if (scheduleSuccess === false) {
+              showNotification('Error rescheduling course. Please try again.', 'error');
+              if (refreshData) refreshData();
+            }
+          });
       }
 
       // Check for conflicts
@@ -138,77 +157,12 @@ const CourseScheduling = () => {
         showNotification(`Warning: Found ${conflicts.length} scheduling conflicts`, 'warning');
       }
 
-      // Update the UI immediately for better user experience
       setSchedule(newSchedule);
-      
-      // Now update the database
-      // If we're moving from courses-list, we need to schedule the course
-      if (source.droppableId === 'courses-list') {
-        // Schedule course at destination using context's removeCourseFromSlot
-        // Get a reference to the appropriate timeSlotId
-        getTimeSlotId(destDay, destTime)
-          .then(timeSlotId => {
-            if (!timeSlotId) {
-              showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
-              if (refreshData) refreshData();
-              return;
-            }
-            
-            // Schedule the course in the database
-            return scheduleCourse(course.id, facultyId, roomId, timeSlotId);
-          })
-          .then(result => {
-            if (result === false) { // explicitly check for false
-              showNotification('Error scheduling course. Please try again.', 'error');
-              if (refreshData) refreshData();
-            }
-          })
-          .catch(error => {
-            showNotification(`Error scheduling course: ${error.message}`, 'error');
-            if (refreshData) refreshData();
-          });
-      }
-      // If moving between slots, we're effectively rescheduling
-      else {
-        // First unschedule from the original slot
-        unscheduleCourse(course.id, sourceDay, sourceTime)
-          .then(unscheduleResult => {
-            if (!unscheduleResult) {
-              showNotification('Error unscheduling course from previous slot.', 'error');
-              if (refreshData) refreshData();
-              return null;
-            }
-            
-            // Then get timeSlotId for the destination
-            return getTimeSlotId(destDay, destTime);
-          })
-          .then(timeSlotId => {
-            if (!timeSlotId) {
-              showNotification(`Could not find time slot for ${destDay} ${destTime}`, 'error');
-              if (refreshData) refreshData();
-              return null;
-            }
-            
-            // Schedule in the new slot
-            return scheduleCourse(course.id, facultyId, roomId, timeSlotId);
-          })
-          .then(scheduleResult => {
-            if (scheduleResult === false) { // explicitly check for false
-              showNotification('Error rescheduling course. Please try again.', 'error');
-              if (refreshData) refreshData();
-            }
-          })
-          .catch(error => {
-            showNotification(`Error moving course: ${error.message}`, 'error');
-            if (refreshData) refreshData();
-          });
-      }
-      
     } catch (error) {
       showNotification(`Error during drag operation: ${error.message}`, 'error');
       if (refreshData) refreshData();
     }
-  }, [schedule, courses, setSchedule, showNotification, refreshData]);
+  }, [schedule, courses, setSchedule, showNotification, refreshData, scheduleCourseToSlot, unscheduleCourseFromSlot]);
 
   const handleSaveSchedule = useCallback(() => {
     const conflicts = findScheduleConflicts(schedule);
