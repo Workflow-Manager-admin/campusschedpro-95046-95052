@@ -1,9 +1,34 @@
 import { createClient } from '@supabase/supabase-js';
 
+/**
+ * Validates required environment variables for Supabase configuration
+ * @throws {Error} If required environment variables are missing
+ */
+function validateEnvironment() {
+  const missingVars = [];
+  
+  if (!process.env.REACT_APP_SUPABASE_URL) {
+    missingVars.push('REACT_APP_SUPABASE_URL');
+  }
+  if (!process.env.REACT_APP_SUPABASE_ANON_KEY) {
+    missingVars.push('REACT_APP_SUPABASE_ANON_KEY');
+  }
+  
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(', ')}. ` +
+      'Please check your .env file and ensure all required variables are set.'
+    );
+  }
+}
+
+// Validate environment variables before creating client
+validateEnvironment();
+
 // PUBLIC_INTERFACE
 export const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL||'https://alsthvnrqazftrtluxss.supabase.co',
-  process.env.REACT_APP_SUPABASE_ANON_KEY||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsc3Rodm5ycWF6ZnRydGx1eHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NTI1MjIsImV4cCI6MjA2MzAyODUyMn0.eY4c5y2ld6z6SJZhrhtOp38bg0PsSyQbhPOyfQjThyk'
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
 // PUBLIC_INTERFACE
