@@ -63,7 +63,8 @@ const CourseScheduling = () => {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </DataFetchErrorBoundary>
   );
 };
 
