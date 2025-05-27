@@ -1,25 +1,29 @@
-
-
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
 import { Paper, CircularProgress } from '@mui/material';
 import { useSchedule } from '../context/ScheduleContext';
 
-const Course = memo(({ course, index, onEdit, onDelete }) => {
+// PUBLIC_INTERFACE
+const Course = memo(({ course, index, onEdit, onDelete, dragDisabled }) => {
   const [showControls, setShowControls] = useState(false);
   const { actionLoadingState } = useSchedule() || {};
   const isLoading = actionLoadingState && actionLoadingState.courseId === course.id;
 
   return (
-    <Draggable draggableId={course.id} index={index}>
+    <Draggable draggableId={course.id} index={index} isDragDisabled={!!dragDisabled}>
       {(provided, snapshot) => (
         <Paper
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`course-card ${snapshot.isDragging ? 'dragging' : ''}`}
+          className={`course-card${snapshot.isDragging ? ' dragging' : ''}${dragDisabled ? ' course-card-disabled' : ''}`}
           elevation={snapshot.isDragging ? 3 : 1}
+          style={{
+            opacity: dragDisabled ? 0.55 : 1,
+            pointerEvents: dragDisabled ? 'none' : undefined,
+            ...provided.draggableProps.style
+          }}
           onMouseEnter={() => setShowControls(true)}
           onMouseLeave={() => setShowControls(false)}
         >
@@ -29,7 +33,7 @@ const Course = memo(({ course, index, onEdit, onDelete }) => {
               <CircularProgress size={24} />
             </div>
           )}
-          {showControls && !snapshot.isDragging && !isLoading && (
+          {showControls && !snapshot.isDragging && !isLoading && !dragDisabled && (
             <div className="course-actions">
               <button 
                 className="edit-btn"
@@ -88,11 +92,14 @@ Course.propTypes = {
     requiresLab: PropTypes.bool,
     requiredEquipment: PropTypes.arrayOf(PropTypes.string),
     academicYear: PropTypes.string,
-    department: PropTypes.string
+    department: PropTypes.string,
+    facultyId: PropTypes.any,
+    roomId: PropTypes.any
   }).isRequired,
   index: PropTypes.number.isRequired,
   onEdit: PropTypes.func,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
+  dragDisabled: PropTypes.bool
 };
 
 export default Course;
