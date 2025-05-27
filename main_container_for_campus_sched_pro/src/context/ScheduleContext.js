@@ -1,78 +1,92 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { 
-  fetchCourses,
-  fetchFaculty, 
-  fetchCourseScheduleView
-} from "../utils/supabaseClient";
+import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
+import { fetchCourseScheduleView } from "../utils/supabaseClient";
 
+// Create ScheduleContext and hook
 const ScheduleContext = createContext();
 
-export const useSchedule = () => useContext(ScheduleContext);
+// PUBLIC_INTERFACE
+export function useSchedule() {
+  return useContext(ScheduleContext);
+}
 
-export const ScheduleProvider = ({ children }) => {
-  const [courses, setCourses] = useState([]);
-  const [faculty, setFaculty] = useState([]);
-  const [courseSchedule, setCourseSchedule] = useState([]);
-  const [schedules, setSchedules] = useState([]);
+// Utility: Map the schedule rows returned from Supabase view to internal model
+function mapScheduleRowsToModel(scheduleRows) {
+  // Adjust field mapping here as per the shape returned from fetchCourseScheduleView
+  // Example assumes view fields: id, course_code, course_name, faculty_name, room_code, day, start_time, end_time, equipment (can be customized further)
+  return scheduleRows.map(row => ({
+    id: row.id,
+    courseCode: row.course_code,
+    courseName: row.course_name,
+    facultyName: row.faculty_name,
+    roomCode: row.room_code,
+    day: row.day,
+    startTime: row.start_time,
+    endTime: row.end_time,
+    equipment: row.equipment, // If any, else remove/massage as needed
+    // Add any other required mappings here
+  }));
+}
+
+// PUBLIC_INTERFACE
+export function ScheduleProvider({ children }) {
+  const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState({
     open: false,
     message: "",
-    severity: "info"
+    severity: "info",
   });
 
-  const handleCloseNotification = () => 
-    setNotification((prev) => ({ ...prev, open: false }));
-
-  // Fetch all core scheduling data flat
-  const fetchAllData = useCallback(async () => {
+  // Fetch data using the Supabase view; replaces legacy fetchSchedules
+  const loadSchedule = useCallback(async () => {
     setLoading(true);
     setErrors({});
     try {
-      const [
-        fetchedCourses,
-        fetchedFaculty,
-        fetchedCourseScheduleViewResult
-      ] = await Promise.all([
-        fetchCourses(),
-        fetchFaculty(),
-        fetchCourseScheduleView()
-      ]);
-      setCourses(fetchedCourses || []);
-      setFaculty(fetchedFaculty || []);
-      setCourseSchedule(fetchedCourseScheduleViewResult || []);
-      setSchedules(fetchedCourseScheduleViewResult || []);
-    } catch (err) {
-      setErrors({ general: err.message || "Failed to load schedule data." });
+      const rows = await fetchCourseScheduleView();
+      // Handle API shape and error here
+      if (Array.isArray(rows)) {
+        setSchedule(mapScheduleRowsToModel(rows));
+      } else {
+        throw new Error("Schedule data format is invalid!");
+      }
+    } catch (error) {
+      setErrors({ general: "Failed to fetch course schedule.", details: error.message });
+      setSchedule([]);
       setNotification({
         open: true,
-        message: err.message || "Failed to load schedule data.",
-        severity: "error"
+        message: "Failed to load course schedule from Supabase.",
+        severity: "error",
       });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
+  // Initial load
   useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
+    loadSchedule();
+  }, [loadSchedule]);
 
-  const refreshData = () => fetchAllData();
+  // Notification handler
+  const handleCloseNotification = useCallback(() => {
+    setNotification((n) => ({ ...n, open: false }));
+  }, []);
+
+  // Exposed context value
+  const value = {
+    schedule,
+    loading,
+    errors,
+    refreshData: loadSchedule,
+    notification,
+    handleCloseNotification,
+    // Add more actions/setters if needed (e.g., save/update schedule row, etc.)
+  };
 
   return (
-    <ScheduleContext.Provider value={{
-      courses,
-      faculty,
-      courseSchedule,
-      schedules,
-      loading,
-      errors,
-      notification,
-      handleCloseNotification,
-      refreshData,
-    }}>
+    <ScheduleContext.Provider value={value}>
       {children}
     </ScheduleContext.Provider>
   );
-};
+}
