@@ -31,7 +31,7 @@ const CourseScheduling = () => {
           </tr>
         </thead>
         <tbody>
-          {courses.map(course => (
+          {(Array.isArray(courses) ? courses : []).map(course => (
             <tr key={course.id}>
               <td>{course.code}</td>
               <td>{course.name}</td>
@@ -53,7 +53,7 @@ const CourseScheduling = () => {
           </tr>
         </thead>
         <tbody>
-          {courseSchedule.map((sched, idx) => (
+          {(Array.isArray(courseSchedule) ? courseSchedule : []).map((sched, idx) => (
             <tr key={idx}>
               <td>{sched.course_code || sched.course_id}</td>
               <td>{sched.day}</td>
