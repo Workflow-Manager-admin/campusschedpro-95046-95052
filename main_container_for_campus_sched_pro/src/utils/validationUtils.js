@@ -1,9 +1,20 @@
 /**
- * Utility functions for validating entity data structures
+ * Enhanced validation utilities with stronger type checking and sanitization
  */
 
+import {
+  sanitizeString,
+  sanitizeNumber,
+  sanitizeArray,
+  sanitizeEmail,
+  sanitizeUUID,
+  sanitizeRoom,
+  sanitizeCourse,
+  sanitizeFaculty
+} from './dataSanitizer';
+
 /**
- * Common validation types
+ * Enhanced validation types
  */
 export const ValidationTypes = {
   STRING: 'string',
@@ -11,192 +22,371 @@ export const ValidationTypes = {
   BOOLEAN: 'boolean',
   ARRAY: 'array',
   EMAIL: 'email',
-  UUID: 'uuid'
+  UUID: 'uuid',
+  OBJECT: 'object',
+  DATE: 'date'
 };
 
 /**
- * Validate a single field
- * @param {any} value - The value to validate
- * @param {string} type - The expected type from ValidationTypes
- * @param {boolean} required - Whether the field is required
- * @returns {boolean} True if valid, false otherwise
+ * Validation rules for specific field types
  */
-export function validateField(value, type, required = true) {
-  // Handle null/undefined
-  if (value == null) {
-    return !required;
+const ValidationRules = {
+  ROOM_NAME: {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 100,
+    pattern: /^[a-zA-Z0-9\s-]+$/
+  },
+  COURSE_CODE: {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 20,
+    pattern: /^[A-Z0-9-]+$/i
+  },
+  EMAIL: {
+    type: ValidationTypes.EMAIL,
+    required: true,
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   }
+};
+
+/**
+ * Validate a single field with enhanced type checking and rules
+ * @param {any} value - The value to validate
+ * @param {Object} rules - Validation rules
+ * @returns {{isValid: boolean, error: string|null}} Validation result
+ */
+export function validateField(value, rules) {
+  const {
+    type,
+    required = false,
+    minLength,
+    maxLength,
+    pattern,
+    min,
+    max
+  } = rules;
+
+  // Handle null/undefined for non-required fields
+  if (value == null || value === '') {
+    return {
+      isValid: !required,
+      error: required ? 'This field is required' : null
+    };
+  }
+
+  let error = null;
 
   switch (type) {
     case ValidationTypes.STRING:
-      return typeof value === 'string' && (value.trim().length > 0 || !required);
-    
+      if (typeof value !== 'string') {
+        error = 'Must be a string';
+        break;
+      }
+      if (minLength && value.length < minLength) {
+        error = `Must be at least ${minLength} characters`;
+      }
+      if (maxLength && value.length > maxLength) {
+        error = `Must be no more than ${maxLength} characters`;
+      }
+      if (pattern && !pattern.test(value)) {
+        error = 'Invalid format';
+      }
+      break;
+
     case ValidationTypes.NUMBER:
-      return typeof value === 'number' && !isNaN(value);
-    
+      const num = Number(value);
+      if (isNaN(num)) {
+        error = 'Must be a number';
+        break;
+      }
+      if (min != null && num < min) {
+        error = `Must be at least ${min}`;
+      }
+      if (max != null && num > max) {
+        error = `Must be no more than ${max}`;
+      }
+      break;
+
     case ValidationTypes.BOOLEAN:
-      return typeof value === 'boolean';
-    
+      if (typeof value !== 'boolean') {
+        error = 'Must be a boolean';
+      }
+      break;
+
     case ValidationTypes.ARRAY:
-      return Array.isArray(value);
-    
+      if (!Array.isArray(value)) {
+        error = 'Must be an array';
+        break;
+      }
+      if (minLength && value.length < minLength) {
+        error = `Must have at least ${minLength} items`;
+      }
+      if (maxLength && value.length > maxLength) {
+        error = `Must have no more than ${maxLength} items`;
+      }
+      break;
+
     case ValidationTypes.EMAIL:
-      return typeof value === 'string' && 
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    
+      if (!ValidationRules.EMAIL.pattern.test(value)) {
+        error = 'Invalid email address';
+      }
+      break;
+
     case ValidationTypes.UUID:
-      return typeof value === 'string' && 
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-    
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
+        error = 'Invalid UUID format';
+      }
+      break;
+
+    case ValidationTypes.DATE:
+      if (!(value instanceof Date) || isNaN(value.getTime())) {
+        error = 'Invalid date';
+      }
+      break;
+
     default:
-      return false;
+      error = 'Invalid type';
   }
+
+  return {
+    isValid: !error,
+    error
+  };
 }
 
 /**
- * Validate a room object
+ * Enhanced room validation with sanitization
  * @param {Object} room - Room object to validate
- * @returns {{isValid: boolean, errors: string[]}} Validation result
+ * @returns {{isValid: boolean, errors: Object, sanitized: Object|null}} Validation result
  */
 export function validateRoom(room) {
-  const errors = [];
-
-  if (!room) {
-    return { isValid: false, errors: ['Room object is required'] };
-  }
-
-  // Required fields
-  if (!validateField(room.name, ValidationTypes.STRING)) {
-    errors.push('Room name is required and must be a non-empty string');
-  }
+  const errors = {};
   
-  if (!validateField(room.type, ValidationTypes.STRING)) {
-    errors.push('Room type is required and must be a non-empty string');
-  }
-  
-  if (!validateField(room.building, ValidationTypes.STRING)) {
-    errors.push('Building name is required and must be a non-empty string');
-  }
-
-  // Optional fields with type validation
-  if (room.capacity != null && !validateField(room.capacity, ValidationTypes.NUMBER, false)) {
-    errors.push('Room capacity must be a number');
+  // First sanitize the input
+  const sanitized = sanitizeRoom(room);
+  if (!sanitized) {
+    return {
+      isValid: false,
+      errors: { _general: 'Invalid room object' },
+      sanitized: null
+    };
   }
 
-  if (room.floor != null && !validateField(room.floor, ValidationTypes.STRING, false)) {
-    errors.push('Floor must be a string');
+  // Validate required fields
+  const nameValidation = validateField(sanitized.name, {
+    ...ValidationRules.ROOM_NAME,
+    required: true
+  });
+  if (!nameValidation.isValid) {
+    errors.name = nameValidation.error;
   }
 
-  if (room.equipment != null && !validateField(room.equipment, ValidationTypes.ARRAY, false)) {
-    errors.push('Equipment must be an array');
+  const typeValidation = validateField(sanitized.type, {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 50
+  });
+  if (!typeValidation.isValid) {
+    errors.type = typeValidation.error;
   }
 
-  if (room.id != null && !validateField(room.id, ValidationTypes.UUID, false)) {
-    errors.push('Room ID must be a valid UUID');
+  const buildingValidation = validateField(sanitized.building, {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 100
+  });
+  if (!buildingValidation.isValid) {
+    errors.building = buildingValidation.error;
+  }
+
+  // Validate optional fields
+  if (sanitized.capacity != null) {
+    const capacityValidation = validateField(sanitized.capacity, {
+      type: ValidationTypes.NUMBER,
+      min: 0,
+      max: 1000
+    });
+    if (!capacityValidation.isValid) {
+      errors.capacity = capacityValidation.error;
+    }
+  }
+
+  if (sanitized.equipment?.length > 0) {
+    const equipmentErrors = sanitized.equipment
+      .map(item => validateField(item, {
+        type: ValidationTypes.STRING,
+        minLength: 1,
+        maxLength: 50
+      }))
+      .filter(result => !result.isValid)
+      .map(result => result.error);
+
+    if (equipmentErrors.length > 0) {
+      errors.equipment = equipmentErrors;
+    }
   }
 
   return {
-    isValid: errors.length === 0,
-    errors
+    isValid: Object.keys(errors).length === 0,
+    errors,
+    sanitized
   };
 }
 
 /**
- * Validate a course object
+ * Enhanced course validation with sanitization
  * @param {Object} course - Course object to validate
- * @returns {{isValid: boolean, errors: string[]}} Validation result
+ * @returns {{isValid: boolean, errors: Object, sanitized: Object|null}} Validation result
  */
 export function validateCourse(course) {
-  const errors = [];
-
-  if (!course) {
-    return { isValid: false, errors: ['Course object is required'] };
-  }
-
-  // Required fields
-  if (!validateField(course.name, ValidationTypes.STRING)) {
-    errors.push('Course name is required and must be a non-empty string');
-  }
+  const errors = {};
   
-  if (!validateField(course.code, ValidationTypes.STRING)) {
-    errors.push('Course code is required and must be a non-empty string');
+  // First sanitize the input
+  const sanitized = sanitizeCourse(course);
+  if (!sanitized) {
+    return {
+      isValid: false,
+      errors: { _general: 'Invalid course object' },
+      sanitized: null
+    };
   }
 
-  // Optional fields with type validation
-  if (course.credits != null && !validateField(course.credits, ValidationTypes.NUMBER, false)) {
-    errors.push('Credits must be a number');
+  // Validate required fields
+  const nameValidation = validateField(sanitized.name, {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 200
+  });
+  if (!nameValidation.isValid) {
+    errors.name = nameValidation.error;
   }
 
-  if (course.expectedEnrollment != null && !validateField(course.expectedEnrollment, ValidationTypes.NUMBER, false)) {
-    errors.push('Expected enrollment must be a number');
+  const codeValidation = validateField(sanitized.code, {
+    ...ValidationRules.COURSE_CODE,
+    required: true
+  });
+  if (!codeValidation.isValid) {
+    errors.code = codeValidation.error;
   }
 
-  if (course.requiresLab != null && !validateField(course.requiresLab, ValidationTypes.BOOLEAN, false)) {
-    errors.push('Requires lab must be a boolean');
+  // Validate optional fields
+  if (sanitized.credits != null) {
+    const creditsValidation = validateField(sanitized.credits, {
+      type: ValidationTypes.NUMBER,
+      min: 0,
+      max: 20
+    });
+    if (!creditsValidation.isValid) {
+      errors.credits = creditsValidation.error;
+    }
   }
 
-  if (course.department != null && !validateField(course.department, ValidationTypes.STRING, false)) {
-    errors.push('Department must be a string');
+  if (sanitized.expectedEnrollment != null) {
+    const enrollmentValidation = validateField(sanitized.expectedEnrollment, {
+      type: ValidationTypes.NUMBER,
+      min: 0,
+      max: 500
+    });
+    if (!enrollmentValidation.isValid) {
+      errors.expectedEnrollment = enrollmentValidation.error;
+    }
   }
 
-  if (course.academicYear != null && !validateField(course.academicYear, ValidationTypes.STRING, false)) {
-    errors.push('Academic year must be a string');
-  }
+  if (sanitized.requiredEquipment?.length > 0) {
+    const equipmentErrors = sanitized.requiredEquipment
+      .map(item => validateField(item, {
+        type: ValidationTypes.STRING,
+        minLength: 1,
+        maxLength: 50
+      }))
+      .filter(result => !result.isValid)
+      .map(result => result.error);
 
-  if (course.requiredEquipment != null && !validateField(course.requiredEquipment, ValidationTypes.ARRAY, false)) {
-    errors.push('Required equipment must be an array');
-  }
-
-  if (course.id != null && !validateField(course.id, ValidationTypes.UUID, false)) {
-    errors.push('Course ID must be a valid UUID');
+    if (equipmentErrors.length > 0) {
+      errors.requiredEquipment = equipmentErrors;
+    }
   }
 
   return {
-    isValid: errors.length === 0,
-    errors
+    isValid: Object.keys(errors).length === 0,
+    errors,
+    sanitized
   };
 }
 
 /**
- * Validate a faculty object
+ * Enhanced faculty validation with sanitization
  * @param {Object} faculty - Faculty object to validate
- * @returns {{isValid: boolean, errors: string[]}} Validation result
+ * @returns {{isValid: boolean, errors: Object, sanitized: Object|null}} Validation result
  */
 export function validateFaculty(faculty) {
-  const errors = [];
-
-  if (!faculty) {
-    return { isValid: false, errors: ['Faculty object is required'] };
-  }
-
-  // Required fields
-  if (!validateField(faculty.name, ValidationTypes.STRING)) {
-    errors.push('Faculty name is required and must be a non-empty string');
-  }
+  const errors = {};
   
-  if (!validateField(faculty.email, ValidationTypes.EMAIL)) {
-    errors.push('Faculty email is required and must be a valid email address');
+  // First sanitize the input
+  const sanitized = sanitizeFaculty(faculty);
+  if (!sanitized) {
+    return {
+      isValid: false,
+      errors: { _general: 'Invalid faculty object' },
+      sanitized: null
+    };
   }
 
-  // Optional fields with type validation
-  if (faculty.department != null && !validateField(faculty.department, ValidationTypes.STRING, false)) {
-    errors.push('Department must be a string');
+  // Validate required fields
+  const nameValidation = validateField(sanitized.name, {
+    type: ValidationTypes.STRING,
+    required: true,
+    minLength: 2,
+    maxLength: 100
+  });
+  if (!nameValidation.isValid) {
+    errors.name = nameValidation.error;
   }
 
-  if (faculty.status != null && !validateField(faculty.status, ValidationTypes.STRING, false)) {
-    errors.push('Status must be a string');
+  const emailValidation = validateField(sanitized.email, {
+    ...ValidationRules.EMAIL,
+    required: true
+  });
+  if (!emailValidation.isValid) {
+    errors.email = emailValidation.error;
   }
 
-  if (faculty.expertise != null && !validateField(faculty.expertise, ValidationTypes.ARRAY, false)) {
-    errors.push('Expertise must be an array');
+  // Validate optional fields
+  if (sanitized.department) {
+    const departmentValidation = validateField(sanitized.department, {
+      type: ValidationTypes.STRING,
+      minLength: 2,
+      maxLength: 100
+    });
+    if (!departmentValidation.isValid) {
+      errors.department = departmentValidation.error;
+    }
   }
 
-  if (faculty.id != null && !validateField(faculty.id, ValidationTypes.UUID, false)) {
-    errors.push('Faculty ID must be a valid UUID');
+  if (sanitized.expertise?.length > 0) {
+    const expertiseErrors = sanitized.expertise
+      .map(item => validateField(item, {
+        type: ValidationTypes.STRING,
+        minLength: 1,
+        maxLength: 50
+      }))
+      .filter(result => !result.isValid)
+      .map(result => result.error);
+
+    if (expertiseErrors.length > 0) {
+      errors.expertise = expertiseErrors;
+    }
   }
 
   return {
-    isValid: errors.length === 0,
-    errors
+    isValid: Object.keys(errors).length === 0,
+    errors,
+    sanitized
   };
 }
