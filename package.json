@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "build": "node build-with-memory.js",
-    "build:nowarnings": "node build-no-warnings.js",
+    "build": "node build-no-warnings.js",
+    "build:diagnostic": "node build-diagnostic.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
