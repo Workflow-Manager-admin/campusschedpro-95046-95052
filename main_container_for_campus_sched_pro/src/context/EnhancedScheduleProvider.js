@@ -1,217 +1,215 @@
-import React, { createContext, useContext, useState } from 'react';
-import { ScheduleProvider, useSchedule } from './ScheduleContext';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { 
+  supabase, 
+  fetchCourses, 
+  fetchFaculty, 
+  fetchRooms, 
+  fetchCourseScheduleView,
+  cleanup as cleanupSupabase 
+} from '../utils/supabaseClient';
+import { 
+  getConnectionState, 
+  ConnectionState 
+} from '../utils/supabaseConnectionMonitor';
+import { handleSupabaseError } from '../utils/supabaseErrorHandler';
+import { findScheduleConflicts } from '../utils/scheduleHelpers';
 
-// Create enhanced context for additional functionality
-const EnhancedScheduleContext = createContext();
+const ScheduleContext = createContext();
 
 /**
- * Hook to use the enhanced schedule context
- * @returns {Object} Enhanced schedule context
+ * Custom hook to access the schedule context
+ * @returns {Object} Schedule context value
  */
-export const useEnhancedSchedule = () => {
-  const context = useContext(EnhancedScheduleContext);
+export function useSchedule() {
+  const context = useContext(ScheduleContext);
   if (!context) {
-    throw new Error('useEnhancedSchedule must be used within an EnhancedScheduleProvider');
+    throw new Error('useSchedule must be used within a ScheduleProvider');
   }
   return context;
-};
+}
 
 /**
- * Enhanced Schedule Provider component
- * Wraps the base ScheduleProvider and adds enhanced functions with error handling
+ * Enhanced Schedule Provider with robust error handling and connection monitoring
  */
-export const EnhancedScheduleProvider = ({ children }) => {
-  // State to track error info
-  const [errorInfo, setErrorInfo] = useState({
-    lastError: null,
-    lastErrorTime: null,
-    errorCount: 0
+export function EnhancedScheduleProvider({ children }) {
+  const [schedule, setSchedule] = useState({});
+  const [courses, setCourses] = useState([]);
+  const [faculty, setFaculty] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [conflicts, setConflicts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState(ConnectionState.CONNECTING);
+  const [errors, setErrors] = useState({});
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'info'
   });
 
-  /**
-   * Helper function to safely execute operations with error handling
-   */
-  const safeExecute = async (operation, entityType = 'entity') => {
-    try {
-      const result = await operation();
-      return result;
-    } catch (error) {
-      // Log the error and update error state
-      console.error(`Error occurred with ${entityType}:`, error);
-      
-      setErrorInfo(prev => ({
-        lastError: error.message || 'Unknown error',
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      
-      // Re-throw for component-level error handling
-      throw error;
-    }
-  };
+  // Function to show notifications
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
 
-  /**
-   * Render the enhanced provider with its wrapped context
-   */
-  return (
-    <ScheduleProvider>
-      <EnhancedScheduleProviderContent 
-        safeExecute={safeExecute}
-        errorInfo={errorInfo}
-        setErrorInfo={setErrorInfo}
-      >
-        {children}
-      </EnhancedScheduleProviderContent>
-    </ScheduleProvider>
-  );
-};
+  // Handle notification close
+  const handleCloseNotification = useCallback(() => {
+    setNotification(prev => ({ ...prev, open: false }));
+  }, []);
 
-/**
- * Inner component that consumes the base ScheduleContext and provides enhanced functions
- */
-const EnhancedScheduleProviderContent = ({ children, safeExecute, errorInfo, setErrorInfo }) => {
-  // Get the base context
-  const baseContext = useSchedule();
-  
-  // Additional helper functions with enhanced error handling
-  
-  /**
-   * Enhanced function to add a new room with validation
-   */
-  const addRoomEnhanced = (roomData) => {
-    // Validate required room fields
-    if (!roomData.name || !roomData.capacity) {
-      const error = new Error('Room name and capacity are required');
-      setErrorInfo(prev => ({
-        lastError: error.message,
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      throw error;
+  // Handle data fetching errors
+  const handleFetchError = useCallback((error, context) => {
+    const handledError = handleSupabaseError(error, context);
+    setErrors(prev => ({ ...prev, [context]: handledError.message }));
+    showNotification(handledError.message, 'error');
+  }, [showNotification]);
+
+  // Clear specific error
+  const clearError = useCallback((context) => {
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[context];
+      return newErrors;
+    });
+  }, []);
+
+  // Monitor connection status
+  useEffect(() => {
+    const subscription = getConnectionState().subscribe(state => {
+      setConnectionStatus(state);
+      if (state === ConnectionState.DISCONNECTED) {
+        showNotification('Lost connection to the database. Attempting to reconnect...', 'warning');
+      } else if (state === ConnectionState.CONNECTED) {
+        showNotification('Connection restored', 'success');
+      } else if (state === ConnectionState.ERROR) {
+        showNotification('Failed to connect to the database. Please try again later.', 'error');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      cleanupSupabase();
+    };
+  }, [showNotification]);
+
+  // Load all data
+  const loadData = useCallback(async () => {
+    if (connectionStatus === ConnectionState.ERROR) {
+      showNotification('Cannot load data: Database connection unavailable', 'error');
+      return;
     }
-    
-    // Use the safe executor
-    return safeExecute(() => baseContext.addRoom(roomData), 'room');
-  };
-  
-  /**
-   * Enhanced function to add a course with validation
-   */
-  const addCourseEnhanced = (courseData) => {
-    // Validate required course fields
-    if (!courseData.name || !courseData.code) {
-      const error = new Error('Course name and code are required');
-      setErrorInfo(prev => ({
-        lastError: error.message,
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      throw error;
-    }
-    
-    // Use the safe executor
-    return safeExecute(() => baseContext.addCourse(courseData), 'course');
-  };
-  
-  /**
-   * Enhanced function to remove a course from a slot with better error handling
-   * and defensive programming against non-array coursesInSlot
-   */
-  // Get base context functions
-  const { showNotification } = baseContext;
-  
-  const removeCourseFromSlotEnhanced = async (slotId, course, index) => {
-    if (!slotId) {
-      const error = new Error('Slot ID is required');
-      setErrorInfo(prev => ({
-        lastError: error.message,
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      showNotification && showNotification(`Error: ${error.message}`, 'error');
-      return Promise.resolve(false);
-    }
-    
-    if (!course) {
-      const error = new Error('Course to remove is required');
-      setErrorInfo(prev => ({
-        lastError: error.message,
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      showNotification && showNotification(`Error: ${error.message}`, 'error');
-      return Promise.resolve(false);
-    }
-    
+
+    setIsLoading(true);
+    clearError('data');
+
     try {
-      // Extract day and time from the slot ID
-      const [day, time] = slotId.split('-');
-      if (!day || !time) {
-        throw new Error(`Invalid slot ID format: ${slotId}`);
-      }
-      
-      // Get the current schedule for safety checks
-      const { schedule } = baseContext;
-      
-      // Handle case where schedule is undefined
-      if (!schedule) {
-        showNotification && showNotification('Schedule is not available', 'error');
-        return Promise.resolve(false);
-      }
-      
-      // Safely navigate to the specific courses array - with defensive checks
-      const slotExists = schedule && 
-        schedule[day] && 
-        schedule[day][time];
-        
-      if (!slotExists) {
-        // Instead of throwing error, provide feedback and return gracefully
-        setErrorInfo(prev => ({
-          lastError: `Slot ${slotId} not found in schedule`,
-          lastErrorTime: new Date().toISOString(),
-          errorCount: prev.errorCount + 1
-        }));
-        showNotification && showNotification(`Error removing course: Slot ${slotId} not found in schedule`, 'warning');
-        return Promise.resolve(false);
-      }
-      
-      // Ensure we're working with an array before using array methods
-      const coursesInSlot = Array.isArray(schedule[day][time]) ? 
-        schedule[day][time] : [];
-        
-      if (typeof index === 'number' && index >= 0 && index < coursesInSlot.length) {
-        // If index is provided, remove by index for better precision
-        return baseContext.removeCourseFromSlot(coursesInSlot[index].id, day, time);
-      } else {
-        // Fallback to removing by course ID
-        return baseContext.removeCourseFromSlot(course.id, day, time);
+      // Fetch all data in parallel
+      const [coursesData, facultyData, roomsData, scheduleData] = await Promise.all([
+        fetchCourses().catch(error => {
+          handleFetchError(error, 'courses');
+          return [];
+        }),
+        fetchFaculty().catch(error => {
+          handleFetchError(error, 'faculty');
+          return [];
+        }),
+        fetchRooms().catch(error => {
+          handleFetchError(error, 'rooms');
+          return [];
+        }),
+        fetchCourseScheduleView().catch(error => {
+          handleFetchError(error, 'schedule');
+          return [];
+        })
+      ]);
+
+      // Update state with fetched data
+      setCourses(coursesData);
+      setFaculty(facultyData);
+      setRooms(roomsData);
+      setSchedule(scheduleData);
+
+      // Check for conflicts
+      const newConflicts = findScheduleConflicts(scheduleData);
+      setConflicts(newConflicts);
+
+      if (newConflicts.length > 0) {
+        showNotification(`Found ${newConflicts.length} scheduling conflicts`, 'warning');
       }
     } catch (error) {
-      // Log error and provide user feedback
-      console.error(`Error removing course from slot ${slotId}:`, error);
-      setErrorInfo(prev => ({
-        lastError: error.message || 'Unknown error removing course',
-        lastErrorTime: new Date().toISOString(),
-        errorCount: prev.errorCount + 1
-      }));
-      return Promise.resolve(false);
+      handleFetchError(error, 'data');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [connectionStatus, handleFetchError, clearError, showNotification]);
 
-  // Provide both the base context and our enhanced functions
-  const enhancedContext = {
-    ...baseContext,
-    addRoomEnhanced,
-    addCourseEnhanced,
-    removeCourseFromSlotEnhanced,
-    errorInfo
+  // Load initial data and set up real-time subscriptions
+  useEffect(() => {
+    loadData();
+
+    // Set up real-time subscriptions
+    const coursesSubscription = supabase
+      .channel('public:courses')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, () => {
+        loadData().catch(error => handleFetchError(error, 'real-time-update'));
+      })
+      .subscribe();
+
+    const facultySubscription = supabase
+      .channel('public:faculty')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, () => {
+        loadData().catch(error => handleFetchError(error, 'real-time-update'));
+      })
+      .subscribe();
+
+    const roomsSubscription = supabase
+      .channel('public:rooms')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
+        loadData().catch(error => handleFetchError(error, 'real-time-update'));
+      })
+      .subscribe();
+
+    const scheduleSubscription = supabase
+      .channel('public:schedule')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'schedule' }, () => {
+        loadData().catch(error => handleFetchError(error, 'real-time-update'));
+      })
+      .subscribe();
+
+    // Cleanup subscriptions
+    return () => {
+      supabase.removeChannel(coursesSubscription);
+      supabase.removeChannel(facultySubscription);
+      supabase.removeChannel(roomsSubscription);
+      supabase.removeChannel(scheduleSubscription);
+    };
+  }, [loadData, handleFetchError]);
+
+  // Context value
+  const value = {
+    schedule,
+    courses,
+    faculty,
+    rooms,
+    conflicts,
+    isLoading,
+    connectionStatus,
+    errors,
+    notification,
+    showNotification,
+    handleCloseNotification,
+    refreshData: loadData,
+    clearError
   };
 
   return (
-    <EnhancedScheduleContext.Provider value={enhancedContext}>
+    <ScheduleContext.Provider value={value}>
       {children}
-    </EnhancedScheduleContext.Provider>
+    </ScheduleContext.Provider>
   );
-};
+}
 
 export default EnhancedScheduleProvider;
