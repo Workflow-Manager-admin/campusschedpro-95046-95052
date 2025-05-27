@@ -437,6 +437,77 @@ export const ScheduleProvider = ({ children }) => {
       .filter(Boolean);
   }, [roomAllocations, rooms]);
   
+  // PUBLIC_INTERFACE
+  /**
+   * Schedules a course into a day/time slot, persisting to DB and reloading schedule after.
+   * @param {string} courseId
+   * @param {string|null} facultyId
+   * @param {string|null} roomId
+   * @param {string} day
+   * @param {string} time
+   * @returns {Promise<boolean>}
+   */
+  const scheduleCourseToSlot = async (courseId, facultyId, roomId, day, time) => {
+    try {
+      setActionLoadingState((prev) => ({ ...prev, schedule: 'PENDING' }));
+      // work out the slot ID
+      // get slot ID from the DB (see getTimeSlotId in supabaseClient.js)
+      const { getTimeSlotId, scheduleCourse } = await import("../utils/supabaseClient");
+      const timeSlotId = await getTimeSlotId(day, time);
+      if (!timeSlotId) {
+        showNotification(`Could not get/create time slot for ${day}-${time}`, "error");
+        return false;
+      }
+      // persist to DB
+      const ok = await scheduleCourse(courseId, facultyId, roomId, timeSlotId);
+      if (ok) {
+        await loadInitialData(); // reload state/UI
+        showNotification(`Scheduled course in ${day} ${time}`, "success");
+        return true;
+      }
+      showNotification("Failed to schedule course (DB error)", "error");
+      return false;
+    } catch (err) {
+      showNotification(`Error scheduling course: ${err.message}`, "error");
+      return false;
+    } finally {
+      setActionLoadingState((prev) => ({ ...prev, schedule: null }));
+    }
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Unschedules a course from a specific day/time slot, persists removal in DB, reloads schedule after.
+   * @param {string} courseId
+   * @param {string} day
+   * @param {string} time
+   * @returns {Promise<boolean>}
+   */
+  const unscheduleCourseFromSlot = async (courseId, day, time) => {
+    try {
+      setActionLoadingState((prev) => ({ ...prev, schedule: 'PENDING' }));
+      const { getTimeSlotId, unscheduleCourse } = await import("../utils/supabaseClient");
+      const timeSlotId = await getTimeSlotId(day, time);
+      if (!timeSlotId) {
+        showNotification(`Could not find time slot for ${day}-${time}`, "error");
+        return false;
+      }
+      const ok = await unscheduleCourse(courseId, timeSlotId);
+      if (ok) {
+        await loadInitialData();
+        showNotification(`Unscheduled course from ${day} ${time}`, "success");
+        return true;
+      }
+      showNotification("Failed to unschedule course (DB error)", "error");
+      return false;
+    } catch (err) {
+      showNotification(`Error unscheduling course: ${err.message}`, "error");
+      return false;
+    } finally {
+      setActionLoadingState((prev) => ({ ...prev, schedule: null }));
+    }
+  };
+
   // Context value
   const contextValue = {
     // State
@@ -475,7 +546,9 @@ export const ScheduleProvider = ({ children }) => {
     handleCloseNotification,
     
     // Course Operations
-    removeCourseFromSlot: unscheduleCourse
+    removeCourseFromSlot: unscheduleCourse,
+    scheduleCourseToSlot,
+    unscheduleCourseFromSlot
   };
 
   return (
