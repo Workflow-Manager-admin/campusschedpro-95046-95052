@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
 import { fetchCourseScheduleView } from "../utils/supabaseClient";
+import { detectConflicts } from "../utils/conflictDetection";
 
 // Create ScheduleContext and hook
 const ScheduleContext = createContext();
@@ -29,7 +30,7 @@ function mapScheduleRowsToModel(scheduleRows) {
 
 // PUBLIC_INTERFACE
 export function ScheduleProvider({ children }) {
-  const [schedule, setSchedule] = useState([]);
+  const [schedule, setSchedule] = useState({});
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState({
