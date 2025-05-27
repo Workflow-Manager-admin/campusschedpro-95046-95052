@@ -346,9 +346,28 @@ export const EnhancedScheduleProvider = ({ children }) => {
 export const useSchedule = () => {
   const context = useContext(ScheduleContext);
   if (!context) {
-    throw new Error('useSchedule must be used within a ScheduleProvider');
+    // Return a default context structure instead of throwing
+    return {
+      scheduleData: null,
+      roomAllocations: null,
+      courses: null,
+      conflicts: null,
+      loading: false,
+      error: null,
+      progress: 0,
+      retryCount: 0,
+      notification: { open: false, message: '', severity: 'info' },
+      handleCloseNotification: () => {},
+      refreshData: () => {},
+      showNotification: () => {},
+      errors: {} // Add errors field to match expected shape
+    };
   }
-  return context;
+  // Ensure errors field exists in returned context
+  return {
+    ...context,
+    errors: context.error ? { general: context.error.message } : {}
+  };
 };
 
 export default EnhancedScheduleProvider;
