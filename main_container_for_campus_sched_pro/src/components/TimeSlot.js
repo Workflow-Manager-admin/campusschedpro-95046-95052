@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip, Paper, IconButton } from '@mui/material';
+import { Tooltip, Paper, IconButton, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ReduxDroppable from './ReduxDroppable';
+import { useSchedule } from '../context/ScheduleContext';
 
 const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
   const slotId = `${day}-${time}`;
-  
+  const { actionLoadingState } = useSchedule() || {};
+
   // Ensure courses is always an array for safety
   const safeCourses = Array.isArray(courses) ? courses : [];
   
@@ -17,30 +19,21 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
   };
 
   const handleRemoveCourse = (course, index, event) => {
-    // Stop propagation to prevent drag event conflicts
     event.stopPropagation();
-    
     if (!removeCourseFromSlot) {
       console.warn("No removeCourseFromSlot function provided to TimeSlot component");
       return;
     }
-    
     try {
-      // Parse the slotId to extract day and time
       const [day, time] = slotId.split('-');
-      
-      // Call the removeCourseFromSlot with correct parameters
-      // It expects courseId, day, time as per the ScheduleContext implementation
       if (course && course.id) {
-        removeCourseFromSlot(course.id, day, time)
-          .catch(error => {
-            console.error("Error removing course:", error);
-          });
+        removeCourseFromSlot(course.id, day, time).catch(error => {
+          console.error("Error removing course:", error);
+        });
       } else {
         console.error("Cannot remove course: Invalid course object or missing ID");
       }
     } catch (error) {
-      // Silent fail in production, but log to console in development
       console.error("Error removing course:", error);
     }
   };
@@ -49,42 +42,52 @@ const TimeSlot = ({ day, time, courses, removeCourseFromSlot }) => {
     <ReduxDroppable 
       droppableId={slotId}
       className="time-slot"
-      style={{ backgroundColor: getSlotColor() }}
+      style={{ backgroundColor: getSlotColor(), position: 'relative' }}
     >
       {(provided, snapshot) => (
         <>
-          {safeCourses.map((course, index) => (
-            <Tooltip
-              key={`${course.id}-${index}`}
-              title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
-              placement="top"
-              arrow
-            >
-              <Paper 
-                className="course-item"
-                elevation={1}
+          {safeCourses.map((course, index) => {
+            const isCourseLoading = actionLoadingState && actionLoadingState.courseId === course.id;
+            return (
+              <Tooltip
+                key={`${course.id}-${index}`}
+                title={`${course.code} - ${course.instructor} (${course.room || 'No room assigned'})`}
+                placement="top"
+                arrow
               >
-                <div className="course-item-header">
-                  <span className="course-code">{course.code}</span>
-                  <span className="course-credits">{course.credits} cr</span>
-                  <IconButton 
-                    className="remove-course-btn"
-                    size="small"
-                    onClick={(e) => handleRemoveCourse(course, index, e)}
-                    aria-label="Remove course"
-                    title="Remove this course instance from schedule"
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </div>
-                <div className="course-name">{course.name}</div>
-                <div className="course-details">
-                  <span><strong>Instructor:</strong> {course.instructor}</span>
-                  <span><strong>Room:</strong> {course.room || 'TBA'}</span>
-                </div>
-              </Paper>
-            </Tooltip>
-          ))}
+                <Paper 
+                  className="course-item"
+                  elevation={1}
+                  style={{ position: 'relative' }}
+                >
+                  {isCourseLoading && (
+                    <div className="course-card-spinner" style={{ top: 8, right: 8 }}>
+                      <CircularProgress size={20}/>
+                    </div>
+                  )}
+                  <div className="course-item-header">
+                    <span className="course-code">{course.code}</span>
+                    <span className="course-credits">{course.credits} cr</span>
+                    <IconButton 
+                      className="remove-course-btn"
+                      size="small"
+                      onClick={(e) => handleRemoveCourse(course, index, e)}
+                      aria-label="Remove course"
+                      title="Remove this course instance from schedule"
+                      disabled={isCourseLoading}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </div>
+                  <div className="course-name">{course.name}</div>
+                  <div className="course-details">
+                    <span><strong>Instructor:</strong> {course.instructor}</span>
+                    <span><strong>Room:</strong> {course.room || 'TBA'}</span>
+                  </div>
+                </Paper>
+              </Tooltip>
+            );
+          })}
         </>
       )}
     </ReduxDroppable>
