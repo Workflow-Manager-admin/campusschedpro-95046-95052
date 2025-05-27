@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
+import GlobalErrorBoundary from './components/common/GlobalErrorBoundary';
 import CourseScheduling from './components/CourseScheduling';
 import { FacultyManagement } from './components/faculty';
 import { RoomManagement, RoomAllocation } from './components/rooms';
@@ -122,10 +123,17 @@ const AppContent = () => {
 };
 
 function App() {
+  const handleGlobalError = useCallback(() => {
+    // Reload the application on critical errors
+    window.location.reload();
+  }, []);
+
   return (
-    <EnhancedScheduleProvider>
-      <AppContent />
-    </EnhancedScheduleProvider>
+    <GlobalErrorBoundary onRetry={handleGlobalError}>
+      <EnhancedScheduleProvider>
+        <AppContent />
+      </EnhancedScheduleProvider>
+    </GlobalErrorBoundary>
   );
 }
 
