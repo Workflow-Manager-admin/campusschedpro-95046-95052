@@ -2,21 +2,18 @@
 > react-kavia@0.1.0 start
 > react-scripts start
 
-(node:6209) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:6543) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:6209) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:6543) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Failed to compile.
 
-Attempted import error: 'fetchCourseScheduleView' is not exported from '../utils/supabaseClient' (imported as 'fetchCourseScheduleView').
-ERROR in ./src/context/ScheduleContext.js 40:143-166
-export 'fetchCourseScheduleView' (imported as 'fetchCourseScheduleView') was not found in '../utils/supabaseClient' (possible exports: fetchCourses, fetchFaculty, fetchRooms, supabase)
-
+Attempted import error: 'fetchSchedules' is not exported from '../utils/supabaseClient' (imported as 'fetchSchedules').
 ERROR in ./src/context/ScheduleContext.js 40:170-184
-export 'fetchSchedules' (imported as 'fetchSchedules') was not found in '../utils/supabaseClient' (possible exports: fetchCourses, fetchFaculty, fetchRooms, supabase)
+export 'fetchSchedules' (imported as 'fetchSchedules') was not found in '../utils/supabaseClient' (possible exports: fetchCourseScheduleView, fetchCourses, fetchFaculty, fetchRooms, supabase)
 
-webpack compiled with 2 errors
+webpack compiled with 1 error
 Compiling...
 Failed to compile.
 
@@ -25,3 +22,6 @@ ERROR in ./src/context/ScheduleContext.js 40:170-184
 export 'fetchSchedules' (imported as 'fetchSchedules') was not found in '../utils/supabaseClient' (possible exports: fetchCourseScheduleView, fetchCourses, fetchFaculty, fetchRooms, supabase)
 
 webpack compiled with 1 error
+Compiling...
+Compiled successfully!
+webpack compiled successfully

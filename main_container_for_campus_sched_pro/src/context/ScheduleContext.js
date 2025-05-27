@@ -2,8 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { 
   fetchCourses,
   fetchFaculty, 
-  fetchCourseScheduleView, 
-  fetchSchedules 
+  fetchCourseScheduleView
 } from "../utils/supabaseClient";
 
 const ScheduleContext = createContext();
@@ -34,18 +33,16 @@ export const ScheduleProvider = ({ children }) => {
       const [
         fetchedCourses,
         fetchedFaculty,
-        fetchedCourseScheduleView,
-        fetchedSchedules
+        fetchedCourseScheduleViewResult
       ] = await Promise.all([
         fetchCourses(),
         fetchFaculty(),
-        fetchCourseScheduleView(),
-        fetchSchedules()
+        fetchCourseScheduleView()
       ]);
       setCourses(fetchedCourses || []);
       setFaculty(fetchedFaculty || []);
-      setCourseSchedule(fetchedCourseScheduleView || []);
-      setSchedules(fetchedSchedules || []);
+      setCourseSchedule(fetchedCourseScheduleViewResult || []);
+      setSchedules(fetchedCourseScheduleViewResult || []);
     } catch (err) {
       setErrors({ general: err.message || "Failed to load schedule data." });
       setNotification({

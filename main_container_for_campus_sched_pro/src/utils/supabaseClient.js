@@ -6,10 +6,6 @@ export const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
-/**
- * Example: fetch all courses.
- * Usage: const { data, error } = await fetchCourses();
- */
 // PUBLIC_INTERFACE
 export async function fetchCourses() {
   return await supabase.from('courses').select('*');
@@ -29,32 +25,34 @@ export async function fetchRooms() {
  * PUBLIC_INTERFACE
  * Fetches all schedule data from the 'course_schedule_view'.
  * Returns an array of schedule rows matching the current SQL schema.
+ * Only selects valid, flat fields—no nested references or joined IDs.
  */
 export async function fetchCourseScheduleView() {
-  // Update the columns below if the view schema changes.
+  // View fields: update this list if the schema/view changes!
   const columns = [
     "schedule_id",
-    "course_id",
+    "year_label",
+    "semester",
     "course_code",
     "course_name",
-    "faculty_id",
+    "department",
     "faculty_name",
-    "room_id",
     "room_name",
+    "room_type",
+    "room_location",
     "day_of_week",
-    "time_slot",
-    "semester",
-    "academic_year",
-    "batch",
-    "section",
-    "equipment_needed"
+    "slot_label",
+    "start_time",
+    "end_time",
+    "scheduled_date",
+    "equipment_assigned",
+    "remarks"
   ];
-  // Query the view and select the relevant columns
   const { data, error } = await supabase
     .from('course_schedule_view')
     .select(columns.join(', '));
   if (error) {
-    console.error('Error fetching course schedule view:', error);
+    console.error('Error fetching course_schedule_view:', error);
     throw error;
   }
   return data;
