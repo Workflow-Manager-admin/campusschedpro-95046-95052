@@ -510,7 +510,28 @@ const CourseScheduling = () => {
                   onCourseMove={setSchedule}
                   timetableRef={timetableRef}
                 />
-                
+
+                {/* Debug panel: show raw schedule for analysis of missing slots/issues */}
+                <div style={{
+                  margin: "2em 0",
+                  padding: "1em",
+                  border: "2px solid #faa",
+                  background: "#fff2ea",
+                  color: "#8a0000"
+                }}>
+                  <h4>Schedule Object State Dump (debug)</h4>
+                  <div>
+                    <b>Slot Count:</b> {Object.keys(schedule || {}).length} <br/>
+                    <b>Keys:</b> {Object.keys(schedule || {}).join(', ') || '(none)'}
+                  </div>
+                  <details style={{ marginTop: "0.5em" }}>
+                    <summary>Full Schedule Object</summary>
+                    <pre style={{ fontSize: "0.75em", overflowX: "auto" }}>
+                      {JSON.stringify(schedule, null, 2)}
+                    </pre>
+                  </details>
+                </div>
+
                 {/* Add debug panel in development - can be commented out for production */}
                 <ScheduleDebug 
                   schedule={schedule}
