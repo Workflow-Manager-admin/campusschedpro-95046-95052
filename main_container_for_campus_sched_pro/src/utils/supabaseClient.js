@@ -479,10 +479,30 @@ export const getSchedule = async () => {
     // Transform data to match application structure
     const schedule = {};
     
+    const normalizeDay = (day) => {
+      // Ensure first letter uppercase, rest lowercase; trim whitespace.
+      if (!day) return '';
+      const trimmed = day.trim();
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+    };
+    const normalizeTime = (time) => {
+      // Remove whitespace, standardize AM/PM casing and leading zero issues.
+      if (!time) return '';
+      let trimmed = time.trim();
+      // Capitalize AM/PM, remove any leading zeros, standardize spacing (e.g., '9:00 AM', not '9:00AM' or '09:00 am').
+      trimmed = trimmed.replace(/\s*([AaPp][Mm])$/, " $1"); // space before AM/PM
+      // capitalize AM/PM
+      trimmed = trimmed.replace(/([AaPp][Mm])$/, (m) => m.toUpperCase());
+      // Remove leading zero (e.g., 09:00 AM  --> 9:00 AM)
+      trimmed = trimmed.replace(/^0+/, '');
+      return trimmed;
+    };
+
     data.forEach(item => {
       if (!item || !item.day || !item.time) return;
 
-      const slotId = `${item.day}-${item.time}`;
+      // Normalize to precisely match Timetable key format (e.g., "Monday-9:00 AM")
+      const slotId = `${normalizeDay(item.day)}-${normalizeTime(item.time)}`;
       
       if (!schedule[slotId]) {
         schedule[slotId] = [];
