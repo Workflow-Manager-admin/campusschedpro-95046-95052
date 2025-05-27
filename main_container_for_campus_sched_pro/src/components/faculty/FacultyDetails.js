@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 
-const FacultyDetails = ({ faculty, onSave, onDelete, onClose }) => {
+import { CircularProgress } from '@mui/material';
+
+const FacultyDetails = ({ faculty, onSave, onDelete, onClose, isUpdatingFaculty, isDeleting }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedFaculty, setEditedFaculty] = useState(faculty);
 

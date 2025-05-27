@@ -128,44 +128,50 @@ const FacultyManagement = () => {
   };
 
   const handleUpdateFaculty = async (updatedFaculty) => {
+    setIsUpdatingFaculty(true);
     try {
       // Use the safer faculty update function
       showNotification('Updating faculty member...', 'info');
-      
+
       const result = await safeSaveFaculty(updatedFaculty);
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Failed to update faculty');
       }
-      
+
       // Reload faculty data to ensure consistency
       await loadFacultyData();
-      
+
       // Update selected faculty with the latest data
       const updatedList = faculty.find(f => f.id === updatedFaculty.id);
       setSelectedFaculty(updatedList || null);
-      
+
       showNotification('Faculty member updated successfully', 'success');
     } catch (error) {
       console.error('Error updating faculty:', error);
       showNotification(`Failed to update faculty: ${error.message || 'Unknown error'}`, 'error');
+    } finally {
+      setIsUpdatingFaculty(false);
     }
   };
 
   const handleDeleteFaculty = async (facultyId) => {
+    setDeletingFacultyId(facultyId);
     try {
       await deleteFaculty(facultyId);
-      
+
       // Clear selection first
       setSelectedFaculty(null);
-      
+
       // Reload faculty data
       await loadFacultyData();
-      
+
       showNotification('Faculty member deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting faculty:', error);
       showNotification('Failed to delete faculty member from the database', 'error');
+    } finally {
+      setDeletingFacultyId(null);
     }
   };
 
@@ -242,6 +248,8 @@ const FacultyManagement = () => {
               onSave={handleUpdateFaculty}
               onDelete={() => handleDeleteFaculty(selectedFaculty.id)}
               onClose={() => setSelectedFaculty(null)}
+              isUpdatingFaculty={isUpdatingFaculty}
+              isDeleting={deletingFacultyId === selectedFaculty.id}
             />
           )}
         </div>
@@ -289,13 +297,15 @@ const FacultyManagement = () => {
                 </div>
                 
                 <div className="dialog-actions">
-                  <button className="btn" onClick={() => setShowAddDialog(false)}>Cancel</button>
+                  <button className="btn" onClick={() => setShowAddDialog(false)} disabled={isAddingFaculty}>
+                    Cancel
+                  </button>
                   <button 
-                    className="btn btn-accent" 
+                    className="btn btn-accent"
                     onClick={handleAddFaculty}
-                    disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email}
+                    disabled={!newFaculty.name || !newFaculty.department || !newFaculty.email || isAddingFaculty}
                   >
-                    Add Faculty
+                    {isAddingFaculty ? <CircularProgress size={18} /> : 'Add Faculty'}
                   </button>
                 </div>
               </div>
