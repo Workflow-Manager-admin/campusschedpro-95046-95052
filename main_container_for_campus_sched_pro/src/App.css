@@ -150,6 +150,17 @@ body {
   padding: 40px;
 }
 
+/* New: Spinner overlay for local card/action loading */
+.course-card-spinner {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(255,255,255,0.75);
+  border-radius: 50%;
+  padding: 2px;
+}
+
 .loading-container p {
   margin-top: 16px;
   font-size: 16px;

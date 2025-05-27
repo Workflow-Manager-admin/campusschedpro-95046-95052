@@ -3,12 +3,14 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
-import { Paper } from '@mui/material';
-
-
+import { Paper, CircularProgress } from '@mui/material';
+import { useSchedule } from '../context/ScheduleContext';
 
 const Course = memo(({ course, index, onEdit, onDelete }) => {
   const [showControls, setShowControls] = useState(false);
+  const { actionLoadingState } = useSchedule() || {};
+  const isLoading = actionLoadingState && actionLoadingState.courseId === course.id;
+
   return (
     <Draggable draggableId={course.id} index={index}>
       {(provided, snapshot) => (
@@ -21,7 +23,13 @@ const Course = memo(({ course, index, onEdit, onDelete }) => {
           onMouseEnter={() => setShowControls(true)}
           onMouseLeave={() => setShowControls(false)}
         >
-          {showControls && !snapshot.isDragging && (
+          {/* Local loading spinner if this row is being updated/deleted */}
+          {isLoading && (
+            <div className="course-card-spinner">
+              <CircularProgress size={24} />
+            </div>
+          )}
+          {showControls && !snapshot.isDragging && !isLoading && (
             <div className="course-actions">
               <button 
                 className="edit-btn"
