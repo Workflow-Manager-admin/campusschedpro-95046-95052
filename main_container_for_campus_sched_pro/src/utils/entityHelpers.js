@@ -1,17 +1,21 @@
 import { supabase } from './supabaseClient';
+import { validateRoom, validateCourse, validateFaculty } from './validationUtils';
 
 /**
  * Enhanced function to save a room with better error handling
  * @param {Object} room - Room object to save
- * @returns {Promise<{success: boolean, data: Object|null, message: string}>}
+ * @returns {Promise<{success: boolean, data: Object|null, message: string, errors?: string[]}>}
  */
 export const enhancedSaveRoom = async (room) => {
   try {
-    if (!room.name || !room.type || !room.building) {
-      return { 
-        success: false, 
-        data: null, 
-        message: 'Room name, type, and building are required' 
+    // Validate room data
+    const validation = validateRoom(room);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        data: null,
+        message: 'Invalid room data',
+        errors: validation.errors
       };
     }
     
