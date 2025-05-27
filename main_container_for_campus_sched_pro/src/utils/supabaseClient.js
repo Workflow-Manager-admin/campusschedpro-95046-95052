@@ -1,59 +1,133 @@
 import { createClient } from '@supabase/supabase-js';
+import { handleSupabaseError } from './supabaseErrorHandler';
+import { startMonitoring, stopMonitoring, getCurrentConnectionState, ConnectionState } from './supabaseConnectionMonitor';
 
 /**
  * Validates required environment variables for Supabase configuration
- * @throws {Error} If required environment variables are missing
+ * @throws {Error} If required environment variables are missing or invalid
  */
 function validateEnvironment() {
-  const missingVars = [];
-  
-  if (!process.env.REACT_APP_SUPABASE_URL) {
-    missingVars.push('REACT_APP_SUPABASE_URL');
-  }
-  if (!process.env.REACT_APP_SUPABASE_ANON_KEY) {
-    missingVars.push('REACT_APP_SUPABASE_ANON_KEY');
-  }
-  
+  const requiredVars = {
+    REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL,
+    REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY
+  };
+
+  const missingVars = Object.entries(requiredVars)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
   if (missingVars.length > 0) {
     throw new Error(
       `Missing required environment variables: ${missingVars.join(', ')}. ` +
       'Please check your .env file and ensure all required variables are set.'
     );
   }
+
+  // Validate URL format
+  try {
+    new URL(process.env.REACT_APP_SUPABASE_URL);
+  } catch (error) {
+    throw new Error('Invalid REACT_APP_SUPABASE_URL format. Please provide a valid URL.');
+  }
+
+  // Validate anon key format (basic check)
+  if (!/^[a-zA-Z0-9._-]+$/.test(process.env.REACT_APP_SUPABASE_ANON_KEY)) {
+    throw new Error('Invalid REACT_APP_SUPABASE_ANON_KEY format.');
+  }
 }
 
 // Validate environment variables before creating client
 validateEnvironment();
 
-// PUBLIC_INTERFACE
+// Create Supabase client
 export const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 10
+      }
+    }
+  }
 );
 
-// PUBLIC_INTERFACE
-export async function fetchCourses() {
-  return await supabase.from('courses').select('*');
-}
+// Start connection monitoring
+startMonitoring();
 
-// PUBLIC_INTERFACE
-export async function fetchFaculty() {
-  return await supabase.from('faculty').select('*');
-}
+/**
+ * Wraps a Supabase query with error handling and connection checking
+ * @param {Function} queryFn Function that performs the Supabase query
+ * @param {string} context Context for error messages
+ * @returns {Promise<Object>} Query result or error
+ */
+async function withErrorHandling(queryFn, context) {
+  // Check connection state
+  if (getCurrentConnectionState() === ConnectionState.DISCONNECTED) {
+    throw new Error('Database connection is currently unavailable. Please try again later.');
+  }
 
-// PUBLIC_INTERFACE
-export async function fetchRooms() {
-  return await supabase.from('rooms').select('*');
+  try {
+    const result = await queryFn();
+    
+    if (result.error) {
+      const handledError = handleSupabaseError(result.error, context);
+      throw new Error(handledError.message);
+    }
+    
+    return result.data;
+  } catch (error) {
+    const handledError = handleSupabaseError(error, context);
+    throw new Error(handledError.message);
+  }
 }
 
 /**
  * PUBLIC_INTERFACE
- * Fetches all schedule data from the 'course_schedule_view'.
- * Returns an array of schedule rows matching the current SQL schema.
- * Only selects valid, flat fields—no nested references or joined IDs.
+ * Fetches all courses from the database
+ * @returns {Promise<Array>} Array of courses
+ */
+export async function fetchCourses() {
+  return await withErrorHandling(
+    () => supabase.from('courses').select('*'),
+    'Fetching courses'
+  );
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Fetches all faculty members from the database
+ * @returns {Promise<Array>} Array of faculty members
+ */
+export async function fetchFaculty() {
+  return await withErrorHandling(
+    () => supabase.from('faculty').select('*'),
+    'Fetching faculty'
+  );
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Fetches all rooms from the database
+ * @returns {Promise<Array>} Array of rooms
+ */
+export async function fetchRooms() {
+  return await withErrorHandling(
+    () => supabase.from('rooms').select('*'),
+    'Fetching rooms'
+  );
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * Fetches the complete course schedule view
+ * @returns {Promise<Array>} Array of schedule entries
  */
 export async function fetchCourseScheduleView() {
-  // View fields: update this list if the schema/view changes!
   const columns = [
     "schedule_id",
     "year_label",
@@ -73,12 +147,23 @@ export async function fetchCourseScheduleView() {
     "equipment_assigned",
     "remarks"
   ];
-  const { data, error } = await supabase
-    .from('course_schedule_view')
-    .select(columns.join(', '));
-  if (error) {
-    console.error('Error fetching course_schedule_view:', error);
-    throw error;
-  }
-  return data;
+
+  return await withErrorHandling(
+    () => supabase
+      .from('course_schedule_view')
+      .select(columns.join(', ')),
+    'Fetching course schedule'
+  );
+}
+
+/**
+ * Clean up function to be called when the application unmounts
+ */
+export function cleanup() {
+  stopMonitoring();
+}
+
+// Automatically clean up when the module is hot reloaded
+if (module.hot) {
+  module.hot.dispose(cleanup);
 }

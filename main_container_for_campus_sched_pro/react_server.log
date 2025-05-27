@@ -18,3 +18,11 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 webpack compiled successfully
+Compiling...
+Failed to compile.
+
+Module not found: Error: Can't resolve 'rxjs' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/utils'
+ERROR in ./src/utils/supabaseConnectionMonitor.js 4:0-39
+Module not found: Error: Can't resolve 'rxjs' in '/home/kavia/workspace/code-generation/campusschedpro-95046-95052/main_container_for_campus_sched_pro/src/utils'
+
+webpack compiled with 1 error
