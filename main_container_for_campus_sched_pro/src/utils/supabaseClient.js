@@ -249,8 +249,8 @@ export const saveCourse = async (course) => {
     expected_enrollment: course.expectedEnrollment,
     requires_lab: course.requiresLab,
     department_id: departmentId,
-    academic_year_id: academicYearId,
-    room_id: course.roomId || null
+    academic_year_id: academicYearId
+    // room_id removed; not present in schema
   };
   
   // Only include ID if it's defined (for updates)
@@ -464,8 +464,6 @@ export const getSchedule = async () => {
         faculty_name,
         room_id,
         room_name,
-        building_id,
-        building_name,
         day,
         time
       `);
@@ -523,8 +521,6 @@ export const getSchedule = async () => {
           instructorId: item.faculty_id || null,
           room: item.room_name || '',
           roomId: item.room_id || null,
-          building: item.building_name || '',
-          buildingId: item.building_id || null,
           academicYear,
           department
         });
