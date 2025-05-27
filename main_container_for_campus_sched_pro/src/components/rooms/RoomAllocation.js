@@ -121,34 +121,35 @@ const RoomAllocation = () => {
       return;
     }
     setIsAssigning(true);
+    // Add affected course/room to refreshing loader array
+    setRefreshingIds(ids => [...new Set([...ids, selectedCourse.id, selectedRoomId])]);
     try {
-      // Validate rooms array
       if (!Array.isArray(rooms)) {
         setAssignmentError('Room data is not available');
         setIsAssigning(false);
+        setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
         return;
       }
-      // Find the selected room
       const room = rooms.find(r => r && r.id === selectedRoomId);
       if (!room) {
         setAssignmentError('Room not found');
         setIsAssigning(false);
+        setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
         return;
       }
-      // Validate room object
       if (!room.name || !room.id) {
         setAssignmentError('Invalid room data');
         setIsAssigning(false);
+        setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
         return;
       }
-      // Check if room is suitable for course
       const suitabilityCheck = isRoomSuitableForCourse(room, selectedCourse);
       if (!suitabilityCheck.suitable) {
         setAssignmentError(suitabilityCheck.message);
         setIsAssigning(false);
+        setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
         return;
       }
-      // Update the course with room assignment
       const updatedCourse = {
         ...selectedCourse,
         room: room.name,
@@ -164,17 +165,20 @@ const RoomAllocation = () => {
 
       if (success) {
         showNotification(`${selectedCourse.code} has been assigned to ${room.name}`, 'success');
+        // Fire async background data refresh but don't block UI, shimmer this row/card
         if (typeof context.refreshData === 'function') {
-          setIsRefreshing(true);
-          await context.refreshData();
-          setIsRefreshing(false);
+          context.refreshData().finally(() => {
+            setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
+          });
         }
         closeAssignDialog();
       } else {
         setAssignmentError('Failed to assign course to room');
+        setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
       }
     } catch (error) {
       setAssignmentError(`Error: ${error.message || 'Unknown error'}`);
+      setRefreshingIds(ids => ids.filter(id => id !== selectedCourse.id && id !== selectedRoomId));
     } finally {
       setIsAssigning(false);
     }
