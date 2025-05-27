@@ -250,8 +250,7 @@ export const saveCourse = async (course) => {
     requires_lab: course.requiresLab,
     department_id: departmentId,
     academic_year_id: academicYearId,
-    room_id: course.roomId || null,
-    building_id: course.building ? await getBuildingId(course.building) : null
+    room_id: course.roomId || null
   };
   
   // Only include ID if it's defined (for updates)
