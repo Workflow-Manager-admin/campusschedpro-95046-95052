@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { useContext, useState, useCallback, useEffect } from 'react';
 import { Alert, Snackbar } from '@mui/material';
 import useDataFetch from '../hooks/useDataFetch';
 import { handleSupabaseError } from '../utils/supabaseErrorHandler';
 import { supabase } from '../utils/supabaseClient';
 import { isRoomSuitableForCourse } from '../utils/roomUtils';
-
-const ScheduleContext = createContext();
+import ScheduleContext from './ScheduleContext';
 
 // Subscription helper functions
 const subscribeToSchedules = (callback) => {
