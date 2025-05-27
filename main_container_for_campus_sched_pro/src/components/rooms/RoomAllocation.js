@@ -29,8 +29,9 @@ const RoomAllocation = () => {
   const [unassignDialogOpen, setUnassignDialogOpen] = useState(false);
   const [courseToUnassign, setCourseToUnassign] = useState(null);
   const [isUnassigning, setIsUnassigning] = useState(false); // Loading for unassign
-  const [isRefreshing, setIsRefreshing] = useState(false); // Global refresh/alloc refresh indicator
-  
+  // Global refresh/alloc refresh indicator replaced by per-allocation refresh
+  const [refreshingIds, setRefreshingIds] = useState([]); // Per-room/course being refreshed
+
   // Get data from context with safe defaults
   const context = useSchedule();
   const { 
@@ -39,7 +40,9 @@ const RoomAllocation = () => {
     rooms = [],
     updateAllocations = () => {},
     updateCourse = async () => false,
-    showNotification = () => {}
+    showNotification = () => {},
+    refreshData = null,
+    actionLoadingState = {},
   } = context || {};
   
   // Initialize data on mount
@@ -77,7 +80,7 @@ const RoomAllocation = () => {
       };
     }) : [];
   }, [rooms, allocations]);
-  
+
   // Filter unassigned courses by search query
   const unassignedCourses = Array.isArray(courses) 
     ? courses.filter(course => course && !course.room)
@@ -121,7 +124,6 @@ const RoomAllocation = () => {
       return;
     }
     setIsAssigning(true);
-    // Add affected course/room to refreshing loader array
     setRefreshingIds(ids => [...new Set([...ids, selectedCourse.id, selectedRoomId])]);
     try {
       if (!Array.isArray(rooms)) {
@@ -427,7 +429,7 @@ const RoomAllocation = () => {
                     {courses
                       .filter(course => course.room)
                       .map(course => (
-                        <tr key={course.id || Math.random()}>
+                        <tr key={course.id || Math.random()} style={refreshingIds.includes(course.id) ? { opacity: 0.5, pointerEvents: "none" } : {}}>
                           <td>{course.code || ''}</td>
                           <td>{course.name || ''}</td>
                           <td>{course.instructor || 'Unassigned'}</td>
@@ -438,9 +440,22 @@ const RoomAllocation = () => {
                               variant="outlined" 
                               color="secondary"
                               size="small"
+                              disabled={refreshingIds.includes(course.id)}
                               onClick={() => openUnassignDialog(course)}
                             >
-                              Unassign
+                              {refreshingIds.includes(course.id) ? (
+                                <span style={{display:'flex', alignItems:'center'}}>
+                                  <svg width="16" height="16">
+                                    <circle cx="8" cy="8" r="7"
+                                      stroke="#d32f2f"
+                                      strokeWidth="2" fill="none"
+                                      strokeDasharray="44" strokeDashoffset="22">
+                                      <animate attributeName="stroke-dashoffset" values="44;0" dur="0.7s" repeatCount="indefinite" />
+                                    </circle>
+                                  </svg>
+                                  &nbsp;Updating...
+                                </span>
+                              ) : "Unassign"}
                             </Button>
                           </td>
                         </tr>
@@ -591,4 +606,3 @@ const RoomAllocation = () => {
 };
 
 export default RoomAllocation;
-
