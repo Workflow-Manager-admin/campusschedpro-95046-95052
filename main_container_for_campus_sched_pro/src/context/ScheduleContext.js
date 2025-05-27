@@ -1,6 +1,9 @@
 import { createContext } from 'react';
 
-// Create base context - this is the only export from this file
+// Create base context
 const ScheduleContext = createContext(null);
+
+// Re-export hook from EnhancedScheduleProvider for backward compatibility
+export { useSchedule } from './EnhancedScheduleProvider';
 
 export default ScheduleContext;
