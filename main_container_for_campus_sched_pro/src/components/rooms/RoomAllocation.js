@@ -317,11 +317,31 @@ const RoomAllocation = () => {
                   {Array.isArray(rooms) && rooms.length > 0 ? (
                     Array.isArray(completeAllocations) && completeAllocations.length > 0 ? (
                       completeAllocations.map(allocation => (
-                        <div key={allocation.roomId || Math.random()} className="allocation-card">
+                        <div
+                          key={allocation.roomId || Math.random()}
+                          className={`allocation-card${refreshingIds.includes(allocation.roomId) ? " allocation-card-refreshing" : ""}`}
+                          style={refreshingIds.includes(allocation.roomId)
+                            ? { opacity: 0.6, pointerEvents: "none", position: "relative" }
+                            : {}}
+                        >
                           <div className="allocation-header">
                             <h3 className="allocation-title">{allocation.roomName || 'Unknown Room'}</h3>
                             <span>{allocation.building || 'Unknown Building'}</span>
                             {allocation.capacity && <span className="room-capacity">{allocation.capacity} seats</span>}
+                            {refreshingIds.includes(allocation.roomId) && (
+                              <span style={{
+                                marginLeft: "1rem",
+                                verticalAlign: "middle",
+                                display: "inline-block"
+                              }}>
+                                <svg width="24" height="24">
+                                  <circle cx="12" cy="12" r="10" stroke="#1976d2" strokeWidth="4" fill="none" strokeDasharray="62.8"
+                                    strokeDashoffset="31.4">
+                                    <animate attributeName="stroke-dashoffset" values="62.8;0" dur="0.8s" repeatCount="indefinite" />
+                                  </circle>
+                                </svg>
+                              </span>
+                            )}
                           </div>
 
                           <table className="schedule-table">
@@ -336,7 +356,7 @@ const RoomAllocation = () => {
                             <tbody>
                               {Array.isArray(allocation.courses) && allocation.courses.length > 0 ? (
                                 allocation.courses.map(course => (
-                                  <tr key={course.id || Math.random()}>
+                                  <tr key={course.id || Math.random()} style={refreshingIds.includes(course.id) ? {opacity: 0.5, pointerEvents:"none"} : {}}>
                                     <td>{course.code || ''} - {course.name || ''}</td>
                                     <td>{course.instructor || 'Unassigned'}</td>
                                     <td>{Array.isArray(course.schedule) ? course.schedule.join(', ') : 'Not scheduled'}</td>
@@ -345,9 +365,22 @@ const RoomAllocation = () => {
                                         variant="outlined" 
                                         color="secondary"
                                         size="small"
+                                        disabled={refreshingIds.includes(course.id)}
                                         onClick={() => openUnassignDialog(course)}
                                       >
-                                        Unassign
+                                        {refreshingIds.includes(course.id) ? (
+                                          <span style={{display:'flex', alignItems:'center'}}>
+                                            <svg width="16" height="16">
+                                              <circle cx="8" cy="8" r="7"
+                                                stroke="#d32f2f"
+                                                strokeWidth="2" fill="none"
+                                                strokeDasharray="44" strokeDashoffset="22">
+                                                <animate attributeName="stroke-dashoffset" values="44;0" dur="0.7s" repeatCount="indefinite" />
+                                              </circle>
+                                            </svg>
+                                            &nbsp;Updating...
+                                          </span>
+                                        ) : "Unassign"}
                                       </Button>
                                     </td>
                                   </tr>
