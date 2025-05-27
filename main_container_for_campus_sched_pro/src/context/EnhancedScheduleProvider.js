@@ -3,13 +3,55 @@ import { Alert, Snackbar } from '@mui/material';
 import useDataFetch from '../hooks/useDataFetch';
 import { handleSupabaseError } from '../utils/supabaseErrorHandler';
 import { supabase } from '../utils/supabaseClient';
+import { isRoomSuitableForCourse } from '../utils/roomUtils';
 
 const ScheduleContext = createContext();
 
+// Subscription helper functions
+const subscribeToSchedules = (callback) => {
+  return supabase
+    .from('schedules')
+    .on('*', callback)
+    .subscribe();
+};
+
+const subscribeToRoomAllocations = (callback) => {
+  return supabase
+    .from('room_allocations')
+    .on('*', callback)
+    .subscribe();
+};
+
+const subscribeToConflicts = (callback) => {
+  return supabase
+    .from('scheduling_conflicts')
+    .on('*', callback)
+    .subscribe();
+};
+
+const subscribeToCourses = (callback) => {
+  return supabase
+    .from('courses')
+    .on('*', callback)
+    .subscribe();
+};
+
 export const EnhancedScheduleProvider = ({ children }) => {
   const [scheduleData, setScheduleData] = useState(null);
+  const [roomAllocations, setRoomAllocations] = useState(null);
+  const [courses, setCourses] = useState(null);
+  const [conflicts, setConflicts] = useState(null);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
   const [retryCount, setRetryCount] = useState(0);
+
+  // Notification helper function
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  }, []);
 
   // Initialize data fetching with retry logic
   const {
