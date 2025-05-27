@@ -40,6 +40,7 @@ function validateEnvironment() {
 validateEnvironment();
 
 // Create Supabase client
+// Create Supabase client with enhanced real-time capabilities
 export const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
   process.env.REACT_APP_SUPABASE_ANON_KEY,
@@ -55,6 +56,54 @@ export const supabase = createClient(
     }
   }
 );
+
+// Subscribe to real-time changes for schedules
+export const subscribeToSchedules = (callback) => {
+  return supabase
+    .channel('schedules-changes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'schedules'
+    }, callback)
+    .subscribe();
+};
+
+// Subscribe to real-time changes for room allocations
+export const subscribeToRoomAllocations = (callback) => {
+  return supabase
+    .channel('room-allocations-changes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'room_allocations'
+    }, callback)
+    .subscribe();
+};
+
+// Subscribe to real-time changes for courses
+export const subscribeToCourses = (callback) => {
+  return supabase
+    .channel('courses-changes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'courses'
+    }, callback)
+    .subscribe();
+};
+
+// Subscribe to real-time changes for conflicts
+export const subscribeToConflicts = (callback) => {
+  return supabase
+    .channel('conflicts-changes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'schedule_conflicts'
+    }, callback)
+    .subscribe();
+};
 
 // Start connection monitoring
 startMonitoring();
