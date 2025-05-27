@@ -21,12 +21,12 @@ export const getAllFaculty = async () => {
       departments:department_id (name),
       expertise:faculty_expertise (expertise)
     `);
-  
+
   if (error) {
     console.error('Error fetching faculty:', error);
     return [];
   }
-  
+
   // Transform data to match application structure
   return data.map(faculty => ({
     id: faculty.id,
@@ -49,21 +49,21 @@ export const getFacultyAssignments = async (facultyId) => {
       time_slots:time_slot_id (day, time)
     `)
     .eq('faculty_id', facultyId);
-    
+
   if (error) {
     console.error('Error fetching faculty assignments:', error);
     return [];
   }
-  
+
   // Group by course
   const assignmentsByCourse = {};
-  
+
   data.forEach(item => {
     if (!item.courses) return;
-    
+
     const courseId = item.courses.id;
     const schedule = `${item.time_slots.day}-${item.time_slots.time}`;
-    
+
     if (!assignmentsByCourse[courseId]) {
       assignmentsByCourse[courseId] = {
         id: courseId,
@@ -76,7 +76,7 @@ export const getFacultyAssignments = async (facultyId) => {
       assignmentsByCourse[courseId].schedule.push(schedule);
     }
   });
-  
+
   return Object.values(assignmentsByCourse);
 };
 
@@ -94,12 +94,12 @@ export const saveFaculty = async (faculty) => {
     })
     .select('id')
     .single();
-    
+
   if (error) {
     console.error('Error saving faculty:', error);
     return null;
   }
-  
+
   // Update expertise
   if (faculty.expertise && faculty.expertise.length > 0) {
     // First, remove existing expertise
@@ -107,18 +107,18 @@ export const saveFaculty = async (faculty) => {
       .from('faculty_expertise')
       .delete()
       .eq('faculty_id', data.id);
-      
+
     // Then insert new expertise
     const expertiseRecords = faculty.expertise.map(exp => ({
       faculty_id: data.id,
       expertise: exp
     }));
-    
+
     await supabase
       .from('faculty_expertise')
       .insert(expertiseRecords);
   }
-  
+
   return data.id;
 };
 
@@ -128,12 +128,12 @@ export const deleteFaculty = async (facultyId) => {
     .from('faculty')
     .delete()
     .eq('id', facultyId);
-    
+
   if (error) {
     console.error('Error deleting faculty:', error);
     return false;
   }
-  
+
   return true;
 };
 
@@ -156,12 +156,12 @@ export const getAllCourses = async () => {
         equipment:equipment_id (name)
       )
     `);
-  
+
   if (error) {
     console.error('Error fetching courses:', error);
     return [];
   }
-  
+
   // Transform data to match application structure
   return data.map(course => ({
     id: course.id,
@@ -179,7 +179,7 @@ export const getAllCourses = async () => {
 // Fetch course assignments (instructor and room)
 export const getCourseAssignments = async (courseIds) => {
   if (!courseIds || courseIds.length === 0) return {};
-  
+
   const { data, error } = await supabase
     .from('schedule')
     .select(`
@@ -189,14 +189,14 @@ export const getCourseAssignments = async (courseIds) => {
       time_slots:time_slot_id (day, time)
     `)
     .in('course_id', courseIds);
-    
+
   if (error) {
     console.error('Error fetching course assignments:', error);
     return {};
   }
-  
+
   const assignments = {};
-  
+
   data.forEach(item => {
     if (!assignments[item.course_id]) {
       assignments[item.course_id] = {
@@ -205,12 +205,12 @@ export const getCourseAssignments = async (courseIds) => {
         schedule: []
       };
     }
-    
+
     assignments[item.course_id].schedule.push(
       `${item.time_slots.day}-${item.time_slots.time}`
     );
   });
-  
+
   return assignments;
 };
 
@@ -219,7 +219,7 @@ export const saveCourse = async (course) => {
   // Get department and academic year IDs
   const departmentId = await getDepartmentId(course.department);
   const academicYearId = await getAcademicYearId(course.academicYear);
-  
+
   // If course has an id, update, otherwise insert
   const { data, error } = await supabase
     .from('courses')
@@ -235,12 +235,12 @@ export const saveCourse = async (course) => {
     })
     .select('id')
     .single();
-    
+
   if (error) {
     console.error('Error saving course:', error);
     return null;
   }
-  
+
   // Update required equipment
   if (course.requiredEquipment && course.requiredEquipment.length > 0) {
     // First, remove existing equipment
@@ -248,7 +248,7 @@ export const saveCourse = async (course) => {
       .from('course_equipment')
       .delete()
       .eq('course_id', data.id);
-      
+
     // Get equipment IDs
     const equipmentRecords = [];
     for (const equipment of course.requiredEquipment) {
@@ -260,7 +260,7 @@ export const saveCourse = async (course) => {
         });
       }
     }
-    
+
     // Insert new equipment
     if (equipmentRecords.length > 0) {
       await supabase
@@ -268,7 +268,7 @@ export const saveCourse = async (course) => {
         .insert(equipmentRecords);
     }
   }
-  
+
   return data.id;
 };
 
@@ -278,12 +278,12 @@ export const deleteCourse = async (courseId) => {
     .from('courses')
     .delete()
     .eq('id', courseId);
-    
+
   if (error) {
     console.error('Error deleting course:', error);
     return false;
   }
-  
+
   return true;
 };
 
@@ -304,12 +304,12 @@ export const getAllRooms = async () => {
         equipment:equipment_id (name)
       )
     `);
-  
+
   if (error) {
     console.error('Error fetching rooms:', error);
     return [];
   }
-  
+
   // Transform data to match application structure
   return data.map(room => ({
     id: room.id,
@@ -326,7 +326,7 @@ export const getAllRooms = async () => {
 export const saveRoom = async (room) => {
   // Get building ID
   const buildingId = await getBuildingId(room.building);
-  
+
   // If room has an id, update, otherwise insert
   const { data, error } = await supabase
     .from('rooms')
@@ -340,12 +340,12 @@ export const saveRoom = async (room) => {
     })
     .select('id')
     .single();
-    
+
   if (error) {
     console.error('Error saving room:', error);
     return null;
   }
-  
+
   // Update equipment
   if (room.equipment && room.equipment.length > 0) {
     // First, remove existing equipment
@@ -353,7 +353,7 @@ export const saveRoom = async (room) => {
       .from('room_equipment')
       .delete()
       .eq('room_id', data.id);
-      
+
     // Get equipment IDs
     const equipmentRecords = [];
     for (const equipment of room.equipment) {
@@ -365,7 +365,7 @@ export const saveRoom = async (room) => {
         });
       }
     }
-    
+
     // Insert new equipment
     if (equipmentRecords.length > 0) {
       await supabase
@@ -373,7 +373,7 @@ export const saveRoom = async (room) => {
         .insert(equipmentRecords);
     }
   }
-  
+
   return data.id;
 };
 
@@ -383,48 +383,67 @@ export const deleteRoom = async (roomId) => {
     .from('rooms')
     .delete()
     .eq('id', roomId);
-    
+
   if (error) {
     console.error('Error deleting room:', error);
     return false;
   }
-  
+
   return true;
 };
 
 // --- Schedule Management Functions ---
 
-// Fetch complete schedule
+// PUBLIC_INTERFACE
+// Fetch complete schedule; only query columns present in course_schedule_view
 export const getSchedule = async () => {
+  // Only select the columns known to be present in course_schedule_view; do not include building_id/building_name
   const { data, error } = await supabase
     .from('course_schedule_view')
-    .select('*');
-    
+    .select(`
+      id,
+      course_id,
+      course_code,
+      course_name,
+      faculty_id,
+      faculty_name,
+      room_id,
+      room_name,
+      start_time,
+      end_time,
+      day_of_week,
+      semester,
+      capacity
+    `);
+
   if (error) {
     console.error('Error fetching schedule:', error);
     return {};
   }
-  
+
   // Transform data to match application structure
   const schedule = {};
-  
+
   data.forEach(item => {
-    const slotId = `${item.day}-${item.time}`;
-    
+    // Create a slotId based on available fields; modify keys as needed
+    const slotId = item.day_of_week !== undefined && item.start_time !== undefined
+      ? `${item.day_of_week}-${item.start_time}` : item.id;
+
     if (!schedule[slotId]) {
       schedule[slotId] = [];
     }
-    
+
     schedule[slotId].push({
       id: item.course_id,
       name: item.course_name,
       code: item.course_code,
-      credits: item.course_credits,
+      // credits: item.course_credits, // Uncomment if field exists
       instructor: item.faculty_name || '',
-      room: item.room_name || ''
+      room: item.room_name || '',
+      // Add more fields as needed based on actual view columns
     });
   });
-  
+
   return schedule;
 };
 
@@ -437,19 +456,19 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
     .eq('course_id', courseId)
     .eq('time_slot_id', timeSlotId)
     .maybeSingle();
-    
+
   if (checkError) {
     console.error('Error checking schedule:', checkError);
     return false;
   }
-  
+
   if (existing) {
     // Update existing schedule
     const { error } = await supabase
       .from('schedule')
       .update({ faculty_id: facultyId, room_id: roomId })
       .eq('id', existing.id);
-      
+
     if (error) {
       console.error('Error updating schedule:', error);
       return false;
@@ -464,13 +483,13 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
         room_id: roomId,
         time_slot_id: timeSlotId
       });
-      
+
     if (error) {
       console.error('Error inserting schedule:', error);
       return false;
     }
   }
-  
+
   return true;
 };
 
@@ -481,12 +500,12 @@ export const unscheduleCourse = async (courseId, timeSlotId) => {
     .delete()
     .eq('course_id', courseId)
     .eq('time_slot_id', timeSlotId);
-    
+
   if (error) {
     console.error('Error removing course from schedule:', error);
     return false;
   }
-  
+
   return true;
 };
 
@@ -495,92 +514,92 @@ export const unscheduleCourse = async (courseId, timeSlotId) => {
 // Get department ID, create if it doesn't exist
 const getDepartmentId = async (departmentName) => {
   if (!departmentName) return null;
-  
+
   // Check if department exists
   const { data: existing } = await supabase
     .from('departments')
     .select('id')
     .eq('name', departmentName)
     .maybeSingle();
-    
+
   if (existing) return existing.id;
-  
+
   // Create new department
   const { data: created } = await supabase
     .from('departments')
     .insert({ name: departmentName })
     .select('id')
     .single();
-    
+
   return created?.id || null;
 };
 
 // Get building ID, create if it doesn't exist
 const getBuildingId = async (buildingName) => {
   if (!buildingName) return null;
-  
+
   // Check if building exists
   const { data: existing } = await supabase
     .from('buildings')
     .select('id')
     .eq('name', buildingName)
     .maybeSingle();
-    
+
   if (existing) return existing.id;
-  
+
   // Create new building
   const { data: created } = await supabase
     .from('buildings')
     .insert({ name: buildingName })
     .select('id')
     .single();
-    
+
   return created?.id || null;
 };
 
 // Get equipment ID, create if it doesn't exist
 const getEquipmentId = async (equipmentName) => {
   if (!equipmentName) return null;
-  
+
   // Check if equipment exists
   const { data: existing } = await supabase
     .from('equipment_types')
     .select('id')
     .eq('name', equipmentName)
     .maybeSingle();
-    
+
   if (existing) return existing.id;
-  
+
   // Create new equipment
   const { data: created } = await supabase
     .from('equipment_types')
     .insert({ name: equipmentName })
     .select('id')
     .single();
-    
+
   return created?.id || null;
 };
 
 // Get academic year ID, create if it doesn't exist
 const getAcademicYearId = async (yearName) => {
   if (!yearName) return null;
-  
+
   // Check if academic year exists
   const { data: existing } = await supabase
     .from('academic_years')
     .select('id')
     .eq('name', yearName)
     .maybeSingle();
-    
+
   if (existing) return existing.id;
-  
+
   // Create new academic year
   const { data: created } = await supabase
     .from('academic_years')
     .insert({ name: yearName })
     .select('id')
     .single();
-    
+
   return created?.id || null;
 };
 
@@ -592,7 +611,7 @@ export const getTimeSlotId = async (day, time) => {
     .eq('day', day)
     .eq('time', time)
     .maybeSingle();
-    
+
   return data?.id || null;
 };
 
