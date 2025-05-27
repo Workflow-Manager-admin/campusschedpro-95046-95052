@@ -9,8 +9,8 @@ import { startMonitoring, stopMonitoring, getCurrentConnectionState, ConnectionS
  */
 function validateEnvironment() {
   const requiredVars = {
-    REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL||,
-    REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY
+    REACT_APP_SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL||'https://alsthvnrqazftrtluxss.supabase.co',
+    REACT_APP_SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsc3Rodm5ycWF6ZnRydGx1eHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NTI1MjIsImV4cCI6MjA2MzAyODUyMn0.eY4c5y2ld6z6SJZhrhtOp38bg0PsSyQbhPOyfQjThyk'
   };
 
   const missingVars = Object.entries(requiredVars)
