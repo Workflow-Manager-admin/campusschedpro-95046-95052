@@ -503,7 +503,7 @@ const CourseScheduling = () => {
                         const dragDisabled = missingFaculty || missingRoom;
 
                         return (
-                          <div key={course.id} className={`course-list-item${dragDisabled ? ' incomplete-assignment' : ''}`}>
+                          <div key={course.code} className={`course-list-item${dragDisabled ? ' incomplete-assignment' : ''}`}>
                             <Course 
                               course={course} 
                               index={index}
