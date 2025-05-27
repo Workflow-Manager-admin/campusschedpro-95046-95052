@@ -23,10 +23,13 @@ const RoomAllocation = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedRoomId, setSelectedRoomId] = useState('');
   const [assignmentError, setAssignmentError] = useState('');
-  
+  const [isAssigning, setIsAssigning] = useState(false); // Loading state for assigning
+
   // State for unassignment confirmation
   const [unassignDialogOpen, setUnassignDialogOpen] = useState(false);
   const [courseToUnassign, setCourseToUnassign] = useState(null);
+  const [isUnassigning, setIsUnassigning] = useState(false); // Loading for unassign
+  const [isRefreshing, setIsRefreshing] = useState(false); // Global refresh/alloc refresh indicator
   
   // Get data from context with safe defaults
   const context = useSchedule();
