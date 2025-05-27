@@ -36,16 +36,19 @@ const BulkImportModal = ({
   const [error, setError] = useState(null);
 
   // Error wrapper will display download errors
+  // PUBLIC_INTERFACE
+  // Download handler that always provides an error callback for robust error feedback
   const handleDownloadTemplate = () => {
     setError(null);
     try {
-      // Support both legacy and updated downloadTemplate signatures
-      if (typeof downloadTemplate === 'function' && downloadTemplate.length >= 1) {
+      if (typeof downloadTemplate === 'function') {
+        // Always provide error callback so errors are surfaced to UI
         downloadTemplate((errMsg) => {
           setError(errMsg || 'Failed to download template. Please try again.');
         });
       } else {
-        downloadTemplate();
+        // Defensive, fallback in case downloadTemplate is not a function
+        setError('Download functionality not implemented.');
       }
     } catch (err) {
       console.error('Error downloading template:', err);
