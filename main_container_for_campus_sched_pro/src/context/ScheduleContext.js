@@ -278,7 +278,8 @@ export const ScheduleProvider = ({ children }) => {
    */
   const addCourse = async (courseData) => {
     try {
-      setIsLoading(true);
+      // Set loading state specific to this course (optimistically reserve a random string if no id yet)
+      setActionLoadingState(prev => ({ ...prev, courseId: 'PENDING' }));
       const courseId = await saveCourse(courseData);
 
       if (courseId) {
@@ -293,7 +294,7 @@ export const ScheduleProvider = ({ children }) => {
       setErrors(prev => ({ ...prev, course: `Error saving course: ${error.message}` }));
       return null;
     } finally {
-      setIsLoading(false);
+      setActionLoadingState(prev => ({ ...prev, courseId: null }));
     }
   };
 
@@ -303,7 +304,7 @@ export const ScheduleProvider = ({ children }) => {
    */
   const updateCourse = async (courseData) => {
     try {
-      setIsLoading(true);
+      setActionLoadingState(prev => ({ ...prev, courseId: courseData.id }));
       const success = await saveCourse(courseData);
 
       if (success) {
@@ -317,7 +318,7 @@ export const ScheduleProvider = ({ children }) => {
       setErrors(prev => ({ ...prev, course: `Error updating course: ${error.message}` }));
       return false;
     } finally {
-      setIsLoading(false);
+      setActionLoadingState(prev => ({ ...prev, courseId: null }));
     }
   };
 
@@ -327,7 +328,7 @@ export const ScheduleProvider = ({ children }) => {
    */
   const deleteCourseById = async (courseId) => {
     try {
-      setIsLoading(true);
+      setActionLoadingState(prev => ({ ...prev, courseId }));
       const success = await deleteCourse(courseId);
 
       if (success) {
@@ -341,7 +342,7 @@ export const ScheduleProvider = ({ children }) => {
       setErrors(prev => ({ ...prev, course: `Error deleting course: ${error.message}` }));
       return false;
     } finally {
-      setIsLoading(false);
+      setActionLoadingState(prev => ({ ...prev, courseId: null }));
     }
   };
 
@@ -388,9 +389,10 @@ export const ScheduleProvider = ({ children }) => {
     allocations: getAllocationsArray(),
     academicYears,
     currentAcademicYear,
-    isLoading,
+    isLoading, // still present for initial boot only!
     errors,
     notification,
+    actionLoadingState, // <-- new, granular action loading state
     
     // Operations
     setCourses,
