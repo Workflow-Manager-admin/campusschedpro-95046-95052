@@ -51,44 +51,59 @@ export const ScheduleProvider = ({ children }) => {
     try {
       setIsLoading(true);
       setErrors({});
-      
+      // DEBUG LOG
+      if (typeof window !== "undefined") {
+        window._scheduleDebug = window._scheduleDebug || {};
+        window._scheduleDebug.lastLoadInitialData = Date.now();
+      }
       // Load courses
       const coursesData = await getAllCourses();
+      // Debug: Raw coursesData
+      if (typeof window !== "undefined") window._scheduleDebug = { ...(window._scheduleDebug||{}), coursesData };
       if (!coursesData) {
         throw new Error('Failed to load courses');
       }
       setCourses(coursesData);
-      
+
       // Load rooms
       const roomsData = await getAllRooms();
+      if (typeof window !== "undefined") window._scheduleDebug.roomsData = roomsData;
       if (!roomsData) {
         throw new Error('Failed to load rooms');
       }
       setRooms(roomsData);
-      
+
       // Load departments
       const departmentsData = await getAllDepartments();
+      if (typeof window !== "undefined") window._scheduleDebug.departmentsData = departmentsData;
       setDepartments(departmentsData || []);
-      
+
       // Load faculty
       const facultyData = await getAllFaculty();
+      if (typeof window !== "undefined") window._scheduleDebug.facultyData = facultyData;
       setFaculty(facultyData || []);
-      
+
       // Load schedule
       const scheduleData = await getSchedule();
+      if (typeof window !== "undefined") window._scheduleDebug.scheduleData = scheduleData; // Debug log key schedule object
       if (scheduleData) {
         setSchedule(scheduleData);
+        // Major Debug Statement
+        if (typeof window !== "undefined") window._scheduleDebug.setAfterSchedule = { after: Date.now(), schedule: scheduleData };
         const conflictsFound = findScheduleConflicts(scheduleData);
         setConflicts(conflictsFound || []);
         updateAllocations(scheduleData);
       } else {
         setSchedule({});
       }
-      
+      if (typeof window !== "undefined") {
+        window._scheduleDebug.loadedKeys = Object.keys(scheduleData || {});
+      }
     } catch (error) {
       setErrors({
         general: `Error loading data: ${error.message}`
       });
+      if (typeof window !== "undefined") window._scheduleDebug = { ...(window._scheduleDebug||{}), errorDuringLoad: error.message };
     } finally {
       setIsLoading(false);
     }

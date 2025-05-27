@@ -530,6 +530,14 @@ const CourseScheduling = () => {
                       {JSON.stringify(schedule, null, 2)}
                     </pre>
                   </details>
+                  <details>
+                    <summary>Debug: Window ⬩_scheduleDebug</summary>
+                    <pre style={{ fontSize: "0.7em", overflowX: "auto" }}>
+                      {typeof window !== "undefined" && window._scheduleDebug
+                        ? JSON.stringify(window._scheduleDebug, null, 2)
+                        : "(No window._scheduleDebug present)"}
+                    </pre>
+                  </details>
                 </div>
 
                 {/* Add debug panel in development - can be commented out for production */}
