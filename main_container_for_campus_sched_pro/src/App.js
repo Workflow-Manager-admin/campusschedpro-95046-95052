@@ -15,8 +15,9 @@ import './styles/ConflictResolution.css';
 import './styles/BulkImport.css';
 
 /**
- * AppContent no longer displays a global loading overlay.
- * Per-component loading is now handled by the relevant components.
+ * AppContent now delegates all loading indicators to local components.
+ * No global or full-page loading overlays are shown here.
+ * Components must handle their own loading UI individually for granular feedback.
  */
 const AppContent = () => {
   const { errors, notification, handleCloseNotification, refreshData } = useSchedule();
@@ -91,6 +92,8 @@ const AppContent = () => {
 
         <main className="main-content">
           <Routes>
+            {/* Main content is responsible for granular loading indicators; 
+                the below components will receive loading UI improvements */}
             <Route path="/" element={<CourseScheduling />} />
             <Route path="/faculty" element={<FacultyManagement />} />
             <Route path="/rooms" element={<RoomManagement />} />
