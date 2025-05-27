@@ -1,71 +1,94 @@
 import { useState, useCallback } from 'react';
+import { isRetryableError, getRetryDelay, handleSupabaseError } from '../utils/supabaseErrorHandler';
 
-// Exponential backoff configuration
-const INITIAL_RETRY_DELAY = 1000; // 1 second
-const MAX_RETRIES = 3;
+// Enhanced retry configuration
+const DEFAULT_OPTIONS = {
+  maxRetries: 3,
+  initialRetryDelay: 1000,
+  maxRetryDelay: 10000,
+  retryMultiplier: 2,
+  shouldRetry: true
+};
 
 export const useDataFetch = (fetchFunction, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [progress, setProgress] = useState({ retrying: false, attempt: 0 });
+
+  // Merge default options with provided options
+  const config = { ...DEFAULT_OPTIONS, ...options };
 
   const executeWithRetry = useCallback(async (...args) => {
     setLoading(true);
     setError(null);
+    setProgress({ retrying: false, attempt: 0 });
     
-    let retryCount = 0;
-    let delay = INITIAL_RETRY_DELAY;
+    let currentRetry = 0;
 
     const attempt = async () => {
       try {
         const result = await fetchFunction(...args);
         setLoading(false);
+        setRetryCount(0);
+        setProgress({ retrying: false, attempt: 0 });
         return result;
       } catch (err) {
-        // If we haven't exceeded max retries and the error is retryable
-        if (retryCount < MAX_RETRIES && isRetryableError(err)) {
-          retryCount++;
-          // Implement exponential backoff
+        // Use supabaseErrorHandler to process the error
+        const processedError = handleSupabaseError(err, 'Data Fetch', currentRetry);
+        
+        // Check if we should retry based on error type and retry count
+        if (config.shouldRetry && 
+            currentRetry < config.maxRetries && 
+            isRetryableError(err)) {
+          currentRetry++;
+          
+          // Update state to show retry progress
+          setProgress({ 
+            retrying: true, 
+            attempt: currentRetry,
+            maxAttempts: config.maxRetries 
+          });
+          
+          // Calculate delay using utility function
+          const delay = getRetryDelay(currentRetry);
+          
+          // Wait before retrying
           await new Promise(resolve => setTimeout(resolve, delay));
-          delay *= 2; // Double the delay for next retry
-          return attempt(); // Retry the operation
+          
+          // Try again
+          return attempt();
         }
         
-        // If we've exhausted retries or error isn't retryable, throw it
-        setError(err);
+        // If we've exhausted retries or error isn't retryable
         setLoading(false);
-        throw err;
+        setError(processedError);
+        setProgress({ retrying: false, attempt: 0 });
+        throw processedError;
       }
     };
 
     return attempt();
-  }, [fetchFunction]);
+  }, [fetchFunction, config]);
+
+  const manualRetry = useCallback(async () => {
+    if (error) {
+      setRetryCount(prev => prev + 1);
+      return executeWithRetry();
+    }
+  }, [error, executeWithRetry]);
 
   return {
     execute: executeWithRetry,
+    retry: manualRetry,
     loading,
     error,
-    clearError: () => setError(null)
+    progress,
+    clearError: () => {
+      setError(null);
+      setProgress({ retrying: false, attempt: 0 });
+    }
   };
-};
-
-// Helper function to determine if an error is retryable
-const isRetryableError = (error) => {
-  // Network errors are retryable
-  if (error.name === 'NetworkError' || error.name === 'TypeError') {
-    return true;
-  }
-  
-  // Supabase specific error handling
-  if (error.statusCode) {
-    // Retry on 5xx server errors and specific 4xx errors
-    return (
-      error.statusCode >= 500 || 
-      error.statusCode === 429 || // Too Many Requests
-      error.statusCode === 408    // Request Timeout
-    );
-  }
-  
-  return false;
 };
 
 export default useDataFetch;
