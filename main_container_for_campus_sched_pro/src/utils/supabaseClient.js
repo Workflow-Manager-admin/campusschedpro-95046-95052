@@ -539,7 +539,46 @@ export const getSchedule = async () => {
 };
 
 // Schedule a course in a time slot
+/**
+ * PUBLIC_INTERFACE
+ * Schedule a course in a time slot. Ensures all fields are valid and non-null; logs error if payload malformed or references invalid IDs.
+ * @param {string} courseId 
+ * @param {string|null} facultyId 
+ * @param {string|null} roomId 
+ * @param {string} timeSlotId 
+ * @returns {Promise<boolean>}
+ */
 export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) => {
+  // Validate payload keys - all must be non-null, truthy, and string
+  if (!courseId || typeof courseId !== "string"
+      || !timeSlotId || typeof timeSlotId !== "string"
+      || !facultyId || typeof facultyId !== "string"
+      || !roomId || typeof roomId !== "string") {
+    console.error("[scheduleCourse] Invalid payload: ", {
+      courseId, facultyId, roomId, timeSlotId
+    });
+    // Optionally: Display a user-facing notification here if called from UI context
+    return false;
+  }
+
+  // Check existence of referenced records (defensive but not strictly required if data is always correct)
+  // (These can be removed for performance if not necessary)
+  const [course, faculty, room, slot] = await Promise.all([
+    supabase.from('courses').select('id').eq('id', courseId).maybeSingle(),
+    supabase.from('faculty').select('id').eq('id', facultyId).maybeSingle(),
+    supabase.from('rooms').select('id').eq('id', roomId).maybeSingle(),
+    supabase.from('time_slots').select('id').eq('id', timeSlotId).maybeSingle()
+  ]);
+  if (!course.data || !faculty.data || !room.data || !slot.data) {
+    console.error("[scheduleCourse] One or more referenced IDs do not exist:", {
+      course: !!course.data,
+      faculty: !!faculty.data,
+      room: !!room.data,
+      slot: !!slot.data
+    });
+    return false;
+  }
+
   // Check if this course is already scheduled in this time slot
   const { data: existing, error: checkError } = await supabase
     .from('schedule')
@@ -549,7 +588,7 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
     .maybeSingle();
     
   if (checkError) {
-    console.error('Error checking schedule:', checkError);
+    console.error('[scheduleCourse] Error checking schedule:', checkError);
     return false;
   }
   
@@ -561,22 +600,25 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
       .eq('id', existing.id);
       
     if (error) {
-      console.error('Error updating schedule:', error);
+      console.error('[scheduleCourse] Error updating schedule:', error);
       return false;
     }
   } else {
     // Insert new schedule
+    const payload = {
+      course_id: courseId,
+      faculty_id: facultyId,
+      room_id: roomId,
+      time_slot_id: timeSlotId
+    };
     const { error } = await supabase
       .from('schedule')
-      .insert({
-        course_id: courseId,
-        faculty_id: facultyId,
-        room_id: roomId,
-        time_slot_id: timeSlotId
-      });
-      
+      .insert(payload);
+
     if (error) {
-      console.error('Error inserting schedule:', error);
+      console.error('[scheduleCourse] Error inserting schedule:', {
+        payload, error
+      });
       return false;
     }
   }
