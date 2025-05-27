@@ -154,24 +154,34 @@ export const EnhancedScheduleProvider = ({ children }) => {
     });
     subscriptions.push(conflictSubscription);
 
-    // Subscribe to course changes
+    // Subscribe to course changes with enhanced room constraint handling
     const courseSubscription = subscribeToCourses((payload) => {
       setCourses((current) => {
         if (!current) return current;
         
+        let updatedCourses;
         switch (payload.eventType) {
           case 'INSERT':
-            return [...current, payload.new];
-          case 'UPDATE':
-            // Check if this update affects room allocation
-            if (payload.old.roomId !== payload.new.roomId) {
+            updatedCourses = [...current, payload.new];
+            // Check room constraints for newly added course
+            if (payload.new.roomId) {
               checkRoomConstraints(payload.new);
             }
-            return current.map(item => 
+            return updatedCourses;
+            
+          case 'UPDATE':
+            updatedCourses = current.map(item => 
               item.id === payload.new.id ? payload.new : item
             );
+            // Check room constraints if room assignment changed
+            if (payload.old.roomId !== payload.new.roomId && payload.new.roomId) {
+              checkRoomConstraints(payload.new);
+            }
+            return updatedCourses;
+            
           case 'DELETE':
             return current.filter(item => item.id !== payload.old.id);
+            
           default:
             return current;
         }
