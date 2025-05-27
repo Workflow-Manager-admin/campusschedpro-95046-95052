@@ -61,40 +61,134 @@ const ConflictResolution = () => {
     showNotification(`Successfully moved ${courseToMove.code} to ${newSlotId}`, 'success');
   };
 
-  const handleResolveAll = () => {
+  const handleResolveAll = async () => {
     if (conflicts.length === 0) {
       showNotification('No conflicts to resolve', 'info');
       return;
     }
     
     let conflictsResolved = 0;
+    let conflictsAttempted = 0;
     const updatedSchedule = { ...schedule };
+    const resolutionLog = [];
+    
+    // Sort conflicts by priority (instructor conflicts first, then room conflicts)
+    const sortedConflicts = [...conflicts].sort((a, b) => {
+      if (a.type === 'instructor' && b.type !== 'instructor') return -1;
+      if (b.type === 'instructor' && a.type !== 'instructor') return 1;
+      return 0;
+    });
     
     // Try to resolve each conflict
-    for (const conflict of conflicts) {
-      const course = conflict.courses[1]; // Choose second course to move
-      const alternatives = suggestAlternativeTimeSlots(updatedSchedule, course, conflict.slotId);
+    for (const conflict of sortedConflicts) {
+      conflictsAttempted++;
       
-      if (alternatives.length > 0) {
-        // Remove course from conflict slot
-        updatedSchedule[conflict.slotId] = updatedSchedule[conflict.slotId]
-          .filter(c => c.id !== course.id);
+      // Get courses involved in conflict
+      const coursesToMove = conflict.courses.sort((a, b) => {
+        // Prioritize courses with more flexibility
+        const aAlternatives = suggestAlternativeTimeSlots(updatedSchedule, a, conflict.slotId);
+        const bAlternatives = suggestAlternativeTimeSlots(updatedSchedule, b, conflict.slotId);
+        return bAlternatives.length - aAlternatives.length;
+      });
+      
+      let resolved = false;
+      
+      // Try each course until conflict is resolved
+      for (const course of coursesToMove) {
+        const alternatives = suggestAlternativeTimeSlots(updatedSchedule, course, conflict.slotId);
         
-        // Add to first alternative slot
-        const newSlotId = alternatives[0];
-        if (!updatedSchedule[newSlotId]) {
-          updatedSchedule[newSlotId] = [];
+        if (alternatives.length > 0) {
+          // Sort alternatives by suitability
+          const sortedAlternatives = alternatives.sort((a, b) => {
+            const [dayA] = a.split('-');
+            const [dayB] = b.split('-');
+            const [conflictDay] = conflict.slotId.split('-');
+            
+            // Prefer same day slots
+            if (dayA === conflictDay && dayB !== conflictDay) return -1;
+            if (dayB === conflictDay && dayA !== conflictDay) return 1;
+            return 0;
+          });
+          
+          // Try each alternative slot until success
+          for (const newSlotId of sortedAlternatives) {
+            try {
+              // Remove course from conflict slot
+              updatedSchedule[conflict.slotId] = updatedSchedule[conflict.slotId]
+                .filter(c => c.id !== course.id);
+              
+              // Add to new slot
+              if (!updatedSchedule[newSlotId]) {
+                updatedSchedule[newSlotId] = [];
+              }
+              updatedSchedule[newSlotId].push(course);
+              
+              // Verify no new conflicts created
+              const newConflicts = detectConflicts(updatedSchedule);
+              if (newConflicts.length >= conflicts.length) {
+                // Revert changes if new conflicts were created
+                updatedSchedule[conflict.slotId].push(course);
+                updatedSchedule[newSlotId] = updatedSchedule[newSlotId]
+                  .filter(c => c.id !== course.id);
+                continue;
+              }
+              
+              // Log successful resolution
+              resolutionLog.push({
+                conflictId: conflict.id,
+                courseId: course.id,
+                oldSlot: conflict.slotId,
+                newSlot: newSlotId,
+                timestamp: new Date()
+              });
+              
+              resolved = true;
+              conflictsResolved++;
+              break;
+            } catch (error) {
+              console.error(`Failed to move course ${course.code} to slot ${newSlotId}:`, error);
+              continue;
+            }
+          }
+          
+          if (resolved) break;
         }
-        updatedSchedule[newSlotId].push(course);
-        conflictsResolved++;
+      }
+      
+      // If conflict couldn't be resolved automatically, log it
+      if (!resolved) {
+        await supabase
+          .from('unresolved_conflicts')
+          .insert([{
+            conflict_id: conflict.id,
+            conflict_type: conflict.type,
+            courses: conflict.courses.map(c => c.id),
+            slot_id: conflict.slotId,
+            attempted_resolution: true,
+            reason: 'No suitable alternative slots found',
+            timestamp: new Date()
+          }]);
       }
     }
     
     if (conflictsResolved > 0) {
+      // Update schedule
       setSchedule(updatedSchedule);
-      showNotification(`Successfully resolved ${conflictsResolved} conflicts`, 'success');
+      
+      // Log resolutions to database
+      await supabase
+        .from('conflict_resolutions')
+        .insert(resolutionLog);
+      
+      showNotification(
+        `Successfully resolved ${conflictsResolved} out of ${conflictsAttempted} conflicts`,
+        'success'
+      );
     } else {
-      showNotification('Could not automatically resolve conflicts. Please resolve manually.', 'warning');
+      showNotification(
+        'Could not automatically resolve conflicts. Please resolve manually.',
+        'warning'
+      );
     }
   };
 
