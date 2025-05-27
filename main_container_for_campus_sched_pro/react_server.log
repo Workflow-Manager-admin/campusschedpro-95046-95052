@@ -132,3 +132,66 @@ src/utils/supabaseClient.js
 Search for the keywords to learn more about each error.
 
 webpack compiled with 1 error
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/components/conflicts/ConflictResolution.js
+  Line 127:36:  'detectConflicts' is not defined  no-undef
+  Line 160:15:  'supabase' is not defined         no-undef
+  Line 179:13:  'supabase' is not defined         no-undef
+
+src/context/EnhancedScheduleProvider.js
+  Line 52:34:   'subscribeToSchedules' is not defined        no-undef
+  Line 73:40:   'subscribeToRoomAllocations' is not defined  no-undef
+  Line 74:7:    'setRoomAllocations' is not defined          no-undef
+  Line 94:34:   'subscribeToConflicts' is not defined        no-undef
+  Line 95:7:    'setConflicts' is not defined                no-undef
+  Line 100:13:  'showNotification' is not defined            no-undef
+  Line 116:32:  'subscribeToCourses' is not defined          no-undef
+  Line 117:7:   'setCourses' is not defined                  no-undef
+  Line 162:9:   'showNotification' is not defined            no-undef
+  Line 166:32:  'isRoomSuitableForCourse' is not defined     no-undef
+  Line 169:9:   'showNotification' is not defined            no-undef
+  Line 185:7:   'showNotification' is not defined            no-undef
+
+src/utils/supabaseClient.js
+  Line 193:14:  'mapArray' is not defined    no-undef
+  Line 193:29:  'mapCourse' is not defined   no-undef
+  Line 218:14:  'mapArray' is not defined    no-undef
+  Line 218:29:  'mapFaculty' is not defined  no-undef
+  Line 239:14:  'mapArray' is not defined    no-undef
+  Line 239:29:  'mapRoom' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+ERROR in [eslint] 
+src/components/conflicts/ConflictResolution.js
+  Line 127:36:  'detectConflicts' is not defined  no-undef
+  Line 160:15:  'supabase' is not defined         no-undef
+  Line 179:13:  'supabase' is not defined         no-undef
+
+src/context/EnhancedScheduleProvider.js
+  Line 52:34:   'subscribeToSchedules' is not defined        no-undef
+  Line 73:40:   'subscribeToRoomAllocations' is not defined  no-undef
+  Line 74:7:    'setRoomAllocations' is not defined          no-undef
+  Line 94:34:   'subscribeToConflicts' is not defined        no-undef
+  Line 95:7:    'setConflicts' is not defined                no-undef
+  Line 100:13:  'showNotification' is not defined            no-undef
+  Line 116:32:  'subscribeToCourses' is not defined          no-undef
+  Line 117:7:   'setCourses' is not defined                  no-undef
+  Line 162:9:   'showNotification' is not defined            no-undef
+  Line 166:32:  'isRoomSuitableForCourse' is not defined     no-undef
+  Line 169:9:   'showNotification' is not defined            no-undef
+  Line 185:7:   'showNotification' is not defined            no-undef
+
+src/utils/supabaseClient.js
+  Line 193:14:  'mapArray' is not defined    no-undef
+  Line 193:29:  'mapCourse' is not defined   no-undef
+  Line 218:14:  'mapArray' is not defined    no-undef
+  Line 218:29:  'mapFaculty' is not defined  no-undef
+  Line 239:14:  'mapArray' is not defined    no-undef
+  Line 239:29:  'mapRoom' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error

@@ -10,30 +10,58 @@
  */
 /**
  * PUBLIC_INTERFACE
- * Check if a room meets the requirements for a course with enhanced validation
+ * Enhanced room suitability check with detailed validation and real-time constraints
+ * @param {Object} room - Room information
+ * @param {Object} course - Course details
+ * @param {Object} options - Additional validation options
+ * @returns {Object} Validation result with detailed feedback
  */
-export const isRoomSuitableForCourse = (room, course) => {
-  // Validate input parameters
+export const isRoomSuitableForCourse = (room, course, options = {}) => {
+  const validationResults = [];
+  const addValidationResult = (check, message) => {
+    validationResults.push({ passed: check, message });
+    return check;
+  };
+
+  // Input validation
   if (!room || !course) {
     return {
       suitable: false,
-      message: 'Invalid room or course data provided'
+      message: 'Invalid room or course data provided',
+      details: null
     };
   }
 
-  // Basic room validation
-  if (!room.id || !room.name || !room.capacity) {
+  // Basic room validation with detailed feedback
+  const hasValidRoomConfig = addValidationResult(
+    room.id && room.name && room.capacity,
+    !room.id ? 'Room ID missing' :
+    !room.name ? 'Room name missing' :
+    !room.capacity ? 'Room capacity not specified' :
+    'Valid room configuration'
+  );
+
+  if (!hasValidRoomConfig) {
     return {
       suitable: false,
-      message: 'Invalid room configuration'
+      message: validationResults.find(r => !r.passed).message,
+      details: { validationResults }
     };
   }
 
-  // Course validation
-  if (!course.id || !course.code) {
+  // Course validation with detailed feedback
+  const hasValidCourseConfig = addValidationResult(
+    course.id && course.code,
+    !course.id ? 'Course ID missing' :
+    !course.code ? 'Course code missing' :
+    'Valid course configuration'
+  );
+
+  if (!hasValidCourseConfig) {
     return {
       suitable: false,
-      message: 'Invalid course configuration'
+      message: validationResults.find(r => !r.passed).message,
+      details: { validationResults }
     };
   }
 
