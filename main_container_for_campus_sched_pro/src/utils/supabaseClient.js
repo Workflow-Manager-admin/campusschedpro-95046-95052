@@ -554,9 +554,16 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
       || !timeSlotId || typeof timeSlotId !== "string"
       || !facultyId || typeof facultyId !== "string"
       || !roomId || typeof roomId !== "string") {
-    console.error("[scheduleCourse] Invalid payload: ", {
-      courseId, facultyId, roomId, timeSlotId
-    });
+    const errorObj = {
+      courseId, facultyId, roomId, timeSlotId,
+      at: Date.now(),
+      reason: "InvalidCourseSchedulingPayload"
+    };
+    if (typeof window !== "undefined") {
+      window._scheduleDebug = window._scheduleDebug || {};
+      window._scheduleDebug.scheduleCourseInvalidPayload = errorObj;
+    }
+    console.error("[scheduleCourse] Invalid payload: ", errorObj);
     // Optionally: Display a user-facing notification here if called from UI context
     return false;
   }
@@ -570,12 +577,20 @@ export const scheduleCourse = async (courseId, facultyId, roomId, timeSlotId) =>
     supabase.from('time_slots').select('id').eq('id', timeSlotId).maybeSingle()
   ]);
   if (!course.data || !faculty.data || !room.data || !slot.data) {
-    console.error("[scheduleCourse] One or more referenced IDs do not exist:", {
-      course: !!course.data,
-      faculty: !!faculty.data,
-      room: !!room.data,
-      slot: !!slot.data
-    });
+    const errorRefObj = {
+      courseId, facultyId, roomId, timeSlotId,
+      courseExists: !!course.data,
+      facultyExists: !!faculty.data,
+      roomExists: !!room.data,
+      slotExists: !!slot.data,
+      at: Date.now(),
+      reason: "ReferencedRecordNotFound"
+    };
+    if (typeof window !== "undefined") {
+      window._scheduleDebug = window._scheduleDebug || {};
+      window._scheduleDebug.scheduleCourseMissingRef = errorRefObj;
+    }
+    console.error("[scheduleCourse] One or more referenced IDs do not exist:", errorRefObj);
     return false;
   }
 
