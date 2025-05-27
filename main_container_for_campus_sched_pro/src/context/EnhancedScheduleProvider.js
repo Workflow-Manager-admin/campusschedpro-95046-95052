@@ -226,19 +226,43 @@ export const EnhancedScheduleProvider = ({ children }) => {
     }
   }, [showNotification]);
 
-  // Initial data fetch
+  // Initial data fetch for all required data
   useEffect(() => {
-    fetchScheduleData()
-      .then(setScheduleData)
-      .catch((error) => {
+    const fetchAllData = async () => {
+      try {
+        // Fetch schedules
+        const scheduleResult = await fetchScheduleData();
+        setScheduleData(scheduleResult);
+
+        // Fetch room allocations
+        const { data: roomAllocationsData, error: roomAllocationsError } = await supabase
+          .from('room_allocations')
+          .select('*');
+        if (roomAllocationsError) throw roomAllocationsError;
+        setRoomAllocations(roomAllocationsData);
+
+        // Fetch courses
+        const { data: coursesData, error: coursesError } = await supabase
+          .from('courses')
+          .select('*');
+        if (coursesError) throw coursesError;
+        setCourses(coursesData);
+
+        // Fetch conflicts
+        const { data: conflictsData, error: conflictsError } = await supabase
+          .from('scheduling_conflicts')
+          .select('*');
+        if (conflictsError) throw conflictsError;
+        setConflicts(conflictsData);
+
+      } catch (error) {
         const processedError = handleSupabaseError(error, 'Initial Data Load');
-        setNotification({
-          open: true,
-          message: processedError.message,
-          severity: 'error'
-        });
-      });
-  }, [fetchScheduleData]);
+        showNotification(processedError.message, 'error');
+      }
+    };
+
+    fetchAllData();
+  }, [fetchScheduleData, showNotification]);
 
   // Handle manual retry
   const handleRetry = useCallback(async () => {
